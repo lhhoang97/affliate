@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {
-  Container,
   Typography,
   Box,
   Card,
@@ -60,7 +59,7 @@ interface ProductFormData {
   updatedAt?: string;
 }
 
-const AdminPage: React.FC = () => {
+const AdminProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
@@ -258,8 +257,8 @@ const AdminPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h3" component="h1" gutterBottom>
+    <Box>
+      <Typography variant="h4" component="h1" gutterBottom>
         Quản lý sản phẩm
       </Typography>
 
@@ -539,8 +538,8 @@ const AdminPage: React.FC = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Container>
+    </Box>
   );
 };
 
-export default AdminPage;
+export default AdminProductsPage;

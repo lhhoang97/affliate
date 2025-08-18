@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -28,8 +28,8 @@ import {
   NewReleases
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { mockCategories, mockProducts } from '../utils/mockData';
-import { useCart } from '../contexts/CartContext';
+import { fetchCategories, fetchProducts } from '../services/productService';
+import { Category as CategoryType, Product } from '../types';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -59,31 +59,42 @@ const CategoriesPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [sortBy, setSortBy] = useState<'name' | 'products' | 'popular'>('popular');
 
+  const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const [cats, prods] = await Promise.all([fetchCategories(), fetchProducts()]);
+      if (!mounted) return;
+      setCategories(cats);
+      setProducts(prods);
+    })();
+    return () => { mounted = false; };
+  }, []);
+
   // Calculate real product counts for each category
   const categoriesWithRealCounts = useMemo(() => {
-    return mockCategories.map(category => ({
+    return categories.map(category => ({
       ...category,
-      productCount: mockProducts.filter(product => product.category === category.name).length,
+      productCount: products.filter(product => product.category === category.name).length,
       averageRating: (() => {
-        const products = mockProducts.filter(product => product.category === category.name);
-        if (products.length === 0) return 0;
-        return products.reduce((sum, product) => sum + product.rating, 0) / products.length;
+        const inCat = products.filter(product => product.category === category.name);
+        if (inCat.length === 0) return 0;
+        return inCat.reduce((sum, product) => sum + product.rating, 0) / inCat.length;
       })(),
       totalReviews: (() => {
-        const products = mockProducts.filter(product => product.category === category.name);
-        return products.reduce((sum, product) => sum + product.reviewCount, 0);
+        const inCat = products.filter(product => product.category === category.name);
+        return inCat.reduce((sum, product) => sum + product.reviewCount, 0);
       })(),
       priceRange: (() => {
-        const products = mockProducts.filter(product => product.category === category.name);
-        if (products.length === 0) return { min: 0, max: 0 };
-        const prices = products.map(p => p.price);
-        return {
-          min: Math.min(...prices),
-          max: Math.max(...prices)
-        };
+        const inCat = products.filter(product => product.category === category.name);
+        if (inCat.length === 0) return { min: 0, max: 0 };
+        const prices = inCat.map(p => p.price);
+        return { min: Math.min(...prices), max: Math.max(...prices) };
       })()
     }));
-  }, []);
+  }, [categories, products]);
 
   // Filter and sort categories
   const filteredCategories = useMemo(() => {
@@ -118,7 +129,6 @@ const CategoriesPage: React.FC = () => {
   };
 
   const handleQuickView = (category: any) => {
-    // Navigate to products page with category filter
     navigate(`/products?category=${encodeURIComponent(category.name)}`);
   };
 

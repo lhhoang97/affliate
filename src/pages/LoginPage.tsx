@@ -1,134 +1,121 @@
 import React, { useState } from 'react';
-import { 
-  Container, 
-  Typography, 
-  Box, 
-  TextField, 
-  Button, 
-  Paper, 
+import {
+  Container,
+  Typography,
+  Box,
+  TextField,
+  Button,
+  Card,
+  CardContent,
   Alert,
-  Link 
+  Link,
+  CircularProgress
 } from '@mui/material';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { login, isLoading, error } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
-  const { login, isLoading, error } = useAuth();
-  const navigate = useNavigate();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors: {[key: string]: string} = {};
-
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (validateForm()) {
-      try {
-        await login(formData.email, formData.password);
-        navigate('/');
-      } catch (err) {
-        // Error is handled by AuthContext
-      }
+    try {
+      await login(formData);
+      navigate('/');
+    } catch (err) {
+      // Error is handled by the auth context
     }
   };
 
-  return (
-    <Container maxWidth="sm" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Sign In
-        </Typography>
-        
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={formData.email}
-            onChange={handleChange}
-            error={!!errors.email}
-            helperText={errors.email}
-          />
-          
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            value={formData.password}
-            onChange={handleChange}
-            error={!!errors.password}
-            helperText={errors.password}
-          />
-          
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Signing In...' : 'Sign In'}
-          </Button>
-          
-          <Box sx={{ textAlign: 'center' }}>
-            <Link href="/register" variant="body2">
-              {"Don't have an account? Sign Up"}
-            </Link>
+  return (
+    <Container maxWidth="sm" sx={{ py: 8 }}>
+      <Box sx={{ textAlign: 'center', mb: 4 }}>
+        <Typography variant="h3" component="h1" gutterBottom>
+          Đăng nhập
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Đăng nhập để truy cập tài khoản của bạn
+        </Typography>
+      </Box>
+
+      <Card>
+        <CardContent sx={{ p: 4 }}>
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+            <TextField
+              fullWidth
+              label="Email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              margin="normal"
+              required
+              disabled={isLoading}
+            />
+            <TextField
+              fullWidth
+              label="Mật khẩu"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              margin="normal"
+              required
+              disabled={isLoading}
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              size="large"
+              sx={{ mt: 3, mb: 2 }}
+              disabled={isLoading}
+            >
+              {isLoading ? <CircularProgress size={24} /> : 'Đăng nhập'}
+            </Button>
           </Box>
-        </Box>
-      </Paper>
+
+          <Box sx={{ mt: 3, textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              Chưa có tài khoản?{' '}
+              <Link component={RouterLink} to="/register" variant="body2">
+                Đăng ký ngay
+              </Link>
+            </Typography>
+          </Box>
+
+          {/* Demo credentials */}
+          <Box sx={{ mt: 4, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              <strong>Demo credentials:</strong>
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Admin:</strong> admin@example.com / admin123
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>User:</strong> user@example.com / user123
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
     </Container>
   );
 };

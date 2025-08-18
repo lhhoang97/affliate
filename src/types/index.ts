@@ -78,6 +78,7 @@ export interface AuthUser {
   email: string;
   avatar?: string;
   isVerified: boolean;
+  role?: 'admin' | 'user';
   createdAt: string;
 }
 

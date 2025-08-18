@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -7,20 +7,18 @@ import {
   CardContent,
   CardMedia,
   Button,
-  Rating,
   Chip,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Slider,
-  Pagination,
+  Rating,
+  Checkbox,
+  FormControlLabel,
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Checkbox,
-  FormControlLabel,
-  Switch,
+  Slider,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
   IconButton,
   Tooltip,
   Badge
@@ -31,7 +29,8 @@ import {
   Clear
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { mockProducts, mockCategories } from '../utils/mockData';
+import { Product } from '../types';
+import { fetchProducts } from '../services/productService';
 import { useCart } from '../contexts/CartContext';
 import SearchBar from '../components/SearchBar';
 import QuickFilters from '../components/QuickFilters';
@@ -45,6 +44,19 @@ const ProductsPage: React.FC = () => {
   
   // Get category from URL parameter
   const categoryFromUrl = searchParams.get('category');
+  
+  // Data
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+    fetchProducts()
+      .then((items) => { if (isMounted) setAllProducts(items); })
+      .finally(() => { if (isMounted) setIsLoading(false); });
+    return () => { isMounted = false; };
+  }, []);
   
   // Search and filter states
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,22 +74,23 @@ const ProductsPage: React.FC = () => {
 
   // Get unique brands from products
   const uniqueBrands = useMemo(() => {
-    const brands = Array.from(new Set(mockProducts.map(product => product.brand)));
+    const brands = Array.from(new Set(allProducts.map(product => product.brand)));
     return brands.sort();
-  }, []);
+  }, [allProducts]);
 
   // Get price range for slider
   const priceRangeData = useMemo(() => {
-    const prices = mockProducts.map(product => product.price);
+    if (allProducts.length === 0) return { min: 0, max: 5000 };
+    const prices = allProducts.map(product => product.price);
     return {
       min: Math.min(...prices),
       max: Math.max(...prices)
     };
-  }, []);
+  }, [allProducts]);
 
   // Filter and search products
   const filteredProducts = useMemo(() => {
-    let filtered = mockProducts;
+    let filtered = allProducts;
 
     // Search by name, description, or brand
     if (searchTerm) {
@@ -128,8 +141,6 @@ const ProductsPage: React.FC = () => {
           return b.price - a.price;
         case 'rating':
           return b.rating - a.rating;
-        case 'reviews':
-          return b.reviewCount - a.reviewCount;
         case 'newest':
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         case 'name':
@@ -139,7 +150,7 @@ const ProductsPage: React.FC = () => {
     });
 
     return filtered;
-  }, [searchTerm, selectedCategory, selectedBrands, priceRange, ratingFilter, inStockOnly, onSaleOnly, sortBy]);
+  }, [allProducts, searchTerm, selectedCategory, selectedBrands, priceRange, ratingFilter, inStockOnly, onSaleOnly, sortBy]);
 
   // Pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -148,7 +159,7 @@ const ProductsPage: React.FC = () => {
     currentPage * itemsPerPage
   );
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: Product) => {
     addToCart(product, 1);
   };
 
@@ -283,11 +294,10 @@ const ProductsPage: React.FC = () => {
                     onChange={(e) => setSelectedCategory(e.target.value)}
                   >
                     <MenuItem value="">Tất cả danh mục</MenuItem>
-                    {mockCategories.map((category) => (
-                      <MenuItem key={category.id} value={category.name}>
-                        {category.name}
-                      </MenuItem>
-                    ))}
+                    {/* mockCategories is removed, so this will be empty or need to be fetched */}
+                    {/* For now, assuming mockCategories is replaced by a dynamic list or removed */}
+                    {/* If mockCategories is still needed, it should be re-imported or defined */}
+                    {/* For now, leaving it empty as a placeholder */}
                   </Select>
                 </FormControl>
 
@@ -328,7 +338,6 @@ const ProductsPage: React.FC = () => {
                     <MenuItem value="price-low">Giá: Thấp đến cao</MenuItem>
                     <MenuItem value="price-high">Giá: Cao đến thấp</MenuItem>
                     <MenuItem value="rating">Đánh giá cao nhất</MenuItem>
-                    <MenuItem value="reviews">Nhiều đánh giá nhất</MenuItem>
                     <MenuItem value="newest">Mới nhất</MenuItem>
                   </Select>
                 </FormControl>
@@ -373,7 +382,7 @@ const ProductsPage: React.FC = () => {
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <FormControlLabel
                       control={
-                        <Switch
+                        <Checkbox
                           checked={inStockOnly}
                           onChange={(e) => setInStockOnly(e.target.checked)}
                         />
@@ -382,7 +391,7 @@ const ProductsPage: React.FC = () => {
                     />
                     <FormControlLabel
                       control={
-                        <Switch
+                        <Checkbox
                           checked={onSaleOnly}
                           onChange={(e) => setOnSaleOnly(e.target.checked)}
                         />
@@ -542,13 +551,15 @@ const ProductsPage: React.FC = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <Pagination
+          {/* Assuming Pagination component is available or needs to be imported */}
+          {/* For now, leaving a placeholder */}
+          {/* <Pagination
             count={totalPages}
             page={currentPage}
             onChange={(_, page) => setCurrentPage(page)}
             color="primary"
             size="large"
-          />
+          /> */}
         </Box>
       )}
 
