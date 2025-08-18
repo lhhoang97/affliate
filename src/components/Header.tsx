@@ -47,6 +47,9 @@ const Header: React.FC = () => {
           <Button color="inherit" component={RouterLink} to="/categories">
             Categories
           </Button>
+          <Button color="inherit" component={RouterLink} to="/admin">
+            Admin
+          </Button>
           
           <IconButton color="inherit" component={RouterLink} to="/cart">
             <Badge badgeContent={totalItems} color="error">

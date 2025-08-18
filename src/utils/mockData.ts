@@ -280,6 +280,42 @@ export const mockProducts: Product[] = [
     tags: ['vacuum', 'dyson', 'cordless', 'cleaning'],
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z'
+  },
+  // Ví dụ sản phẩm mới - Bạn có thể thêm sản phẩm mới ở đây
+  {
+    id: '9',
+    name: 'Sony PlayStation 5',
+    description: 'Next-generation gaming console with lightning-fast loading and stunning graphics.',
+    price: 499,
+    originalPrice: 599,
+    image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400',
+    rating: 4.9,
+    reviewCount: 2341,
+    category: 'Electronics',
+    brand: 'Sony',
+    inStock: true,
+    features: [
+      '4K gaming',
+      'Ray tracing',
+      '3D audio',
+      'Ultra-high speed SSD',
+      'Backward compatibility'
+    ],
+    specifications: {
+      'CPU': 'AMD Zen 2',
+      'GPU': 'AMD RDNA 2',
+      'Storage': '825GB SSD',
+      'Memory': '16GB GDDR6',
+      'Resolution': 'Up to 8K'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400',
+      'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400',
+      'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400'
+    ],
+    tags: ['gaming', 'console', 'playstation', '4k'],
+    createdAt: '2024-01-25T10:00:00Z',
+    updatedAt: '2024-01-25T10:00:00Z'
   }
 ];
 
