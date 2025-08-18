@@ -346,5 +346,37 @@ export const mockCategories: Category[] = [
     image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300',
     productCount: 45,
     slug: 'sports'
+  },
+  {
+    id: '5',
+    name: 'Books',
+    description: 'Books, magazines and educational materials',
+    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300',
+    productCount: 234,
+    slug: 'books'
+  },
+  {
+    id: '6',
+    name: 'Beauty',
+    description: 'Cosmetics, skincare and beauty products',
+    image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=300',
+    productCount: 123,
+    slug: 'beauty'
+  },
+  {
+    id: '7',
+    name: 'Toys & Games',
+    description: 'Fun toys and games for all ages',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300',
+    productCount: 78,
+    slug: 'toys-games'
+  },
+  {
+    id: '8',
+    name: 'Automotive',
+    description: 'Car parts, accessories and maintenance',
+    image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=300',
+    productCount: 56,
+    slug: 'automotive'
   }
 ];

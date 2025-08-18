@@ -30,20 +30,25 @@ import {
   ExpandMore, 
   Clear
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { mockProducts, mockCategories } from '../utils/mockData';
 import { useCart } from '../contexts/CartContext';
 import SearchBar from '../components/SearchBar';
 import QuickFilters from '../components/QuickFilters';
 import ActiveFilters from '../components/ActiveFilters';
+import CategoryBreadcrumb from '../components/CategoryBreadcrumb';
 
 const ProductsPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { addToCart } = useCart();
+  
+  // Get category from URL parameter
+  const categoryFromUrl = searchParams.get('category');
   
   // Search and filter states
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl || '');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [ratingFilter, setRatingFilter] = useState<number>(0);
@@ -214,8 +219,17 @@ const ProductsPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* Category Breadcrumb */}
+      {selectedCategory && (
+        <CategoryBreadcrumb
+          categoryName={selectedCategory}
+          productCount={filteredProducts.length}
+          onClear={() => setSelectedCategory('')}
+        />
+      )}
+      
       <Typography variant="h3" component="h1" gutterBottom>
-        Tìm kiếm sản phẩm
+        {selectedCategory ? `${selectedCategory}` : 'Tìm kiếm sản phẩm'}
       </Typography>
 
       {/* Search Bar */}
