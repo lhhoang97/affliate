@@ -177,7 +177,7 @@ const AdminProductsPage: React.FC = () => {
 
   const handleSave = async () => {
     if (!formData.name || !formData.description || !formData.category || !formData.brand) {
-      setSnackbar({ open: true, message: 'Please fill in all required fields', severity: 'error' });
+      setSnackbar({ open: true, message: 'Vui lòng điền đầy đủ thông tin bắt buộc', severity: 'error' });
       return;
     }
 
@@ -201,7 +201,7 @@ const AdminProductsPage: React.FC = () => {
           externalUrl: formData.externalUrl,
         });
         setProducts(prev => prev.map(p => p.id === editingProduct.id ? updated : p));
-        setSnackbar({ open: true, message: 'Product updated successfully!', severity: 'success' });
+        setSnackbar({ open: true, message: 'Cập nhật sản phẩm thành công!', severity: 'success' });
       } else {
         const created = await createProduct({
           name: formData.name,
@@ -221,22 +221,22 @@ const AdminProductsPage: React.FC = () => {
           externalUrl: formData.externalUrl,
         });
         setProducts(prev => [...prev, created]);
-        setSnackbar({ open: true, message: 'Product added successfully!', severity: 'success' });
+        setSnackbar({ open: true, message: 'Thêm sản phẩm mới thành công!', severity: 'success' });
       }
       handleCloseDialog();
     } catch (e) {
-      setSnackbar({ open: true, message: 'Error saving product', severity: 'error' });
+      setSnackbar({ open: true, message: 'Có lỗi khi lưu sản phẩm', severity: 'error' });
     }
   };
 
   const handleDelete = async (productId: string) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
       try {
         await deleteProductApi(productId);
         setProducts(prev => prev.filter(p => p.id !== productId));
-        setSnackbar({ open: true, message: 'Product deleted successfully!', severity: 'success' });
+        setSnackbar({ open: true, message: 'Xóa sản phẩm thành công!', severity: 'success' });
       } catch (e) {
-        setSnackbar({ open: true, message: 'Error deleting product', severity: 'error' });
+        setSnackbar({ open: true, message: 'Có lỗi khi xóa sản phẩm', severity: 'error' });
       }
     }
   };
@@ -265,7 +265,7 @@ const AdminProductsPage: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" component="h1" gutterBottom>
-        Product Management
+        Quản lý sản phẩm
       </Typography>
 
       {/* Search and Filter */}
@@ -273,7 +273,7 @@ const AdminProductsPage: React.FC = () => {
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1.5fr 1fr 1fr' }, gap: 2, alignItems: 'center' }}>
           <TextField
             fullWidth
-            placeholder="Search products..."
+            placeholder="Tìm kiếm sản phẩm..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             InputProps={{
@@ -281,13 +281,13 @@ const AdminProductsPage: React.FC = () => {
             }}
           />
           <FormControl fullWidth>
-            <InputLabel>Category</InputLabel>
+            <InputLabel>Danh mục</InputLabel>
             <Select
               value={selectedCategory}
-              label="Category"
+              label="Danh mục"
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
-              <MenuItem value="">All</MenuItem>
+              <MenuItem value="">Tất cả</MenuItem>
               {categories.map((category) => (
                 <MenuItem key={category.id} value={category.name}>
                   {category.name}
@@ -296,7 +296,7 @@ const AdminProductsPage: React.FC = () => {
             </Select>
           </FormControl>
           <Typography variant="body2" color="text.secondary">
-            Total: {filteredProducts.length} products
+            Tổng: {filteredProducts.length} sản phẩm
           </Typography>
           <Button
             variant="contained"
@@ -304,7 +304,7 @@ const AdminProductsPage: React.FC = () => {
             fullWidth
             onClick={() => handleOpenDialog()}
           >
-            Add New
+            Thêm mới
           </Button>
         </Box>
       </Card>
@@ -314,14 +314,14 @@ const AdminProductsPage: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Image</TableCell>
-              <TableCell>Product Name</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Brand</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Rating</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Hình ảnh</TableCell>
+              <TableCell>Tên sản phẩm</TableCell>
+              <TableCell>Danh mục</TableCell>
+              <TableCell>Thương hiệu</TableCell>
+              <TableCell>Giá</TableCell>
+              <TableCell>Đánh giá</TableCell>
+              <TableCell>Trạng thái</TableCell>
+              <TableCell>Thao tác</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -363,24 +363,24 @@ const AdminProductsPage: React.FC = () => {
                 </TableCell>
                 <TableCell>
                   <Chip 
-                    label={product.inStock ? 'In Stock' : 'Out of Stock'} 
+                    label={product.inStock ? 'Có sẵn' : 'Hết hàng'} 
                     color={product.inStock ? 'success' : 'error'}
                     size="small"
                   />
                 </TableCell>
                 <TableCell>
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Tooltip title="View details">
+                    <Tooltip title="Xem chi tiết">
                       <IconButton size="small">
                         <Visibility />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Edit">
+                    <Tooltip title="Chỉnh sửa">
                       <IconButton size="small" onClick={() => handleOpenDialog(product)}>
                         <Edit />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Delete">
+                    <Tooltip title="Xóa">
                       <IconButton 
                         size="small" 
                         color="error"
@@ -400,20 +400,20 @@ const AdminProductsPage: React.FC = () => {
       {/* Add/Edit Product Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
         <DialogTitle>
-          {editingProduct ? 'Edit Product' : 'Add New Product'}
+          {editingProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mt: 1 }}>
             <TextField
               fullWidth
-              label="Product Name *"
+              label="Tên sản phẩm *"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
               margin="normal"
             />
             <TextField
               fullWidth
-              label="Brand *"
+              label="Thương hiệu *"
               value={formData.brand}
               onChange={(e) => handleInputChange('brand', e.target.value)}
               margin="normal"
@@ -422,7 +422,7 @@ const AdminProductsPage: React.FC = () => {
           
           <TextField
             fullWidth
-            label="Description *"
+            label="Mô tả *"
             value={formData.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
             multiline
@@ -433,7 +433,7 @@ const AdminProductsPage: React.FC = () => {
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr 1fr' }, gap: 2, mt: 1 }}>
             <TextField
               fullWidth
-              label="Price *"
+              label="Giá *"
               type="number"
               value={formData.price}
               onChange={(e) => handleInputChange('price', Number(e.target.value))}
@@ -441,17 +441,17 @@ const AdminProductsPage: React.FC = () => {
             />
             <TextField
               fullWidth
-              label="Original Price"
+              label="Giá gốc"
               type="number"
               value={formData.originalPrice}
               onChange={(e) => handleInputChange('originalPrice', Number(e.target.value))}
               margin="normal"
             />
             <FormControl fullWidth margin="normal">
-              <InputLabel>Category *</InputLabel>
+              <InputLabel>Danh mục *</InputLabel>
               <Select
                 value={formData.category}
-                label="Category *"
+                label="Danh mục *"
                 onChange={(e) => handleInputChange('category', e.target.value)}
               >
                 {categories.map((category) => (
@@ -466,7 +466,7 @@ const AdminProductsPage: React.FC = () => {
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr 1fr' }, gap: 2, mt: 1 }}>
             <TextField
               fullWidth
-              label="Main Image URL *"
+              label="URL hình ảnh chính *"
               value={formData.image}
               onChange={(e) => handleInputChange('image', e.target.value)}
               margin="normal"
@@ -480,7 +480,7 @@ const AdminProductsPage: React.FC = () => {
             />
             <TextField
               fullWidth
-              label="Rating"
+              label="Đánh giá"
               type="number"
               inputProps={{ min: 0, max: 5, step: 0.1 }}
               value={formData.rating}
@@ -489,7 +489,7 @@ const AdminProductsPage: React.FC = () => {
             />
             <TextField
               fullWidth
-              label="Review Count"
+              label="Số review"
               type="number"
               value={formData.reviewCount}
               onChange={(e) => handleInputChange('reviewCount', Number(e.target.value))}
@@ -504,19 +504,19 @@ const AdminProductsPage: React.FC = () => {
                 onChange={(e) => handleInputChange('inStock', e.target.checked)}
               />
             }
-            label="In Stock"
+            label="Có sẵn hàng"
             sx={{ mt: 2 }}
           />
           
           <Box sx={{ mt: 3 }}>
             <Typography variant="h6" gutterBottom>
-              Features
+              Tính năng
             </Typography>
             {formData.features.map((feature, index) => (
               <Box key={index} sx={{ display: 'flex', gap: 1, mb: 1 }}>
                 <TextField
                   fullWidth
-                  label={`Feature ${index + 1}`}
+                  label={`Tính năng ${index + 1}`}
                   value={feature}
                   onChange={(e) => handleFeaturesChange(index, e.target.value)}
                 />
@@ -529,14 +529,14 @@ const AdminProductsPage: React.FC = () => {
               </Box>
             ))}
             <Button startIcon={<Add />} onClick={addFeature}>
-              Add Feature
+              Thêm tính năng
             </Button>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleCloseDialog}>Hủy</Button>
           <Button onClick={handleSave} variant="contained" startIcon={<Save />}>
-            {editingProduct ? 'Update' : 'Add New'}
+            {editingProduct ? 'Cập nhật' : 'Thêm mới'}
           </Button>
         </DialogActions>
       </Dialog>
