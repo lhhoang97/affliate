@@ -220,7 +220,7 @@ const ProductDetailPage: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Rating value={averageRating} precision={0.1} readOnly />
               <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                ({productReviews.length} đánh giá)
+                ({productReviews.length} reviews)
               </Typography>
             </Box>
 
@@ -251,7 +251,7 @@ const ProductDetailPage: React.FC = () => {
               
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mr: 2 }}>
-                  Người bán: {selectedSeller.seller}
+                  Seller: {selectedSeller.seller}
                 </Typography>
                 {selectedSeller.verified && (
                   <Verified sx={{ color: 'success.main', fontSize: 16 }} />
@@ -266,7 +266,7 @@ const ProductDetailPage: React.FC = () => {
                   </Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary">
-                  Giao hàng: {selectedSeller.delivery}
+                  Delivery: {selectedSeller.delivery}
                 </Typography>
               </Box>
 
@@ -282,14 +282,14 @@ const ProductDetailPage: React.FC = () => {
                   '&:hover': { backgroundColor: '#0056b3' }
                 }}
               >
-                Mua ngay từ {selectedSeller.seller}
+                Buy now from {selectedSeller.seller}
               </Button>
             </Card>
 
             {/* Features */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Tính năng nổi bật
+                Key Features
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                 {product.features.map((feature, index) => (
@@ -413,7 +413,7 @@ const ProductDetailPage: React.FC = () => {
                           '&:hover': { backgroundColor: '#0056b3' }
                         }}
                       >
-                        Chọn
+                        Select
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -427,9 +427,9 @@ const ProductDetailPage: React.FC = () => {
         <Box sx={{ mt: 6 }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabValue} onChange={handleTabChange}>
-              <Tab label="Mô tả" />
-              <Tab label="Thông số kỹ thuật" />
-              <Tab label={`Đánh giá (${productReviews.length})`} />
+              <Tab label="Description" />
+              <Tab label="Specifications" />
+              <Tab label={`Reviews (${productReviews.length})`} />
             </Tabs>
           </Box>
 
@@ -438,9 +438,9 @@ const ProductDetailPage: React.FC = () => {
               {product.description}
             </Typography>
             <Typography variant="body1">
-              Sản phẩm này cung cấp chất lượng và hiệu suất vượt trội. Được thiết kế với công nghệ mới nhất 
-              để mang lại trải nghiệm người dùng tốt nhất. Dù bạn là người dùng chuyên nghiệp hay thông thường, 
-              sản phẩm này sẽ đáp ứng mọi nhu cầu và vượt quá mong đợi của bạn.
+              This product offers outstanding quality and performance. Designed with the latest technology 
+              to provide the best user experience. Whether you are a professional or regular user, 
+              this product will meet all your needs and exceed your expectations.
             </Typography>
           </TabPanel>
 

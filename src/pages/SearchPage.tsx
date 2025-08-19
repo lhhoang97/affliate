@@ -380,7 +380,7 @@ const SearchPage: React.FC = () => {
                 <Search />
               </IconButton>
               <InputBase
-                placeholder="Bạn ơi, bạn muốn tìm gì?"
+                placeholder="What are you looking for?"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 sx={{ 

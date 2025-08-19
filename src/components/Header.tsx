@@ -67,51 +67,51 @@ const Header: React.FC = () => {
   const categories = [
     {
       id: 'electronics',
-      name: 'Thiết bị điện tử',
+      name: 'Electronics',
       icon: '📱',
-      subcategories: ['Điện thoại', 'Laptop', 'Máy tính bảng', 'Tivi', 'Tai nghe', 'Loa', 'Máy ảnh']
+      subcategories: ['Phones', 'Laptops', 'Tablets', 'TVs', 'Headphones', 'Speakers', 'Cameras']
     },
     {
       id: 'home',
-      name: 'Nhà cửa & Đời sống',
+      name: 'Home & Garden',
       icon: '🏠',
-      subcategories: ['Đồ gia dụng', 'Nội thất', 'Trang trí', 'Dụng cụ nhà bếp', 'Đồ dùng vệ sinh']
+      subcategories: ['Home Appliances', 'Furniture', 'Decor', 'Kitchen Tools', 'Bathroom Items']
     },
     {
       id: 'fashion',
-      name: 'Thời trang',
+      name: 'Fashion',
       icon: '👕',
-      subcategories: ['Quần áo nam', 'Quần áo nữ', 'Giày dép', 'Túi xách', 'Phụ kiện', 'Đồng hồ']
+      subcategories: ['Men\'s Clothing', 'Women\'s Clothing', 'Shoes', 'Bags', 'Accessories', 'Watches']
     },
     {
       id: 'beauty',
-      name: 'Làm đẹp',
+      name: 'Beauty',
       icon: '💄',
-      subcategories: ['Mỹ phẩm', 'Chăm sóc da', 'Chăm sóc tóc', 'Nước hoa', 'Dụng cụ làm đẹp']
+      subcategories: ['Cosmetics', 'Skincare', 'Haircare', 'Perfume', 'Beauty Tools']
     },
     {
       id: 'sports',
-      name: 'Thể thao',
+      name: 'Sports',
       icon: '⚽',
-      subcategories: ['Quần áo thể thao', 'Giày thể thao', 'Dụng cụ tập luyện', 'Xe đạp', 'Bóng đá']
+      subcategories: ['Sports Clothing', 'Sports Shoes', 'Exercise Equipment', 'Bicycles', 'Football']
     },
     {
       id: 'baby',
-      name: 'Mẹ & Bé',
+      name: 'Baby & Kids',
       icon: '👶',
-      subcategories: ['Đồ dùng cho bé', 'Sữa bột', 'Tã bỉm', 'Đồ chơi', 'Xe đẩy', 'Nôi cũi']
+      subcategories: ['Baby Items', 'Baby Formula', 'Diapers', 'Toys', 'Strollers', 'Cribs']
     },
     {
       id: 'automotive',
-      name: 'Ô tô & Xe máy',
+      name: 'Automotive',
       icon: '🚗',
-      subcategories: ['Phụ tùng xe', 'Dầu nhớt', 'Bảo hiểm', 'Đồ chơi xe', 'Phụ kiện xe']
+      subcategories: ['Auto Parts', 'Motor Oil', 'Insurance', 'Car Toys', 'Car Accessories']
     },
     {
       id: 'books',
-      name: 'Sách & Văn phòng phẩm',
+      name: 'Books & Office',
       icon: '📚',
-      subcategories: ['Sách giáo khoa', 'Sách văn học', 'Văn phòng phẩm', 'Đồ dùng học tập']
+      subcategories: ['Textbooks', 'Literature', 'Office Supplies', 'School Supplies']
     }
   ];
 
@@ -422,7 +422,7 @@ const Header: React.FC = () => {
                     }
                   }}
                 >
-                  Đăng nhập
+                  Login
                 </Button>
                 <Button
                   component={RouterLink}
@@ -435,7 +435,7 @@ const Header: React.FC = () => {
                     }
                   }}
                 >
-                  Đăng ký
+                  Register
                 </Button>
               </Box>
                           )}
@@ -485,13 +485,13 @@ const Header: React.FC = () => {
         }}
       >
         <MenuItem onClick={() => { navigate('/profile'); handleProfileMenuClose(); }}>
-          Hồ sơ
+          Profile
         </MenuItem>
         <MenuItem onClick={() => { navigate('/orders'); handleProfileMenuClose(); }}>
-          Đơn hàng
+          Orders
         </MenuItem>
         <MenuItem onClick={() => { navigate('/profile?tab=wishlist'); handleProfileMenuClose(); }}>
-          Yêu thích
+          Wishlist
         </MenuItem>
         {user?.role === 'admin' && (
           <MenuItem onClick={() => { navigate('/admin'); handleProfileMenuClose(); }} sx={{ color: '#dc3545', fontWeight: 600 }}>
@@ -499,7 +499,7 @@ const Header: React.FC = () => {
           </MenuItem>
         )}
         <MenuItem onClick={handleLogout}>
-          Đăng xuất
+          Logout
         </MenuItem>
       </Menu>
     </>

@@ -45,10 +45,10 @@ const RegisterPage: React.FC = () => {
     <Container maxWidth="sm" sx={{ py: 8 }}>
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Typography variant="h3" component="h1" gutterBottom>
-          Đăng ký
+          Register
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Tạo tài khoản mới để bắt đầu
+          Create a new account to get started
         </Typography>
       </Box>
 
@@ -63,7 +63,7 @@ const RegisterPage: React.FC = () => {
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
             <TextField
               fullWidth
-              label="Họ và tên"
+              label="Full Name"
               name="name"
               value={formData.name}
               onChange={handleChange}
@@ -84,7 +84,7 @@ const RegisterPage: React.FC = () => {
             />
             <TextField
               fullWidth
-              label="Mật khẩu"
+              label="Password"
               name="password"
               type="password"
               value={formData.password}
@@ -95,7 +95,7 @@ const RegisterPage: React.FC = () => {
             />
             <TextField
               fullWidth
-              label="Xác nhận mật khẩu"
+              label="Confirm Password"
               name="confirmPassword"
               type="password"
               value={formData.confirmPassword}
@@ -112,15 +112,15 @@ const RegisterPage: React.FC = () => {
               sx={{ mt: 3, mb: 2 }}
               disabled={isLoading}
             >
-              {isLoading ? <CircularProgress size={24} /> : 'Đăng ký'}
+              {isLoading ? <CircularProgress size={24} /> : 'Register'}
             </Button>
           </Box>
 
           <Box sx={{ mt: 3, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              Đã có tài khoản?{' '}
+              Already have an account?{' '}
               <Link component={RouterLink} to="/login" variant="body2">
-                Đăng nhập
+                Sign in
               </Link>
             </Typography>
           </Box>

@@ -43,10 +43,10 @@ const LoginPage: React.FC = () => {
     <Container maxWidth="sm" sx={{ py: 8 }}>
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Typography variant="h3" component="h1" gutterBottom>
-          Đăng nhập
+          Login
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Đăng nhập để truy cập tài khoản của bạn
+          Sign in to access your account
         </Typography>
       </Box>
 
@@ -72,7 +72,7 @@ const LoginPage: React.FC = () => {
             />
             <TextField
               fullWidth
-              label="Mật khẩu"
+              label="Password"
               name="password"
               type="password"
               value={formData.password}
@@ -89,15 +89,15 @@ const LoginPage: React.FC = () => {
               sx={{ mt: 3, mb: 2 }}
               disabled={isLoading}
             >
-              {isLoading ? <CircularProgress size={24} /> : 'Đăng nhập'}
+              {isLoading ? <CircularProgress size={24} /> : 'Login'}
             </Button>
           </Box>
 
           <Box sx={{ mt: 3, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              Chưa có tài khoản?{' '}
+              Don't have an account?{' '}
               <Link component={RouterLink} to="/register" variant="body2">
-                Đăng ký ngay
+                Register now
               </Link>
             </Typography>
           </Box>
