@@ -102,18 +102,7 @@ const LoginPage: React.FC = () => {
             </Typography>
           </Box>
 
-          {/* Demo credentials */}
-          <Box sx={{ mt: 4, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              <strong>Demo credentials:</strong>
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              <strong>Admin:</strong> admin@example.com / admin123
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              <strong>User:</strong> user@example.com / user123
-            </Typography>
-          </Box>
+
         </CardContent>
       </Card>
     </Container>
