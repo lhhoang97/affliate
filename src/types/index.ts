@@ -14,6 +14,7 @@ export interface Product {
   specifications: Record<string, string>;
   images: string[];
   tags: string[];
+  externalUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -79,7 +80,11 @@ export interface AuthUser {
   avatar?: string;
   isVerified: boolean;
   role?: 'admin' | 'user';
+  phone?: string;
+  address?: string;
+  bio?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface LoginCredentials {

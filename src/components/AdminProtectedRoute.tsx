@@ -10,6 +10,15 @@ interface AdminProtectedRouteProps {
 const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
 
+  // Debug logging
+  console.log('AdminProtectedRoute Debug:', {
+    user,
+    isAuthenticated,
+    isLoading,
+    userEmail: user?.email,
+    userRole: user?.role
+  });
+
   if (isLoading) {
     return (
       <Box
@@ -27,11 +36,14 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
   }
 
   if (!isAuthenticated) {
+    console.log('User not authenticated, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
-  // Check if user is admin (you can modify this logic based on your user structure)
+  // Check if user is admin - improved logic
   const isAdmin = user?.email === 'admin@example.com' || user?.role === 'admin';
+  
+  console.log('Admin check result:', { isAdmin, userEmail: user?.email, userRole: user?.role });
   
   if (!isAdmin) {
     return (
@@ -48,6 +60,9 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
         </Typography>
         <Typography>
           Bạn không có quyền truy cập vào trang admin.
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Email: {user?.email} | Role: {user?.role}
         </Typography>
       </Box>
     );

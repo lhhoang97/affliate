@@ -16,14 +16,12 @@ import {
   Divider
 } from '@mui/material';
 import {
-  TrendingUp,
   Inventory,
   Category,
   People,
   ShoppingCart,
   Star,
-  Add,
-  Visibility
+  Add
 } from '@mui/icons-material';
 import { fetchProducts, fetchCategories } from '../services/productService';
 import { Product, Category as CategoryType } from '../types';

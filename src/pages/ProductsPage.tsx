@@ -21,7 +21,8 @@ import {
   InputLabel,
   IconButton,
   Tooltip,
-  Badge
+  Badge,
+  LinearProgress
 } from '@mui/material';
 import { 
   FilterList, 
@@ -36,14 +37,16 @@ import SearchBar from '../components/SearchBar';
 import QuickFilters from '../components/QuickFilters';
 import ActiveFilters from '../components/ActiveFilters';
 import CategoryBreadcrumb from '../components/CategoryBreadcrumb';
+import SearchResults from '../components/SearchResults';
 
 const ProductsPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { addToCart } = useCart();
   
-  // Get category from URL parameter
+  // Get category and search from URL parameters
   const categoryFromUrl = searchParams.get('category');
+  const searchFromUrl = searchParams.get('search');
   
   // Data
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -57,9 +60,16 @@ const ProductsPage: React.FC = () => {
       .finally(() => { if (isMounted) setIsLoading(false); });
     return () => { isMounted = false; };
   }, []);
+
+  // Update search term when URL changes
+  useEffect(() => {
+    if (searchFromUrl) {
+      setSearchTerm(searchFromUrl);
+    }
+  }, [searchFromUrl]);
   
   // Search and filter states
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(searchFromUrl || '');
   const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl || '');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
@@ -161,6 +171,9 @@ const ProductsPage: React.FC = () => {
 
   const handleAddToCart = (product: Product) => {
     addToCart(product, 1);
+    if (product.externalUrl) {
+      window.open(product.externalUrl, '_blank', 'noopener,noreferrer');
+    }
   };
 
   const handleProductClick = (productId: string) => {
@@ -228,6 +241,14 @@ const ProductsPage: React.FC = () => {
     onSaleOnly
   ].filter(Boolean).length;
 
+  if (isLoading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <LinearProgress />
+      </Container>
+    );
+  }
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Category Breadcrumb */}
@@ -274,6 +295,13 @@ const ProductsPage: React.FC = () => {
           )}
         </Box>
       </Card>
+
+      {/* Search Results */}
+      <SearchResults
+        searchTerm={searchTerm}
+        resultCount={filteredProducts.length}
+        totalCount={allProducts.length}
+      />
 
       {/* Advanced Filters */}
       {showAdvancedFilters && (

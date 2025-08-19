@@ -1,22 +1,32 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Box } from '@mui/material';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import CssBaseline from '@mui/material/CssBaseline';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
+import SearchPage from './pages/SearchPage';
 import CategoriesPage from './pages/CategoriesPage';
+import CategoryListPage from './pages/CategoryListPage';
+import CartPage from './pages/CartPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import ProfilePage from './pages/ProfilePage';
+import DealsPage from './pages/DealsPage';
+import ReviewsPage from './pages/ReviewsPage';
+import OrdersPage from './pages/OrdersPage';
+import AboutUsPage from './pages/AboutUsPage';
+import ContactPage from './pages/ContactPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import AdminLayout from './components/AdminLayout';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminProductsPage from './pages/AdminProductsPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import CartPage from './pages/CartPage';
-import ProfilePage from './pages/ProfilePage';
+import AdminCategoriesPage from './pages/AdminCategoriesPage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import AdminSettingsPage from './pages/AdminSettingsPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
@@ -26,17 +36,17 @@ import { CartProvider } from './contexts/CartContext';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: '#007bff',
     },
     secondary: {
-      main: '#dc004e',
+      main: '#6c757d',
     },
     background: {
-      default: '#f5f5f5',
+      default: '#f8f9fa',
     },
   },
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", "Helvetica Neue", Arial, sans-serif',
     h1: {
       fontWeight: 700,
     },
@@ -62,6 +72,7 @@ const theme = createTheme({
         root: {
           textTransform: 'none',
           borderRadius: 8,
+          fontWeight: 500,
         },
       },
     },
@@ -73,115 +84,87 @@ const theme = createTheme({
         },
       },
     },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        },
+      },
+    },
   },
 });
 
-// Create a client
-const queryClient = new QueryClient();
-
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AuthProvider>
-          <CartProvider>
-            <Router>
-              <Routes>
-                {/* Public routes */}
-                <Route path="/" element={
-                  <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-                    <Header />
-                    <Box component="main" sx={{ flexGrow: 1 }}>
-                      <HomePage />
-                    </Box>
-                    <Footer />
-                  </Box>
-                } />
-                <Route path="/products" element={
-                  <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-                    <Header />
-                    <Box component="main" sx={{ flexGrow: 1 }}>
-                      <ProductsPage />
-                    </Box>
-                    <Footer />
-                  </Box>
-                } />
-                <Route path="/product/:id" element={
-                  <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-                    <Header />
-                    <Box component="main" sx={{ flexGrow: 1 }}>
-                      <ProductDetailPage />
-                    </Box>
-                    <Footer />
-                  </Box>
-                } />
-                <Route path="/categories" element={
-                  <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-                    <Header />
-                    <Box component="main" sx={{ flexGrow: 1 }}>
-                      <CategoriesPage />
-                    </Box>
-                    <Footer />
-                  </Box>
-                } />
-                <Route path="/login" element={
-                  <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-                    <Header />
-                    <Box component="main" sx={{ flexGrow: 1 }}>
-                      <LoginPage />
-                    </Box>
-                    <Footer />
-                  </Box>
-                } />
-                <Route path="/register" element={
-                  <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-                    <Header />
-                    <Box component="main" sx={{ flexGrow: 1 }}>
-                      <RegisterPage />
-                    </Box>
-                    <Footer />
-                  </Box>
-                } />
-                <Route path="/cart" element={
-                  <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-                    <Header />
-                    <Box component="main" sx={{ flexGrow: 1 }}>
-                      <CartPage />
-                    </Box>
-                    <Footer />
-                  </Box>
-                } />
-                <Route path="/profile" element={
-                  <ProtectedRoute>
-                    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-                      <Header />
-                      <Box component="main" sx={{ flexGrow: 1 }}>
-                        <ProfilePage />
-                      </Box>
-                      <Footer />
-                    </Box>
-                  </ProtectedRoute>
-                } />
-
-                {/* Admin routes */}
-                <Route path="/admin" element={
-                  <AdminProtectedRoute>
-                    <AdminLayout />
-                  </AdminProtectedRoute>
-                }>
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="products" element={<AdminProductsPage />} />
-                  <Route path="categories" element={<CategoriesPage />} />
-                  <Route path="users" element={<div>User Management (Coming Soon)</div>} />
-                  <Route path="settings" element={<div>Settings (Coming Soon)</div>} />
-                </Route>
-              </Routes>
-            </Router>
-          </CartProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AuthProvider>
+        <CartProvider>
+          <Router>
+            <Routes>
+              {/* Search page without header/footer */}
+              <Route path="/search" element={<SearchPage />} />
+              
+              {/* Regular layout with header/footer */}
+              <Route path="/*" element={
+                <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                  <Header />
+                  <main style={{ flex: 1 }}>
+                    <Routes>
+                      {/* Public Routes */}
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/products" element={<ProductsPage />} />
+                      <Route path="/product/:id" element={<ProductDetailPage />} />
+                      <Route path="/categories" element={<CategoriesPage />} />
+                      <Route path="/categories/:category" element={<CategoriesPage />} />
+                      <Route path="/category-list" element={<CategoryListPage />} />
+                      <Route path="/deals" element={<DealsPage />} />
+                      <Route path="/reviews" element={<ReviewsPage />} />
+                      <Route path="/about" element={<AboutUsPage />} />
+                      <Route path="/contact" element={<ContactPage />} />
+                      <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/register" element={<RegisterPage />} />
+                      
+                      {/* Protected Routes */}
+                      <Route path="/cart" element={
+                        <ProtectedRoute>
+                          <CartPage />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="/profile" element={
+                        <ProtectedRoute>
+                          <ProfilePage />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="/orders" element={
+                        <ProtectedRoute>
+                          <OrdersPage />
+                        </ProtectedRoute>
+                      } />
+                      
+                      {/* Admin Routes */}
+                      <Route path="/admin" element={
+                        <AdminProtectedRoute>
+                          <AdminLayout />
+                        </AdminProtectedRoute>
+                      }>
+                        <Route index element={<AdminDashboard />} />
+                        <Route path="products" element={<AdminProductsPage />} />
+                        <Route path="categories" element={<AdminCategoriesPage />} />
+                        <Route path="users" element={<AdminUsersPage />} />
+                        <Route path="settings" element={<AdminSettingsPage />} />
+                      </Route>
+                    </Routes>
+                  </main>
+                  <Footer />
+                </div>
+              } />
+            </Routes>
+          </Router>
+        </CartProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
