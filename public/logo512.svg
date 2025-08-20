@@ -1,25 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
     <style>
-      .money-icon { fill: #ff6b35; }
+      .cart-icon { fill: #ff6b35; }
       .background { fill: #000000; }
+      .money { fill: #ffd700; }
     </style>
   </defs>
   
   <!-- Background circle -->
   <circle cx="256" cy="256" r="256" class="background"/>
   
-  <!-- Top hand giving money -->
-  <path class="money-icon" d="M128 192c0-17.7 14.3-32 32-32h32c9.6 0 16-6.4 16-16s-6.4-16-16-16H160c-35.2 0-64 28.8-64 64v32c0 9.6 6.4 16 16 16s16-6.4 16-16v-32z"/>
+  <!-- Shopping cart body -->
+  <path class="cart-icon" d="M128 192h32l40 128h144l40-128h32l-48 160H176L128 192z"/>
   
-  <!-- Money bill with dollar sign -->
-  <rect x="160" y="160" width="128" height="64" rx="8" class="money-icon" fill="none" stroke="#ff6b35" stroke-width="8"/>
-  <text x="224" y="200" text-anchor="middle" class="money-icon" font-family="Arial, sans-serif" font-size="32" font-weight="bold">$</text>
+  <!-- Shopping cart wheels -->
+  <circle cx="160" cy="384" r="32" class="cart-icon"/>
+  <circle cx="352" cy="384" r="32" class="cart-icon"/>
   
-  <!-- Bottom hand receiving money -->
-  <path class="money-icon" d="M352 320c0 17.7-14.3 32-32 32h-32c-9.6 0-16 6.4-16 16s6.4 16 16 16h32c35.2 0 64-28.8 64-64v-32c0-9.6-6.4-16-16-16s-16 6.4-16 16v32z"/>
+  <!-- Shopping cart handle -->
+  <path class="cart-icon" d="M192 128h128v32H192z"/>
+  <path class="cart-icon" d="M224 96h64v32h-64z"/>
   
-  <!-- Hand details -->
-  <path class="money-icon" d="M192 128c-9.6 0-16 6.4-16 16v32c0 9.6 6.4 16 16 16s16-6.4 16-16v-32c0-9.6-6.4-16-16-16z"/>
-  <path class="money-icon" d="M320 352c9.6 0 16-6.4 16-16v-32c0-9.6-6.4-16-16-16s-16 6.4-16 16v32c0 9.6 6.4 16 16 16z"/>
+  <!-- Money coins inside cart -->
+  <circle cx="192" cy="288" r="16" class="money"/>
+  <circle cx="256" cy="288" r="16" class="money"/>
+  <circle cx="320" cy="288" r="16" class="money"/>
+  
+  <!-- Dollar sign -->
+  <text x="256" y="352" text-anchor="middle" class="money" font-family="Arial, sans-serif" font-size="48" font-weight="bold">$</text>
 </svg>

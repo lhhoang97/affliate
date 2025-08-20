@@ -1,25 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
   <defs>
     <style>
-      .money-icon { fill: #ff6b35; }
+      .cart-icon { fill: #ff6b35; }
       .background { fill: #000000; }
+      .money { fill: #ffd700; }
     </style>
   </defs>
   
   <!-- Background circle -->
   <circle cx="96" cy="96" r="96" class="background"/>
   
-  <!-- Top hand giving money -->
-  <path class="money-icon" d="M48 72c0-6.6 5.4-12 12-12h12c3.6 0 6-2.4 6-6s-2.4-6-6-6H60c-13.2 0-24 10.8-24 24v12c0 3.6 2.4 6 6 6s6-2.4 6-6V72z"/>
+  <!-- Shopping cart body -->
+  <path class="cart-icon" d="M48 72h12l15 48h54l15-48h12l-18 60H66L48 72z"/>
   
-  <!-- Money bill with dollar sign -->
-  <rect x="60" y="60" width="48" height="24" rx="3" class="money-icon" fill="none" stroke="#ff6b35" stroke-width="3"/>
-  <text x="84" y="75" text-anchor="middle" class="money-icon" font-family="Arial, sans-serif" font-size="12" font-weight="bold">$</text>
+  <!-- Shopping cart wheels -->
+  <circle cx="60" cy="144" r="12" class="cart-icon"/>
+  <circle cx="132" cy="144" r="12" class="cart-icon"/>
   
-  <!-- Bottom hand receiving money -->
-  <path class="money-icon" d="M132 120c0 6.6-5.4 12-12 12h-12c-3.6 0-6 2.4-6 6s2.4 6 6 6h12c13.2 0 24-10.8 24-24v-12c0-3.6-2.4-6-6-6s-6 2.4-6 6v12z"/>
+  <!-- Shopping cart handle -->
+  <path class="cart-icon" d="M72 48h48v12H72z"/>
+  <path class="cart-icon" d="M84 36h24v12H84z"/>
   
-  <!-- Hand details -->
-  <path class="money-icon" d="M72 48c-3.6 0-6 2.4-6 6v12c0 3.6 2.4 6 6 6s6-2.4 6-6V54c0-3.6-2.4-6-6-6z"/>
-  <path class="money-icon" d="M120 132c3.6 0 6-2.4 6-6v-12c0-3.6-2.4-6-6-6s-6 2.4-6 6v12c0 3.6 2.4 6 6 6z"/>
+  <!-- Money coins inside cart -->
+  <circle cx="72" cy="108" r="6" class="money"/>
+  <circle cx="96" cy="108" r="6" class="money"/>
+  <circle cx="120" cy="108" r="6" class="money"/>
+  
+  <!-- Dollar sign -->
+  <text x="96" y="132" text-anchor="middle" class="money" font-family="Arial, sans-serif" font-size="18" font-weight="bold">$</text>
 </svg>
