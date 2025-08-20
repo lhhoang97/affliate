@@ -57,6 +57,7 @@ interface ProductFormData {
   images: string[];
   tags: string[];
   externalUrl?: string;
+  affiliateLink?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -229,6 +230,7 @@ const AdminProductsPage: React.FC = () => {
         images: [...product.images],
         tags: [...product.tags],
         externalUrl: (product as any).externalUrl || '',
+        affiliateLink: (product as any).affiliateLink || '',
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
       });
@@ -251,7 +253,8 @@ const AdminProductsPage: React.FC = () => {
         specifications: {},
         images: [],
         tags: [],
-        externalUrl: ''
+        externalUrl: '',
+        affiliateLink: ''
       });
     }
     setOpenDialog(true);
@@ -286,6 +289,7 @@ const AdminProductsPage: React.FC = () => {
           images: formData.images,
           tags: formData.tags,
           externalUrl: formData.externalUrl,
+          affiliateLink: formData.affiliateLink,
         });
         setProducts(prev => prev.map(p => p.id === editingProduct.id ? updated : p));
         setSnackbar({ open: true, message: 'Cập nhật sản phẩm thành công!', severity: 'success' });
@@ -306,6 +310,7 @@ const AdminProductsPage: React.FC = () => {
           images: formData.images,
           tags: formData.tags,
           externalUrl: formData.externalUrl,
+          affiliateLink: formData.affiliateLink,
         });
         setProducts(prev => [...prev, created]);
         setSnackbar({ open: true, message: 'Thêm sản phẩm mới thành công!', severity: 'success' });
@@ -444,6 +449,7 @@ const AdminProductsPage: React.FC = () => {
               <TableCell>Price</TableCell>
               <TableCell>Rating</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Affiliate Link</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -504,6 +510,30 @@ const AdminProductsPage: React.FC = () => {
                     color={product.inStock ? 'success' : 'error'}
                     size="small"
                   />
+                </TableCell>
+                <TableCell>
+                  {product.affiliateLink ? (
+                    <Tooltip title={product.affiliateLink}>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={() => window.open(product.affiliateLink, '_blank')}
+                        sx={{ 
+                          maxWidth: 120, 
+                          overflow: 'hidden', 
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          fontSize: '0.7rem'
+                        }}
+                      >
+                        View Link
+                      </Button>
+                    </Tooltip>
+                  ) : (
+                    <Typography variant="caption" color="text.secondary">
+                      No link
+                    </Typography>
+                  )}
                 </TableCell>
                 <TableCell>
                   <Box sx={{ display: 'flex', gap: 1 }}>
@@ -634,15 +664,27 @@ const AdminProductsPage: React.FC = () => {
               value={formData.image}
               onChange={(e) => handleInputChange('image', e.target.value)}
               margin="normal"
+              helperText="Direct link to product image"
             />
             <TextField
               fullWidth
-              label="Affiliate Link *"
+              label="External URL"
               value={formData.externalUrl}
               onChange={(e) => handleInputChange('externalUrl', e.target.value)}
               margin="normal"
+              helperText="Link to original product page"
             />
           </Box>
+          
+          <TextField
+            fullWidth
+            label="Affiliate Link *"
+            value={formData.affiliateLink}
+            onChange={(e) => handleInputChange('affiliateLink', e.target.value)}
+            margin="normal"
+            helperText="Your affiliate link for this product (required for commission)"
+            placeholder="https://example.com/product?ref=your-affiliate-id"
+          />
           
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mt: 1 }}>
             <TextField

@@ -15,6 +15,7 @@ export interface Product {
   images: string[];
   tags: string[];
   externalUrl?: string;
+  affiliateLink?: string;
   createdAt: string;
   updatedAt: string;
 }
