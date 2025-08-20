@@ -1,6 +1,153 @@
 import { Product, Review, Category } from '../types';
 
 export const mockProducts: Product[] = [
+  // iPhone Products
+  {
+    id: 'iphone-11',
+    name: 'Apple iPhone 11 128GB',
+    description: 'Latest iPhone with A13 Bionic chip and dual camera system.',
+    price: 699,
+    originalPrice: 799,
+    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+    rating: 4.7,
+    reviewCount: 2156,
+    category: 'Electronics',
+    brand: 'Apple',
+    inStock: true,
+    features: ['A13 Bionic chip', 'Dual camera system', 'Face ID', 'Water resistant'],
+    specifications: {
+      'Screen Size': '6.1 inches',
+      'Storage': '128GB',
+      'Color': 'Multiple colors',
+      'Chip': 'A13 Bionic',
+      'Camera': '12MP Dual camera'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400'
+    ],
+    tags: ['smartphone', 'apple', 'iphone', '5g'],
+    createdAt: '2024-01-15T10:00:00Z',
+    updatedAt: '2024-01-15T10:00:00Z'
+  },
+  {
+    id: 'iphone-13',
+    name: 'Apple iPhone 13 128GB',
+    description: 'Advanced iPhone with A15 Bionic chip and pro camera system.',
+    price: 799,
+    originalPrice: 899,
+    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+    rating: 4.8,
+    reviewCount: 1892,
+    category: 'Electronics',
+    brand: 'Apple',
+    inStock: true,
+    features: ['A15 Bionic chip', 'Pro camera system', 'Face ID', 'Cinematic mode'],
+    specifications: {
+      'Screen Size': '6.1 inches',
+      'Storage': '128GB',
+      'Color': 'Multiple colors',
+      'Chip': 'A15 Bionic',
+      'Camera': '12MP Dual camera'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400'
+    ],
+    tags: ['smartphone', 'apple', 'iphone', '5g'],
+    createdAt: '2024-01-16T10:00:00Z',
+    updatedAt: '2024-01-16T10:00:00Z'
+  },
+  {
+    id: 'iphone-12-64',
+    name: 'Apple iPhone 12 64GB',
+    description: 'Premium iPhone with A14 Bionic chip and MagSafe technology.',
+    price: 599,
+    originalPrice: 699,
+    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+    rating: 4.6,
+    reviewCount: 1654,
+    category: 'Electronics',
+    brand: 'Apple',
+    inStock: true,
+    features: ['A14 Bionic chip', 'MagSafe', 'Face ID', '5G capable'],
+    specifications: {
+      'Screen Size': '6.1 inches',
+      'Storage': '64GB',
+      'Color': 'Multiple colors',
+      'Chip': 'A14 Bionic',
+      'Camera': '12MP Dual camera'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400'
+    ],
+    tags: ['smartphone', 'apple', 'iphone', '5g'],
+    createdAt: '2024-01-17T10:00:00Z',
+    updatedAt: '2024-01-17T10:00:00Z'
+  },
+  {
+    id: 'iphone-12-128',
+    name: 'Apple iPhone 12 128GB',
+    description: 'Premium iPhone with A14 Bionic chip and MagSafe technology.',
+    price: 649,
+    originalPrice: 749,
+    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+    rating: 4.6,
+    reviewCount: 1654,
+    category: 'Electronics',
+    brand: 'Apple',
+    inStock: true,
+    features: ['A14 Bionic chip', 'MagSafe', 'Face ID', '5G capable'],
+    specifications: {
+      'Screen Size': '6.1 inches',
+      'Storage': '128GB',
+      'Color': 'Multiple colors',
+      'Chip': 'A14 Bionic',
+      'Camera': '12MP Dual camera'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400'
+    ],
+    tags: ['smartphone', 'apple', 'iphone', '5g'],
+    createdAt: '2024-01-17T10:00:00Z',
+    updatedAt: '2024-01-17T10:00:00Z'
+  },
+  // Nike Products
+  {
+    id: 'nike-air-max',
+    name: 'Giày Nike Air Max 270',
+    description: 'Comfortable running shoes with Air Max technology.',
+    price: 1200000,
+    originalPrice: 1450000,
+    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+    rating: 4.5,
+    reviewCount: 892,
+    category: 'Fashion',
+    brand: 'Nike',
+    inStock: true,
+    features: ['Air Max technology', 'Breathable mesh', 'Comfortable fit', 'Durable sole'],
+    specifications: {
+      'Type': 'Running Shoes',
+      'Material': 'Mesh and synthetic',
+      'Sole': 'Rubber',
+      'Closure': 'Lace-up',
+      'Weight': 'Lightweight'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400'
+    ],
+    tags: ['shoes', 'nike', 'running', 'sports'],
+    createdAt: '2024-01-18T10:00:00Z',
+    updatedAt: '2024-01-18T10:00:00Z'
+  },
   {
     id: '1',
     name: 'iPhone 15 Pro Max',

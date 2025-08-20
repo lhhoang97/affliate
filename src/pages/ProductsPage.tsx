@@ -571,6 +571,37 @@ const ProductsPage: React.FC = () => {
                 {product.name}
               </Typography>
               
+              {/* Color Variants */}
+              <Box sx={{ display: 'flex', gap: 0.5, mb: 1 }}>
+                {product.category === 'Electronics' && product.name.toLowerCase().includes('iphone') ? (
+                  // iPhone color variants
+                  <>
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#000' }} />
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#4CAF50' }} />
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#FFEB3B' }} />
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#9C27B0' }} />
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#F44336' }} />
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#fff', border: '1px solid #ddd' }} />
+                  </>
+                ) : product.category === 'Fashion' && product.name.toLowerCase().includes('nike') ? (
+                  // Nike shoe color variants
+                  <>
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#F44336' }} />
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#2196F3' }} />
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#4CAF50' }} />
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#FF9800' }} />
+                  </>
+                ) : (
+                  // Default color variants for other products
+                  <>
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#2196F3' }} />
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#F44336' }} />
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#4CAF50' }} />
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#FF9800' }} />
+                  </>
+                )}
+              </Box>
+              
               {/* Price */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography 
