@@ -49,6 +49,7 @@ interface ProductFormData {
   rating: number;
   reviewCount: number;
   category: string;
+  subcategory?: string;
   brand: string;
   inStock: boolean;
   features: string[];
@@ -67,18 +68,84 @@ const AdminProductsPage: React.FC = () => {
   const [editingProduct, setEditingProduct] = useState<ProductFormData | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('');
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as any });
   
-  // Predefined categories for easy product management
+  // Predefined categories with subcategories for easy product management
   const predefinedCategories = [
-    { id: 'electronics', name: 'Electronics', color: '#007bff' },
-    { id: 'fashion', name: 'Fashion', color: '#e91e63' },
-    { id: 'home-garden', name: 'Home & Garden', color: '#4caf50' },
-    { id: 'sports', name: 'Sports & Outdoors', color: '#ff9800' },
-    { id: 'books', name: 'Books & Media', color: '#9c27b0' },
-    { id: 'toys', name: 'Toys & Games', color: '#f44336' },
-    { id: 'health', name: 'Health & Beauty', color: '#00bcd4' },
-    { id: 'automotive', name: 'Automotive', color: '#795548' }
+    {
+      id: 'electronics',
+      name: 'Electronics',
+      color: '#007bff',
+      subcategories: [
+        'Smartphones', 'Laptops', 'Tablets', 'Headphones', 'Speakers',
+        'Cameras', 'Gaming', 'Smart Watches', 'TVs', 'Audio Equipment'
+      ]
+    },
+    {
+      id: 'fashion',
+      name: 'Fashion',
+      color: '#e91e63',
+      subcategories: [
+        'Men\'s Clothing', 'Women\'s Clothing', 'Kids\' Clothing', 'Shoes',
+        'Bags', 'Accessories', 'Jewelry', 'Watches', 'Sunglasses'
+      ]
+    },
+    {
+      id: 'home-garden',
+      name: 'Home & Garden',
+      color: '#4caf50',
+      subcategories: [
+        'Furniture', 'Kitchen Appliances', 'Garden Tools', 'Lighting',
+        'Decor', 'Bedding', 'Bathroom', 'Storage', 'Outdoor Living'
+      ]
+    },
+    {
+      id: 'sports',
+      name: 'Sports & Outdoors',
+      color: '#ff9800',
+      subcategories: [
+        'Fitness Equipment', 'Team Sports', 'Outdoor Gear', 'Swimming',
+        'Cycling', 'Running', 'Yoga', 'Hiking', 'Camping'
+      ]
+    },
+    {
+      id: 'books',
+      name: 'Books & Media',
+      color: '#9c27b0',
+      subcategories: [
+        'Fiction', 'Non-Fiction', 'Educational', 'Children\'s Books',
+        'Magazines', 'E-books', 'Audiobooks', 'Music', 'Movies'
+      ]
+    },
+    {
+      id: 'toys',
+      name: 'Toys & Games',
+      color: '#f44336',
+      subcategories: [
+        'Action Figures', 'Board Games', 'Puzzles', 'Educational Toys',
+        'Building Sets', 'Dolls', 'Remote Control', 'Arts & Crafts'
+      ]
+    },
+    {
+      id: 'health',
+      name: 'Health & Beauty',
+      color: '#00bcd4',
+      subcategories: [
+        'Skincare', 'Makeup', 'Hair Care', 'Personal Care',
+        'Vitamins', 'Fitness Trackers', 'Medical Devices', 'Wellness'
+      ]
+    },
+    {
+      id: 'automotive',
+      name: 'Automotive',
+      color: '#795548',
+      subcategories: [
+        'Car Parts', 'Car Care', 'Motorcycle', 'Truck Accessories',
+        'Tools', 'Electronics', 'Safety', 'Performance'
+      ]
+    }
   ];
 
   useEffect(() => {
@@ -107,6 +174,7 @@ const AdminProductsPage: React.FC = () => {
     rating: 0,
     reviewCount: 0,
     category: '',
+    subcategory: '',
     brand: '',
     inStock: true,
     features: [],
@@ -124,7 +192,8 @@ const AdminProductsPage: React.FC = () => {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchTerm.toLowerCase())
+        product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ((product as any).subcategory && (product as any).subcategory.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
@@ -132,8 +201,12 @@ const AdminProductsPage: React.FC = () => {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
 
+    if (selectedSubcategory) {
+      filtered = filtered.filter(product => (product as any).subcategory === selectedSubcategory);
+    }
+
     return filtered;
-  }, [products, searchTerm, selectedCategory]);
+  }, [products, searchTerm, selectedCategory, selectedSubcategory]);
 
   const handleOpenDialog = (product?: any) => {
     if (product) {
@@ -148,6 +221,7 @@ const AdminProductsPage: React.FC = () => {
         rating: product.rating,
         reviewCount: product.reviewCount,
         category: product.category,
+        subcategory: (product as any).subcategory || '',
         brand: product.brand,
         inStock: product.inStock,
         features: [...product.features],
@@ -170,6 +244,7 @@ const AdminProductsPage: React.FC = () => {
         rating: 0,
         reviewCount: 0,
         category: '',
+        subcategory: '',
         brand: '',
         inStock: true,
         features: [],
@@ -287,44 +362,86 @@ const AdminProductsPage: React.FC = () => {
         </Typography>
         <Box sx={{ 
           display: 'grid', 
-          gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(4, 1fr)', md: 'repeat(8, 1fr)' }, 
+          gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(4, 1fr)', md: 'repeat(4, 1fr)' }, 
           gap: 2 
         }}>
           {predefinedCategories.map((category) => (
-            <Button
-              key={category.id}
-              variant="outlined"
-              onClick={() => {
-                setFormData(prev => ({ ...prev, category: category.name }));
-                handleOpenDialog();
-              }}
-              sx={{
-                py: 2,
-                borderColor: category.color,
-                color: category.color,
-                '&:hover': {
+            <Box key={category.id}>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  setExpandedCategory(expandedCategory === category.id ? null : category.id);
+                }}
+                sx={{
+                  py: 2,
+                  width: '100%',
                   borderColor: category.color,
-                  backgroundColor: `${category.color}10`,
-                  color: category.color
-                }
-              }}
-            >
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {category.name}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Add Product
-                </Typography>
-              </Box>
-            </Button>
+                  color: category.color,
+                  '&:hover': {
+                    borderColor: category.color,
+                    backgroundColor: `${category.color}10`,
+                    color: category.color
+                  }
+                }}
+              >
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                    {category.name}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {expandedCategory === category.id ? 'Hide Subcategories' : 'Show Subcategories'}
+                  </Typography>
+                </Box>
+              </Button>
+              
+              {/* Subcategories */}
+              {expandedCategory === category.id && (
+                <Box sx={{ mt: 2, p: 2, border: `1px solid ${category.color}20`, borderRadius: 1, backgroundColor: `${category.color}05` }}>
+                  <Typography variant="subtitle2" sx={{ mb: 2, color: category.color, fontWeight: 600 }}>
+                    {category.name} Subcategories:
+                  </Typography>
+                  <Box sx={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)' }, 
+                    gap: 1 
+                  }}>
+                    {category.subcategories.map((subcategory) => (
+                      <Button
+                        key={subcategory}
+                        variant="text"
+                        size="small"
+                        onClick={() => {
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            category: category.name,
+                            subcategory: subcategory 
+                          }));
+                          handleOpenDialog();
+                        }}
+                        sx={{
+                          py: 1,
+                          px: 1,
+                          fontSize: '0.75rem',
+                          color: category.color,
+                          '&:hover': {
+                            backgroundColor: `${category.color}15`,
+                          }
+                        }}
+                      >
+                        {subcategory}
+                      </Button>
+                    ))}
+                  </Box>
+                </Box>
+              )}
+            </Box>
           ))}
         </Box>
       </Card>
 
       {/* Search and Filter */}
       <Card sx={{ mb: 4, p: 3 }}>
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1.5fr 1fr 1fr' }, gap: 2, alignItems: 'center' }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr 1fr 1fr 1fr' }, gap: 2, alignItems: 'center' }}>
           <TextField
             fullWidth
             placeholder="Search products..."
@@ -339,7 +456,10 @@ const AdminProductsPage: React.FC = () => {
             <Select
               value={selectedCategory}
               label="Category"
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                setSelectedSubcategory(''); // Reset subcategory filter
+              }}
             >
               <MenuItem value="">All Categories</MenuItem>
               {predefinedCategories.map((category) => (
@@ -347,6 +467,24 @@ const AdminProductsPage: React.FC = () => {
                   {category.name}
                 </MenuItem>
               ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel>Subcategory</InputLabel>
+            <Select
+              value={selectedSubcategory}
+              label="Subcategory"
+              onChange={(e) => setSelectedSubcategory(e.target.value)}
+              disabled={!selectedCategory}
+            >
+              <MenuItem value="">All Subcategories</MenuItem>
+              {selectedCategory && predefinedCategories
+                .find(cat => cat.name === selectedCategory)
+                ?.subcategories.map((subcategory) => (
+                  <MenuItem key={subcategory} value={subcategory}>
+                    {subcategory}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
           <Typography variant="body2" color="text.secondary">
@@ -371,6 +509,7 @@ const AdminProductsPage: React.FC = () => {
               <TableCell>Image</TableCell>
               <TableCell>Product Name</TableCell>
               <TableCell>Category</TableCell>
+              <TableCell>Subcategory</TableCell>
               <TableCell>Brand</TableCell>
               <TableCell>Price</TableCell>
               <TableCell>Rating</TableCell>
@@ -398,6 +537,20 @@ const AdminProductsPage: React.FC = () => {
                 </TableCell>
                 <TableCell>
                   <Chip label={product.category} size="small" />
+                </TableCell>
+                <TableCell>
+                  {(product as any).subcategory ? (
+                    <Chip 
+                      label={(product as any).subcategory} 
+                      size="small" 
+                      variant="outlined"
+                      sx={{ fontSize: '0.7rem' }}
+                    />
+                  ) : (
+                    <Typography variant="caption" color="text.secondary">
+                      -
+                    </Typography>
+                  )}
                 </TableCell>
                 <TableCell>{product.brand}</TableCell>
                 <TableCell>
@@ -506,7 +659,10 @@ const AdminProductsPage: React.FC = () => {
               <Select
                 value={formData.category}
                 label="Category *"
-                onChange={(e) => handleInputChange('category', e.target.value)}
+                onChange={(e) => {
+                  handleInputChange('category', e.target.value);
+                  handleInputChange('subcategory', ''); // Reset subcategory when category changes
+                }}
               >
                 {predefinedCategories.map((category) => (
                   <MenuItem key={category.id} value={category.name}>
@@ -516,6 +672,29 @@ const AdminProductsPage: React.FC = () => {
               </Select>
             </FormControl>
           </Box>
+          
+          {/* Subcategory Selection */}
+          {formData.category && (
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Subcategory</InputLabel>
+              <Select
+                value={formData.subcategory || ''}
+                label="Subcategory"
+                onChange={(e) => handleInputChange('subcategory', e.target.value)}
+              >
+                <MenuItem value="">
+                  <em>Select a subcategory (optional)</em>
+                </MenuItem>
+                {predefinedCategories
+                  .find(cat => cat.name === formData.category)
+                  ?.subcategories.map((subcategory) => (
+                    <MenuItem key={subcategory} value={subcategory}>
+                      {subcategory}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          )}
           
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mt: 1 }}>
             <TextField
