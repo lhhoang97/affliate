@@ -273,16 +273,82 @@ const ProductsPage: React.FC = () => {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          {/* Assuming Pagination component is available or needs to be imported */}
-          {/* For now, leaving a placeholder */}
-          {/* <Pagination
-            count={totalPages}
-            page={currentPage}
-            onChange={(_, page) => setCurrentPage(page)}
-            color="primary"
-            size="large"
-          /> */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 4 }}>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            {/* Previous Button */}
+            <Button
+              variant="outlined"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+              sx={{
+                minWidth: 'auto',
+                px: 2,
+                py: 1,
+                borderRadius: '8px',
+                borderColor: '#007bff',
+                color: '#007bff',
+                '&:hover': {
+                  borderColor: '#0056b3',
+                  backgroundColor: '#f8f9fa'
+                },
+                '&:disabled': {
+                  borderColor: '#ccc',
+                  color: '#ccc'
+                }
+              }}
+            >
+              ←
+            </Button>
+
+            {/* Page Numbers */}
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+              <Button
+                key={page}
+                variant={currentPage === page ? "contained" : "outlined"}
+                onClick={() => setCurrentPage(page)}
+                sx={{
+                  minWidth: 'auto',
+                  px: 2,
+                  py: 1,
+                  borderRadius: '8px',
+                  backgroundColor: currentPage === page ? '#007bff' : 'transparent',
+                  borderColor: currentPage === page ? '#007bff' : '#007bff',
+                  color: currentPage === page ? 'white' : '#007bff',
+                  '&:hover': {
+                    backgroundColor: currentPage === page ? '#0056b3' : '#f8f9fa',
+                    borderColor: '#0056b3'
+                  }
+                }}
+              >
+                Page {page}
+              </Button>
+            ))}
+
+            {/* Next Button */}
+            <Button
+              variant="outlined"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(currentPage + 1)}
+              sx={{
+                minWidth: 'auto',
+                px: 2,
+                py: 1,
+                borderRadius: '8px',
+                borderColor: '#007bff',
+                color: '#007bff',
+                '&:hover': {
+                  borderColor: '#0056b3',
+                  backgroundColor: '#f8f9fa'
+                },
+                '&:disabled': {
+                  borderColor: '#ccc',
+                  color: '#ccc'
+                }
+              }}
+            >
+              →
+            </Button>
+          </Box>
         </Box>
       )}
 

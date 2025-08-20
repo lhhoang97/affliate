@@ -164,53 +164,7 @@ const CategoryNavigation: React.FC<CategoryNavigationProps> = ({
         ))}
       </Box>
 
-      {/* Show More Button */}
-      <Box sx={{ 
-        textAlign: 'center', 
-        mt: 3,
-        pt: 2,
-        borderTop: '1px solid #e9ecef'
-      }}>
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 1,
-            px: 3,
-            py: 1.5,
-            borderRadius: '25px',
-            backgroundColor: '#f8f9fa',
-            border: '2px solid #e9ecef',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease-in-out',
-            '&:hover': {
-              backgroundColor: '#007bff',
-              color: 'white',
-              borderColor: '#007bff',
-              transform: 'scale(1.05)'
-            }
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: '14px',
-              fontWeight: 'bold',
-              color: 'inherit'
-            }}
-          >
-            +
-          </Typography>
-          <Typography
-            sx={{
-              fontSize: '14px',
-              fontWeight: 'bold',
-              color: 'inherit'
-            }}
-          >
-            Show more
-          </Typography>
-        </Box>
-      </Box>
+
     </Box>
   );
 };
