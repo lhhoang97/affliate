@@ -1,8 +1,18 @@
-// Mock Supabase client for development
-export const isSupabaseConfigured = false;
+import { createClient } from '@supabase/supabase-js';
 
-// Create a mock client with full method chain support
-const createMockClient = () => {
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+
+// Check if Supabase is configured
+export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
+
+// Create real Supabase client if configured, otherwise use mock
+export const supabase = isSupabaseConfigured 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : createMockClient();
+
+// Mock client for development when Supabase is not configured
+function createMockClient() {
   const mockQueryBuilder = {
     select: (columns?: string) => ({
       data: [],
@@ -104,6 +114,4 @@ const createMockClient = () => {
       return mockQueryBuilder;
     }
   };
-};
-
-export const supabase = createMockClient();
+}
