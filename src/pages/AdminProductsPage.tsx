@@ -79,8 +79,8 @@ const AdminProductsPage: React.FC = () => {
       name: 'Electronics',
       color: '#007bff',
       subcategories: [
-        'Smartphones', 'Laptops', 'Tablets', 'Headphones', 'Speakers',
-        'Cameras', 'Gaming', 'Smart Watches', 'TVs', 'Audio Equipment'
+        'Headphones', 'Laptops', 'Tablets', 'Phones', 'TVs', 
+        'Refrigerators', 'Air Conditioners', 'Printers', 'Speakers', 'Watches'
       ]
     },
     {

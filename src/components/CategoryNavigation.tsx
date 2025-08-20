@@ -8,7 +8,9 @@ import {
   Tablet,
   Phone,
   Headphones,
-  Laptop
+  Laptop,
+  Tv,
+  Kitchen
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,14 +22,13 @@ interface Category {
 }
 
 const categories: Category[] = [
-  { id: 'air-conditioner', name: 'Air Conditioner', icon: <AcUnit />, letter: 'A' },
-  { id: 'printer', name: 'Printer', icon: <Print />, letter: 'P' },
-  { id: 'speaker', name: 'Speaker', icon: <Speaker />, letter: 'S' },
-  { id: 'watch', name: 'Watch', icon: <Watch />, letter: 'W' },
-  { id: 'tablet', name: 'Tablet', icon: <Tablet />, letter: 'T' },
-  { id: 'phone', name: 'Phone', icon: <Phone />, letter: 'P' },
   { id: 'headphones', name: 'Headphones', icon: <Headphones />, letter: 'H' },
   { id: 'laptop', name: 'Laptop', icon: <Laptop />, letter: 'L' },
+  { id: 'tablet', name: 'Tablet', icon: <Tablet />, letter: 'T' },
+  { id: 'phone', name: 'Phone', icon: <Phone />, letter: 'P' },
+  { id: 'tv', name: 'TV', icon: <Tv />, letter: 'T' },
+  { id: 'refrigerator', name: 'Refrigerator', icon: <Kitchen />, letter: 'R' },
+  { id: 'air-conditioner', name: 'Air Conditioner', icon: <AcUnit />, letter: 'A' },
 ];
 
 interface CategoryNavigationProps {
@@ -82,7 +83,7 @@ const CategoryNavigation: React.FC<CategoryNavigationProps> = ({
       {/* Categories Grid */}
       <Box sx={{
         display: 'grid',
-        gridTemplateColumns: { xs: 'repeat(4, 1fr)', sm: 'repeat(4, 1fr)', md: 'repeat(8, 1fr)' },
+        gridTemplateColumns: { xs: 'repeat(4, 1fr)', sm: 'repeat(4, 1fr)', md: 'repeat(7, 1fr)' },
         gap: { xs: 2, sm: 3, md: 4 },
         maxWidth: '1200px',
         mx: 'auto'
