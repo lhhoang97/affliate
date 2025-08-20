@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { Campaign, WbSunny } from '@mui/icons-material';
+import { ShoppingCart } from '@mui/icons-material';
 
 interface LogoProps {
   variant?: 'header' | 'footer' | 'mobile';
@@ -48,59 +48,60 @@ const Logo: React.FC<LogoProps> = ({ variant = 'header', onClick }) => {
       }}
       onClick={onClick}
     >
-      {/* Icons Container */}
+      {/* Shopping Cart Icon */}
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
-          gap: 0.5,
-          mb: 0.5
+          justifyContent: 'center',
+          mb: 0.5,
+          position: 'relative'
         }}
       >
-        {/* Red Megaphone with Yellow Tag */}
-        <Box sx={{ position: 'relative' }}>
-          <Campaign
-            sx={{
-              ...iconSize,
-              color: '#e74c3c', // Red color
-              transform: 'scaleX(-1)', // Flip horizontally to face right
-            }}
-          />
-          {/* Yellow tag with dollar sign */}
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: -2,
-              right: -2,
-              width: 12,
-              height: 12,
-              backgroundColor: '#f39c12', // Yellow color
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '1px solid #fff',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
-            }}
-          >
-            <Typography
-              sx={{
-                fontSize: '8px',
-                fontWeight: 'bold',
-                color: '#fff',
-                lineHeight: 1
-              }}
-            >
-              $
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* Yellow Sun */}
-        <WbSunny
+        {/* Blue Shopping Cart */}
+        <ShoppingCart
           sx={{
             ...iconSize,
-            color: '#f39c12', // Yellow color
+            color: '#1976d2', // Blue color
+            transform: 'scale(1.2)', // Make it slightly larger
+          }}
+        />
+        
+        {/* Colorful items inside cart */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '25%',
+            left: '20%',
+            width: 6,
+            height: 8,
+            backgroundColor: '#e91e63', // Pink/magenta
+            borderRadius: '1px',
+            transform: 'rotate(-15deg)'
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '35%',
+            left: '25%',
+            width: 5,
+            height: 6,
+            backgroundColor: '#00bcd4', // Light blue/cyan
+            borderRadius: '1px',
+            transform: 'rotate(10deg)'
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '45%',
+            left: '30%',
+            width: 4,
+            height: 5,
+            backgroundColor: '#ff9800', // Orange
+            borderRadius: '1px',
+            transform: 'rotate(-5deg)'
           }}
         />
       </Box>
