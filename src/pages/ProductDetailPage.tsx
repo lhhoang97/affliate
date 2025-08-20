@@ -63,7 +63,7 @@ function TabPanel(props: TabPanelProps) {
 const mockPriceComparison = [
   {
     id: 1,
-          seller: 'ShopWithUs Official',
+    seller: 'ShopWithUs Official',
     price: 2990000,
     originalPrice: 3500000,
     shipping: 'Free',
@@ -73,7 +73,8 @@ const mockPriceComparison = [
     verified: true,
     badge: 'Best Price',
     badgeColor: 'success' as const,
-    features: ['Free Shipping', 'Official Warranty', '30-day Return']
+    features: ['Free Shipping', 'Official Warranty', '30-day Return'],
+    affiliateLink: 'https://shopwithus.com/product/air-purifier?ref=official'
   },
   {
     id: 2,
@@ -87,7 +88,8 @@ const mockPriceComparison = [
     verified: true,
     badge: 'Fast Delivery',
     badgeColor: 'info' as const,
-    features: ['Fast Delivery', 'Extended Warranty']
+    features: ['Fast Delivery', 'Extended Warranty'],
+    affiliateLink: 'https://techmart.vn/product/air-purifier?ref=shopwithus'
   },
   {
     id: 3,
@@ -101,7 +103,8 @@ const mockPriceComparison = [
     verified: false,
     badge: 'New Seller',
     badgeColor: 'warning' as const,
-    features: ['Free Shipping', 'Installation Service']
+    features: ['Free Shipping', 'Installation Service'],
+    affiliateLink: 'https://smarthome.vn/product/air-purifier?ref=shopwithus'
   },
   {
     id: 4,
@@ -115,7 +118,8 @@ const mockPriceComparison = [
     verified: true,
     badge: 'Premium Service',
     badgeColor: 'primary' as const,
-    features: ['Premium Support', 'Free Installation']
+    features: ['Premium Support', 'Free Installation'],
+    affiliateLink: 'https://electronicshub.vn/product/air-purifier?ref=shopwithus'
   }
 ];
 
@@ -146,8 +150,15 @@ const ProductDetailPage: React.FC = () => {
 
   const handleAddToCart = () => {
     addToCart(product as any, quantity);
-    if ((product as any).externalUrl) {
+    // Open affiliate link for the selected seller
+    if (selectedSeller.affiliateLink) {
+      window.open(selectedSeller.affiliateLink, '_blank', 'noopener,noreferrer');
+    } else if ((product as any).externalUrl) {
       window.open((product as any).externalUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      // Fallback to default affiliate link
+      const affiliateLink = `https://techmart.vn/product/${product.id}?ref=shopwithus`;
+      window.open(affiliateLink, '_blank', 'noopener,noreferrer');
     }
   };
 
