@@ -9,7 +9,7 @@
 -- Then, create the profile in profiles table
 INSERT INTO profiles (id, name, email, role, is_verified, created_at, updated_at) 
 VALUES (
-  '00000000-0000-0000-0000-000000000001', -- Replace with actual user ID from auth.users
+  '9c3c28aa-2cbe-49a2-bb32-5acf4fd534c0', -- Replace with actual user ID from auth.users
   'Admin User',
   'admin@shopwithus.com',
   'admin',

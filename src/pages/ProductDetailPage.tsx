@@ -346,12 +346,12 @@ const ProductDetailPage: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Người bán</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Giá</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Phí vận chuyển</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Thời gian giao</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Đánh giá</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Seller</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Price</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Shipping</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Delivery</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Rating</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -418,13 +418,17 @@ const ProductDetailPage: React.FC = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedSeller(seller);
+                          // Open affiliate link
+                          if (seller.affiliateLink) {
+                            window.open(seller.affiliateLink, '_blank', 'noopener,noreferrer');
+                          }
                         }}
                         sx={{ 
                           backgroundColor: '#007bff',
                           '&:hover': { backgroundColor: '#0056b3' }
                         }}
                       >
-                        Select
+                        Visit Page
                       </Button>
                     </TableCell>
                   </TableRow>
