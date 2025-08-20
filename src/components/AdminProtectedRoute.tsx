@@ -30,7 +30,7 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
         gap={2}
       >
         <CircularProgress />
-        <Typography>Đang kiểm tra quyền truy cập...</Typography>
+        <Typography>Checking access permissions...</Typography>
       </Box>
     );
   }
@@ -56,10 +56,10 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
         gap={2}
       >
         <Typography variant="h4" color="error">
-          Truy cập bị từ chối
+          Access Denied
         </Typography>
         <Typography>
-          Bạn không có quyền truy cập vào trang admin.
+          You don't have permission to access the admin page.
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Email: {user?.email} | Role: {user?.role}

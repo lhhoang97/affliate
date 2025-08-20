@@ -102,7 +102,7 @@ const AdminLayout: React.FC = () => {
           <ListItemIcon>
             <Logout />
           </ListItemIcon>
-          <ListItemText primary="Đăng xuất" />
+                      <ListItemText primary="Logout" />
         </ListItem>
       </List>
     </Box>
@@ -152,9 +152,9 @@ const AdminLayout: React.FC = () => {
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>Hồ sơ</MenuItem>
-              <MenuItem onClick={handleClose}>Cài đặt</MenuItem>
-              <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
+                          <MenuItem onClick={handleClose}>Profile</MenuItem>
+            <MenuItem onClick={handleClose}>Settings</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </Box>
         </Toolbar>

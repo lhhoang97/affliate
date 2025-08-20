@@ -438,7 +438,7 @@ const ProductDetailPage: React.FC = () => {
                 startIcon={<Share />}
                 sx={{ borderColor: '#007bff', color: '#007bff' }}
               >
-                Chia sẻ
+                Share
               </Button>
             </Box>
           </Box>
@@ -447,7 +447,7 @@ const ProductDetailPage: React.FC = () => {
         {/* Price Comparison Section */}
         <Box sx={{ mt: 6 }}>
           <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: '#2c3e50', mb: 3 }}>
-            So sánh giá từ các người bán
+            Price Comparison from Sellers
           </Typography>
           
           <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: 'hidden' }}>
@@ -610,7 +610,7 @@ const ProductDetailPage: React.FC = () => {
                           </Box>
                         </Box>
                         {review.verified && (
-                          <Chip label="Đã mua hàng" size="small" color="success" />
+                          <Chip label="Verified Purchase" size="small" color="success" />
                         )}
                       </Box>
                       <Typography variant="h6" gutterBottom>
