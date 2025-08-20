@@ -476,19 +476,18 @@ const ProductsPage: React.FC = () => {
       </Box>
 
       {/* Products Grid */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 3 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)', lg: 'repeat(5, 1fr)', xl: 'repeat(6, 1fr)' }, gap: 2 }}>
         {paginatedProducts.map((product) => (
           <Card 
             key={product.id}
             sx={{ 
-              height: '100%', 
-              display: 'flex', 
-              flexDirection: 'column',
               cursor: 'pointer',
               transition: 'transform 0.2s, box-shadow 0.2s',
+              borderRadius: 1,
+              border: '1px solid #e9ecef',
               '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: 4
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
               }
             }}
             onClick={() => handleProductClick(product.id)}
@@ -496,18 +495,28 @@ const ProductsPage: React.FC = () => {
             <Box sx={{ position: 'relative' }}>
               <CardMedia
                 component="img"
-                height="200"
+                height="160"
                 image={product.image}
                 alt={product.name}
                 sx={{ objectFit: 'cover' }}
               />
               {product.originalPrice && product.originalPrice > product.price && (
-                <Chip
-                  label={`-${Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%`}
-                  color="error"
-                  size="small"
-                  sx={{ position: 'absolute', top: 8, right: 8 }}
-                />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 4,
+                    right: 4,
+                    backgroundColor: '#e74c3c',
+                    color: 'white',
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                    padding: '2px 6px',
+                    borderRadius: '2px',
+                    lineHeight: 1
+                  }}
+                >
+                  -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                </Box>
               )}
               {!product.inStock && (
                 <Box
@@ -529,59 +538,64 @@ const ProductsPage: React.FC = () => {
                 </Box>
               )}
             </Box>
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-              <Typography gutterBottom variant="h6" component="h3" sx={{ 
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical'
-              }}>
+            <CardContent sx={{ p: 2 }}>
+              {/* Category Label */}
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#666',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  mb: 1
+                }}
+              >
+                {product.category === 'Electronics' ? 'ĐIỆN THOẠI THÔNG MINH' : 
+                 product.category === 'Fashion' ? 'THỜI TRANG' :
+                 product.category === 'Home & Garden' ? 'NHÀ CỬA' :
+                 product.category.toUpperCase()}
+              </Typography>
+              
+              {/* Product Name */}
+              <Typography 
+                variant="body1" 
+                component="h3" 
+                sx={{ 
+                  fontWeight: 'bold',
+                  color: '#333',
+                  fontSize: '14px',
+                  lineHeight: 1.3,
+                  mb: 1
+                }}
+              >
                 {product.name}
               </Typography>
               
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, flexGrow: 1 }}>
-                {product.description.substring(0, 80)}...
-              </Typography>
-
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Rating value={product.rating} precision={0.1} readOnly size="small" />
-                <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                  ({product.reviewCount})
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold' }}>
+              {/* Price */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 'bold',
+                    color: '#e74c3c',
+                    fontSize: '16px'
+                  }}
+                >
                   ${product.price.toLocaleString()}
                 </Typography>
-                {product.originalPrice && (
+                {product.originalPrice && product.originalPrice > product.price && (
                   <Typography
                     variant="body2"
-                    color="text.secondary"
-                    sx={{ textDecoration: 'line-through' }}
+                    sx={{ 
+                      textDecoration: 'line-through',
+                      color: '#999',
+                      fontSize: '12px'
+                    }}
                   >
                     ${product.originalPrice.toLocaleString()}
                   </Typography>
                 )}
               </Box>
-
-              <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
-                <Chip label={product.category} size="small" variant="outlined" />
-                <Chip label={product.brand} size="small" variant="outlined" />
-              </Box>
-
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddToCart(product);
-                }}
-                disabled={!product.inStock}
-              >
-                {product.inStock ? 'Add to Cart' : 'Out of Stock'}
-              </Button>
             </CardContent>
           </Card>
         ))}
