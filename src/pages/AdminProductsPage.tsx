@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   Typography,
   Box,
@@ -73,6 +73,8 @@ const AdminProductsPage: React.FC = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as any });
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Predefined categories with subcategories for easy product management
   const predefinedCategories = [
@@ -353,6 +355,72 @@ const AdminProductsPage: React.FC = () => {
       ...prev, 
       features: prev.features.filter((_, i) => i !== index) 
     }));
+  };
+
+  // Image upload functions
+  const handleFileUpload = async (file: File, type: 'main' | 'additional') => {
+    if (!file) return;
+    
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      setSnackbar({ open: true, message: 'Please select an image file', severity: 'error' });
+      return;
+    }
+    
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setSnackbar({ open: true, message: 'File size must be less than 5MB', severity: 'error' });
+      return;
+    }
+    
+    setIsUploading(true);
+    
+    try {
+      // Convert to base64 for immediate preview
+      const base64 = await convertFileToBase64(file);
+      
+      if (type === 'main') {
+        handleInputChange('image', base64);
+      } else {
+        // Add to additional images
+        const newImages = [...formData.images, base64];
+        handleInputChange('images', newImages);
+      }
+      
+      setSnackbar({ open: true, message: 'Image uploaded successfully!', severity: 'success' });
+    } catch (error) {
+      setSnackbar({ open: true, message: 'Failed to upload image', severity: 'error' });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  const handleUploadClick = (type: 'main' | 'additional') => {
+    if (fileInputRef.current) {
+      fileInputRef.current.setAttribute('data-upload-type', type);
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    const type = event.target.getAttribute('data-upload-type') as 'main' | 'additional';
+    
+    if (file) {
+      handleFileUpload(file, type);
+    }
+    
+    // Reset input
+    event.target.value = '';
   };
 
   return (
@@ -690,14 +758,26 @@ const AdminProductsPage: React.FC = () => {
           </Box>
           
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mt: 1 }}>
-            <TextField
-              fullWidth
-              label="Main Product Image URL *"
-              value={formData.image}
-              onChange={(e) => handleInputChange('image', e.target.value)}
-              margin="normal"
-              helperText="Direct link to main product image"
-            />
+            <Box>
+              <TextField
+                fullWidth
+                label="Main Product Image URL *"
+                value={formData.image}
+                onChange={(e) => handleInputChange('image', e.target.value)}
+                margin="normal"
+                helperText="Direct link to main product image"
+              />
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<CloudUpload />}
+                onClick={() => handleUploadClick('main')}
+                disabled={isUploading}
+                sx={{ mt: 1 }}
+              >
+                {isUploading ? 'Uploading...' : 'Upload Image'}
+              </Button>
+            </Box>
             <TextField
               fullWidth
               label="External URL"
@@ -737,13 +817,16 @@ const AdminProductsPage: React.FC = () => {
               📸 Image Upload Guide:
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              • Use direct image URLs (ending with .jpg, .png, .webp)
+              • <strong>Upload from computer:</strong> Click "Upload Image" button (max 5MB)
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              • Recommended services: Imgur, Cloudinary, or your own server
+              • <strong>Use URL:</strong> Direct image URLs (ending with .jpg, .png, .webp)
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              • <strong>Recommended services:</strong> Imgur, Cloudinary, or your own server
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              • Example: https://i.imgur.com/example.jpg
+              • <strong>Example:</strong> https://i.imgur.com/example.jpg
             </Typography>
           </Box>
           
@@ -779,16 +862,28 @@ const AdminProductsPage: React.FC = () => {
                   </Button>
                 </Box>
               ))}
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => {
-                  handleInputChange('images', [...formData.images, '']);
-                }}
-                sx={{ alignSelf: 'flex-start' }}
-              >
-                Add Image URL
-              </Button>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => {
+                    handleInputChange('images', [...formData.images, '']);
+                  }}
+                  sx={{ alignSelf: 'flex-start' }}
+                >
+                  Add Image URL
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<CloudUpload />}
+                  onClick={() => handleUploadClick('additional')}
+                  disabled={isUploading}
+                  sx={{ alignSelf: 'flex-start' }}
+                >
+                  {isUploading ? 'Uploading...' : 'Upload Image'}
+                </Button>
+              </Box>
             </Box>
             
             {/* Additional Images Preview */}
@@ -869,6 +964,15 @@ const AdminProductsPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Hidden file input for image upload */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        accept="image/*"
+        onChange={handleFileInputChange}
+      />
 
       {/* Snackbar */}
       <Snackbar
