@@ -74,6 +74,7 @@ const AdminProductsPage: React.FC = () => {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as any });
   const [isUploading, setIsUploading] = useState(false);
+  const [showImagePreview, setShowImagePreview] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Predefined categories with subcategories for easy product management
@@ -823,9 +824,32 @@ const AdminProductsPage: React.FC = () => {
               • <strong>Use URL:</strong> Direct image URLs (ending with .jpg, .png, .webp)
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              • <strong>Recommended services:</strong> Imgur, Cloudinary, or your own server
+              • <strong>Quick upload services:</strong>
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', ml: 2 }}>
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => window.open('https://imgur.com/upload', '_blank')}
+              >
+                Imgur
+              </Button>
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => window.open('https://cloudinary.com/console/media_library', '_blank')}
+              >
+                Cloudinary
+              </Button>
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => window.open('https://postimages.org/', '_blank')}
+              >
+                PostImages
+              </Button>
+            </Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               • <strong>Example:</strong> https://i.imgur.com/example.jpg
             </Typography>
           </Box>
@@ -889,11 +913,20 @@ const AdminProductsPage: React.FC = () => {
             {/* Additional Images Preview */}
             {formData.images.filter(img => img.trim()).length > 0 && (
               <Box sx={{ mt: 2 }}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Additional Images Preview:
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                  <Typography variant="subtitle2">
+                    Additional Images Preview:
+                  </Typography>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => setShowImagePreview(true)}
+                  >
+                    View All Images
+                  </Button>
+                </Box>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {formData.images.filter(img => img.trim()).map((img, index) => (
+                  {formData.images.filter(img => img.trim()).slice(0, 4).map((img, index) => (
                     <Box key={index} sx={{ position: 'relative' }}>
                       <img 
                         src={img} 
@@ -911,6 +944,25 @@ const AdminProductsPage: React.FC = () => {
                       />
                     </Box>
                   ))}
+                  {formData.images.filter(img => img.trim()).length > 4 && (
+                    <Box 
+                      sx={{ 
+                        width: '100px', 
+                        height: '100px', 
+                        bgcolor: 'grey.300', 
+                        borderRadius: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.8rem',
+                        color: 'grey.600',
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => setShowImagePreview(true)}
+                    >
+                      +{formData.images.filter(img => img.trim()).length - 4} more
+                    </Box>
+                  )}
                 </Box>
               </Box>
             )}
@@ -973,6 +1025,68 @@ const AdminProductsPage: React.FC = () => {
         accept="image/*"
         onChange={handleFileInputChange}
       />
+
+      {/* Image Preview Modal */}
+      <Dialog 
+        open={showImagePreview} 
+        onClose={() => setShowImagePreview(false)} 
+        maxWidth="lg" 
+        fullWidth
+      >
+        <DialogTitle>
+          All Product Images
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 2 }}>
+            {/* Main Image */}
+            <Box>
+              <Typography variant="subtitle2" gutterBottom color="primary">
+                Main Image:
+              </Typography>
+              <img 
+                src={formData.image} 
+                alt="Main product"
+                style={{ 
+                  width: '100%', 
+                  height: '200px', 
+                  objectFit: 'cover', 
+                  borderRadius: '8px',
+                  border: '1px solid #ddd'
+                }}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </Box>
+            
+            {/* Additional Images */}
+            {formData.images.filter(img => img.trim()).map((img, index) => (
+              <Box key={index}>
+                <Typography variant="subtitle2" gutterBottom color="text.secondary">
+                  Additional Image {index + 1}:
+                </Typography>
+                <img 
+                  src={img} 
+                  alt={`Product ${index + 1}`}
+                  style={{ 
+                    width: '100%', 
+                    height: '200px', 
+                    objectFit: 'cover', 
+                    borderRadius: '8px',
+                    border: '1px solid #ddd'
+                  }}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </Box>
+            ))}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowImagePreview(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Snackbar */}
       <Snackbar
