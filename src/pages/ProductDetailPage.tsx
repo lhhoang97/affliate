@@ -366,20 +366,43 @@ const ProductDetailPage: React.FC = () => {
                 </Typography>
               </Box>
 
-              <Button
-                variant="contained"
-                size="large"
-                startIcon={<ShoppingCart />}
-                onClick={handleAddToCart}
-                disabled={!product.inStock}
-                sx={{ 
-                  width: '100%',
-                  backgroundColor: '#007bff',
-                  '&:hover': { backgroundColor: '#0056b3' }
-                }}
-              >
-                Buy now from {selectedSeller.seller}
-              </Button>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  startIcon={<ShoppingCart />}
+                  onClick={() => {
+                    addToCart(product as any, quantity);
+                  }}
+                  disabled={!product.inStock}
+                  sx={{ 
+                    flex: 1,
+                    borderColor: '#007bff',
+                    color: '#007bff',
+                    '&:hover': { 
+                      borderColor: '#0056b3',
+                      backgroundColor: '#f8f9fa'
+                    }
+                  }}
+                >
+                  Add to Cart
+                </Button>
+                
+                <Button
+                  variant="contained"
+                  size="large"
+                  startIcon={<ShoppingCart />}
+                  onClick={handleAddToCart}
+                  disabled={!product.inStock}
+                  sx={{ 
+                    flex: 1,
+                    backgroundColor: '#007bff',
+                    '&:hover': { backgroundColor: '#0056b3' }
+                  }}
+                >
+                  Buy now from {selectedSeller.seller}
+                </Button>
+              </Box>
             </Card>
 
             {/* Features */}

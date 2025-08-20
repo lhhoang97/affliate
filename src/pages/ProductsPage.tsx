@@ -242,7 +242,7 @@ const ProductsPage: React.FC = () => {
               </Box>
               
               {/* Price */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <Typography 
                   variant="h6" 
                   sx={{ 
@@ -266,6 +266,29 @@ const ProductsPage: React.FC = () => {
                   </Typography>
                 )}
               </Box>
+              
+              {/* Add to Cart Button */}
+              <Button
+                variant="contained"
+                fullWidth
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddToCart(product);
+                }}
+                disabled={!product.inStock}
+                sx={{
+                  backgroundColor: '#007bff',
+                  '&:hover': {
+                    backgroundColor: '#0056b3'
+                  },
+                  '&:disabled': {
+                    backgroundColor: '#ccc'
+                  }
+                }}
+              >
+                {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+              </Button>
             </CardContent>
           </Card>
         ))}
