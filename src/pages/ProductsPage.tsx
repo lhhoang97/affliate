@@ -270,7 +270,7 @@ const ProductsPage: React.FC = () => {
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}
-            onSearch={(query) => {
+            onSearch={(query: string) => {
               setSearchTerm(query);
               setCurrentPage(1);
             }}

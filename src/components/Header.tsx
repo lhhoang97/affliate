@@ -10,17 +10,16 @@ import {
   Badge,
   Menu,
   MenuItem,
-  Avatar,
-  InputBase
+  Avatar
 } from '@mui/material';
 import {
   ShoppingCart,
-  Menu as MenuIcon,
-  Search
+  Menu as MenuIcon
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
+import SearchBar from './SearchBar';
 
 const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -34,10 +33,9 @@ const Header: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+  const handleSearch = (query: string) => {
+    if (query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
     }
   };
 
@@ -62,66 +60,7 @@ const Header: React.FC = () => {
 
   const cartItemCount = items.reduce((total: number, item: any) => total + item.quantity, 0);
 
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
-  const categories = [
-    {
-      id: 'electronics',
-      name: 'Electronics',
-      icon: '📱',
-      subcategories: ['Phones', 'Laptops', 'Tablets', 'TVs', 'Headphones', 'Speakers', 'Cameras']
-    },
-    {
-      id: 'home',
-      name: 'Home & Garden',
-      icon: '🏠',
-      subcategories: ['Home Appliances', 'Furniture', 'Decor', 'Kitchen Tools', 'Bathroom Items']
-    },
-    {
-      id: 'fashion',
-      name: 'Fashion',
-      icon: '👕',
-      subcategories: ['Men\'s Clothing', 'Women\'s Clothing', 'Shoes', 'Bags', 'Accessories', 'Watches']
-    },
-    {
-      id: 'beauty',
-      name: 'Beauty',
-      icon: '💄',
-      subcategories: ['Cosmetics', 'Skincare', 'Haircare', 'Perfume', 'Beauty Tools']
-    },
-    {
-      id: 'sports',
-      name: 'Sports',
-      icon: '⚽',
-      subcategories: ['Sports Clothing', 'Sports Shoes', 'Exercise Equipment', 'Bicycles', 'Football']
-    },
-    {
-      id: 'baby',
-      name: 'Baby & Kids',
-      icon: '👶',
-      subcategories: ['Baby Items', 'Baby Formula', 'Diapers', 'Toys', 'Strollers', 'Cribs']
-    },
-    {
-      id: 'automotive',
-      name: 'Automotive',
-      icon: '🚗',
-      subcategories: ['Auto Parts', 'Motor Oil', 'Insurance', 'Car Toys', 'Car Accessories']
-    },
-    {
-      id: 'books',
-      name: 'Books & Office',
-      icon: '📚',
-      subcategories: ['Textbooks', 'Literature', 'Office Supplies', 'School Supplies']
-    }
-  ];
-
-  const handleCategoryClick = (categoryId: string) => {
-    if (expandedCategory === categoryId) {
-      setExpandedCategory(null);
-    } else {
-      setExpandedCategory(categoryId);
-    }
-  };
 
   const drawer = (
     <Box sx={{ width: 280, height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -178,79 +117,78 @@ const Header: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Categories */}
-      <Box sx={{ flex: 1, overflowY: 'auto' }}>
-        {categories.map((category) => (
-          <Box key={category.id}>
-            <Box
-              onClick={() => handleCategoryClick(category.id)}
-              sx={{
-                p: 2.5,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                cursor: 'pointer',
-                borderBottom: '1px solid #f0f0f0',
-                '&:hover': {
-                  backgroundColor: '#f8f9fa'
-                }
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Typography sx={{ fontSize: '20px' }}>
-                  {category.icon}
-                </Typography>
-                <Typography sx={{ 
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  color: '#333'
-                }}>
-                  {category.name}
-                </Typography>
-              </Box>
-              <Typography sx={{ 
-                fontSize: '16px',
-                color: '#666',
-                transform: expandedCategory === category.id ? 'rotate(90deg)' : 'rotate(0deg)',
-                transition: 'transform 0.2s ease'
-              }}>
-                ›
-              </Typography>
-            </Box>
-            
-            {/* Subcategories */}
-            {expandedCategory === category.id && (
-              <Box sx={{ backgroundColor: '#f8f9fa' }}>
-                {category.subcategories.map((subcategory, index) => (
-                  <Box
-                    key={index}
-                    onClick={() => {
-                      navigate(`/products?category=${encodeURIComponent(subcategory)}`);
-                      setMobileOpen(false);
-                      setExpandedCategory(null);
-                    }}
-                    sx={{
-                      py: 1.5,
-                      px: 4,
-                      cursor: 'pointer',
-                      borderBottom: '1px solid #e9ecef',
-                      '&:hover': {
-                        backgroundColor: '#e9ecef'
-                      }
-                    }}
-                  >
-                    <Typography sx={{ 
-                      fontSize: '14px',
-                      color: '#666'
-                    }}>
-                      {subcategory}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            )}
-          </Box>
-        ))}
+      {/* Navigation Menu */}
+      <Box sx={{ flex: 1, py: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Typography
+            component={RouterLink}
+            to="/products"
+            onClick={() => setMobileOpen(false)}
+            sx={{
+              color: '#333',
+              textDecoration: 'none',
+              py: 1.5,
+              px: 3,
+              fontSize: '16px',
+              '&:hover': {
+                backgroundColor: '#f8f9fa'
+              }
+            }}
+          >
+            Sản phẩm
+          </Typography>
+          <Typography
+            component={RouterLink}
+            to="/deals"
+            onClick={() => setMobileOpen(false)}
+            sx={{
+              color: '#333',
+              textDecoration: 'none',
+              py: 1.5,
+              px: 3,
+              fontSize: '16px',
+              '&:hover': {
+                backgroundColor: '#f8f9fa'
+              }
+            }}
+          >
+            Ưu đãi
+          </Typography>
+          <Typography
+            component={RouterLink}
+            to="/about"
+            onClick={() => setMobileOpen(false)}
+            sx={{
+              color: '#333',
+              textDecoration: 'none',
+              py: 1.5,
+              px: 3,
+              fontSize: '16px',
+              '&:hover': {
+                backgroundColor: '#f8f9fa'
+              }
+            }}
+          >
+            Về chúng tôi
+          </Typography>
+          <Typography
+            component={RouterLink}
+            to="/contact"
+            onClick={() => setMobileOpen(false)}
+            sx={{
+              color: '#333',
+              textDecoration: 'none',
+              py: 1.5,
+              px: 3,
+              fontSize: '16px',
+              '&:hover': {
+                backgroundColor: '#f8f9fa'
+              }
+            }}
+          >
+            Liên hệ
+          </Typography>
+        </Box>
       </Box>
 
       {/* Footer */}
@@ -287,7 +225,8 @@ const Header: React.FC = () => {
               display: 'flex', 
               alignItems: 'center', 
               gap: 1,
-              flexShrink: 0
+              flexShrink: 0,
+              minWidth: { xs: 'auto', md: 'auto' }
             }}>
               <Box sx={{ 
                 position: 'relative',
@@ -341,34 +280,18 @@ const Header: React.FC = () => {
           </Box>
           
           {/* Center: Search bar */}
-          <Box 
-            component="form" 
-            onSubmit={handleSearch}
-            sx={{ 
-              display: { xs: 'none', md: 'flex' },
-              alignItems: 'center',
-              backgroundColor: '#f1f3f4',
-              borderRadius: '24px',
-              px: 2,
-              py: 1,
-              flex: 1,
-              maxWidth: 500,
-              mx: 2
-            }}
-          >
-            <IconButton sx={{ p: 0.5, color: '#666' }}>
-              <Search />
-            </IconButton>
-            <InputBase
-              placeholder="What are you looking for?"
+          <Box sx={{ 
+            display: 'flex',
+            alignItems: 'center',
+            flex: 1,
+            maxWidth: { xs: '100%', md: 500 },
+            mx: { xs: 1, md: 2 }
+          }}>
+            <SearchBar
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              sx={{ 
-                ml: 1, 
-                flex: 1,
-                fontSize: '16px',
-                color: '#333'
-              }}
+              onChange={setSearchTerm}
+              onSearch={handleSearch}
+              placeholder="Tìm kiếm..."
             />
           </Box>
           
@@ -438,18 +361,8 @@ const Header: React.FC = () => {
                   Register
                 </Button>
               </Box>
-                          )}
-
-            {/* Mobile Search Button */}
-            <IconButton
-              color="inherit"
-              aria-label="search"
-              onClick={() => navigate('/search')}
-              sx={{ display: { md: 'none' } }}
-            >
-              <Search />
-            </IconButton>
-            </Box>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
 

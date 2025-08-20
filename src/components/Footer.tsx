@@ -3,84 +3,224 @@ import {
   Box,
   Container,
   Typography,
-  Link,
-  Divider
+  Link
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
 const Footer: React.FC = () => {
-  const currentYear = new Date().getFullYear();
-
-  const footerSections = [
-    {
-      title: 'Thông Tin',
-      links: [
-        { text: 'Về Chúng Tôi', path: '/about' },
-        { text: 'Liên Hệ', path: '/contact' },
-        { text: 'Trung Tâm Trợ Giúp', path: '/help' }
-      ]
-    },
-    {
-      title: 'Quy Định & Hướng Dẫn',
-      links: [
-        { text: 'Quy Định & Hướng Dẫn', path: '/terms' },
-        { text: 'Điều Khoản & Điều Kiện', path: '/terms' },
-        { text: 'Chính Sách Bảo Mật', path: '/privacy' },
-        { text: 'Chính Sách Cookie', path: '/cookies' },
-        { text: 'Cài Đặt Bảo Mật', path: '/security' }
-      ]
-    }
-  ];
-
   return (
-    <Box sx={{ backgroundColor: '#f8f9fa', color: '#333333', mt: 'auto', borderTop: '1px solid #e9ecef' }}>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        {/* Main Footer Content */}
-        <Box sx={{ 
-          display: 'grid', 
-          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, 
-          gap: 4 
-        }}>
-          {/* Footer Links */}
-          {footerSections.map((section, index) => (
-            <Box key={index}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: '#2c3e50', fontSize: '0.875rem' }}>
-                {section.title}
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {section.links.map((link, linkIndex) => (
-                  <Link
-                    key={linkIndex}
-                    component={RouterLink}
-                    to={link.path}
-                    sx={{
-                      color: '#6c757d',
-                      textDecoration: 'none',
-                      fontSize: '0.875rem',
-                      '&:hover': {
-                        color: '#007bff',
-                        textDecoration: 'underline'
-                      }
-                    }}
-                  >
-                    {link.text}
-                  </Link>
-                ))}
-              </Box>
+    <Box sx={{ 
+      backgroundColor: '#ffffff', 
+      borderTop: '1px solid #e9ecef',
+      mt: 'auto'
+    }}>
+      <Container maxWidth="lg" sx={{ py: 6 }}>
+        {/* Logo */}
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Box sx={{ 
+            position: 'relative',
+            width: 32,
+            height: 32,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            mb: 2
+          }}>
+            <Box sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: 16,
+              height: 16,
+              backgroundColor: '#ff4444',
+              borderRadius: '50% 50% 0 50%',
+              transform: 'rotate(-45deg)'
+            }} />
+            <Box sx={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: 12,
+              height: 12,
+              backgroundColor: '#ffaa00',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '8px',
+              color: '#333'
+            }}>
+              ☀
             </Box>
-          ))}
+          </Box>
+          <Typography variant="h6" sx={{ 
+            fontWeight: 'bold', 
+            color: '#007bff',
+            textTransform: 'lowercase'
+          }}>
+            GiaTotDay Logo
+          </Typography>
         </Box>
 
-        <Divider sx={{ my: 3, borderColor: '#dee2e6' }} />
+        {/* Footer Links */}
+        <Box sx={{ 
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'center',
+          gap: { xs: 3, md: 6 },
+          mb: 4
+        }}>
+          {/* Thông Tin */}
+          <Box sx={{ textAlign: { xs: 'left', md: 'center' } }}>
+            <Typography variant="subtitle2" gutterBottom sx={{ 
+              fontWeight: 'bold', 
+              color: '#333',
+              mb: 2
+            }}>
+              Thông Tin
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Link
+                component={RouterLink}
+                to="/about"
+                sx={{
+                  color: '#666',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  '&:hover': {
+                    color: '#007bff'
+                  }
+                }}
+              >
+                Về Chúng Tôi
+              </Link>
+              <Link
+                component={RouterLink}
+                to="/contact"
+                sx={{
+                  color: '#666',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  '&:hover': {
+                    color: '#007bff'
+                  }
+                }}
+              >
+                Liên Hệ
+              </Link>
+              <Link
+                component={RouterLink}
+                to="/help"
+                sx={{
+                  color: '#666',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  '&:hover': {
+                    color: '#007bff'
+                  }
+                }}
+              >
+                Trung Tâm Trợ Giúp
+              </Link>
+            </Box>
+          </Box>
 
-        {/* Bottom Footer */}
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 2 }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
+          {/* Quy Định & Hướng Dẫn */}
+          <Box sx={{ textAlign: { xs: 'left', md: 'center' } }}>
+            <Typography variant="subtitle2" gutterBottom sx={{ 
+              fontWeight: 'bold', 
+              color: '#333',
+              mb: 2
+            }}>
+              Quy Định & Hướng Dẫn
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Link
+                component={RouterLink}
+                to="/terms"
+                sx={{
+                  color: '#666',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  '&:hover': {
+                    color: '#007bff'
+                  }
+                }}
+              >
+                Quy Định & Hướng Dẫn
+              </Link>
+              <Link
+                component={RouterLink}
+                to="/terms"
+                sx={{
+                  color: '#666',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  '&:hover': {
+                    color: '#007bff'
+                  }
+                }}
+              >
+                Điều Khoản & Điều Kiện
+              </Link>
+              <Link
+                component={RouterLink}
+                to="/privacy"
+                sx={{
+                  color: '#666',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  '&:hover': {
+                    color: '#007bff'
+                  }
+                }}
+              >
+                Chính Sách Bảo Mật
+              </Link>
+              <Link
+                component={RouterLink}
+                to="/cookies"
+                sx={{
+                  color: '#666',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  '&:hover': {
+                    color: '#007bff'
+                  }
+                }}
+              >
+                Chính Sách Cookie
+              </Link>
+              <Link
+                component={RouterLink}
+                to="/security"
+                sx={{
+                  color: '#666',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  '&:hover': {
+                    color: '#007bff'
+                  }
+                }}
+              >
+                Cài Đặt Bảo Mật
+              </Link>
+            </Box>
+          </Box>
+        </Box>
+
+        {/* Bottom */}
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="h6" sx={{ 
+            fontWeight: 'bold', 
+            color: '#007bff',
+            mb: 1,
+            textTransform: 'lowercase'
+          }}>
             GiaTotDay
           </Typography>
-          
-          <Typography variant="body2" sx={{ color: '#6c757d' }}>
-            ©{currentYear} GiaTotDay
+          <Typography variant="body2" sx={{ color: '#666' }}>
+            ©2025 GiaTotDay
           </Typography>
         </Box>
       </Container>

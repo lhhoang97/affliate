@@ -36,3 +36,33 @@
     transform: rotate(360deg);
   }
 }
+
+/* Mobile responsive improvements */
+@media (max-width: 768px) {
+  /* Ensure search bar doesn't overflow on mobile */
+  .MuiTextField-root {
+    width: 100% !important;
+  }
+  
+  /* Ensure search bar is properly sized on mobile */
+  .MuiInputBase-root {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+  
+  /* Ensure search bar container doesn't overflow */
+  .MuiBox-root {
+    max-width: 100% !important;
+  }
+}
+
+/* Prevent horizontal scroll on mobile */
+@media (max-width: 480px) {
+  body {
+    overflow-x: hidden;
+  }
+  
+  .MuiContainer-root {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}

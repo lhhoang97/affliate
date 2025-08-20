@@ -10,7 +10,7 @@ import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import SearchPage from './pages/SearchPage';
 import CategoriesPage from './pages/CategoriesPage';
-import CategoryListPage from './pages/CategoryListPage';
+
 import CartPage from './pages/CartPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -117,7 +117,7 @@ function App() {
                       <Route path="/product/:id" element={<ProductDetailPage />} />
                       <Route path="/categories" element={<CategoriesPage />} />
                       <Route path="/categories/:category" element={<CategoriesPage />} />
-                      <Route path="/category-list" element={<CategoryListPage />} />
+              
                       <Route path="/deals" element={<DealsPage />} />
                       <Route path="/reviews" element={<ReviewsPage />} />
                       <Route path="/about" element={<AboutUsPage />} />
