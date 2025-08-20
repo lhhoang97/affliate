@@ -20,6 +20,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 import SearchBar from './SearchBar';
+import Logo from './Logo';
 
 const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -70,50 +71,8 @@ const Header: React.FC = () => {
         borderBottom: '1px solid #e9ecef',
         backgroundColor: '#f8f9fa'
       }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ 
-            position: 'relative',
-            width: 32,
-            height: 32,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <Box sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: 16,
-              height: 16,
-              backgroundColor: '#ff4444',
-              borderRadius: '50% 50% 0 50%',
-              transform: 'rotate(-45deg)'
-            }} />
-            <Box sx={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              width: 12,
-              height: 12,
-              backgroundColor: '#ffaa00',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '8px',
-              color: '#333'
-            }}>
-              ☀
-            </Box>
-          </Box>
-          <Typography sx={{ 
-            color: '#007bff', 
-            fontWeight: 'bold', 
-            fontSize: '18px',
-            textTransform: 'lowercase'
-          }}>
-            shopwithus
-          </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Logo variant="mobile" />
         </Box>
       </Box>
 
@@ -228,54 +187,7 @@ const Header: React.FC = () => {
               flexShrink: 0,
               minWidth: { xs: 'auto', md: 'auto' }
             }}>
-              <Box sx={{ 
-                position: 'relative',
-                width: 32,
-                height: 32,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <Box sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: 16,
-                  height: 16,
-                  backgroundColor: '#ff4444',
-                  borderRadius: '50% 50% 0 50%',
-                  transform: 'rotate(-45deg)'
-                }} />
-                <Box sx={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  width: 12,
-                  height: 12,
-                  backgroundColor: '#ffaa00',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '8px',
-                  color: '#333'
-                }}>
-                  ☀
-                </Box>
-              </Box>
-                        <Typography
-            component={RouterLink}
-            to="/"
-            sx={{
-              textDecoration: 'none',
-              color: '#007bff',
-              fontWeight: 'bold',
-              fontSize: '18px',
-              textTransform: 'lowercase'
-            }}
-          >
-            shopwithus
-          </Typography>
+              <Logo variant="header" onClick={() => navigate('/')} />
             </Box>
           </Box>
           

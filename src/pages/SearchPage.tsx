@@ -16,6 +16,7 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { mockProducts } from '../utils/mockData';
 import SearchBar from '../components/SearchBar';
+import Logo from '../components/Logo';
 
 const SearchPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -49,56 +50,14 @@ const SearchPage: React.FC = () => {
               <MenuIcon />
             </IconButton>
             
-            {/* Center: Logo */}
+                        {/* Center: Logo */}
             <Box sx={{ 
               display: 'flex', 
               alignItems: 'center', 
-              gap: 1,
+              justifyContent: 'center',
               flexShrink: 0
             }}>
-              <Box sx={{ 
-                position: 'relative',
-                width: 32,
-                height: 32,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <Box sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: 16,
-                  height: 16,
-                  backgroundColor: '#ff4444',
-                  borderRadius: '50% 50% 0 50%',
-                  transform: 'rotate(-45deg)'
-                }} />
-                <Box sx={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  width: 12,
-                  height: 12,
-                  backgroundColor: '#ffaa00',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '8px',
-                  color: '#333'
-                }}>
-                  ☀
-                </Box>
-              </Box>
-              <Typography sx={{ 
-                color: '#007bff', 
-                fontWeight: 'bold', 
-                fontSize: '18px',
-                textTransform: 'lowercase'
-              }}>
-                shopwithus
-              </Typography>
+              <Logo variant="mobile" />
             </Box>
             
             {/* Right side: Search bar */}
