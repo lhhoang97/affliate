@@ -9,35 +9,13 @@ import {
   Button,
   Chip,
   Rating,
-  Checkbox,
-  FormControlLabel,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Slider,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  IconButton,
-  Tooltip,
-  Badge,
   LinearProgress
 } from '@mui/material';
-import { 
-  FilterList, 
-  ExpandMore, 
-  Clear
-} from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Product } from '../types';
 import { fetchProducts } from '../services/productService';
 import { useCart } from '../contexts/CartContext';
-import SearchBar from '../components/SearchBar';
-import QuickFilters from '../components/QuickFilters';
-import ActiveFilters from '../components/ActiveFilters';
 import CategoryBreadcrumb from '../components/CategoryBreadcrumb';
-import SearchResults from '../components/SearchResults';
 import CategoryNavigation from '../components/CategoryNavigation';
 
 const ProductsPage: React.FC = () => {
@@ -62,106 +40,25 @@ const ProductsPage: React.FC = () => {
     return () => { isMounted = false; };
   }, []);
 
-  // Update search term when URL changes
-  useEffect(() => {
-    if (searchFromUrl) {
-      setSearchTerm(searchFromUrl);
-    }
-  }, [searchFromUrl]);
+
   
-  // Search and filter states
-  const [searchTerm, setSearchTerm] = useState(searchFromUrl || '');
+  // Filter states
   const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl || '');
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
-  const [ratingFilter, setRatingFilter] = useState<number>(0);
-  const [inStockOnly, setInStockOnly] = useState(false);
-  const [onSaleOnly, setOnSaleOnly] = useState(false);
-  const [sortBy, setSortBy] = useState('name');
   const [currentPage, setCurrentPage] = useState(1);
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   
   const itemsPerPage = 12;
 
-  // Get unique brands from products
-  const uniqueBrands = useMemo(() => {
-    const brands = Array.from(new Set(allProducts.map(product => product.brand)));
-    return brands.sort();
-  }, [allProducts]);
-
-  // Get price range for slider
-  const priceRangeData = useMemo(() => {
-    if (allProducts.length === 0) return { min: 0, max: 5000 };
-    const prices = allProducts.map(product => product.price);
-    return {
-      min: Math.min(...prices),
-      max: Math.max(...prices)
-    };
-  }, [allProducts]);
-
-  // Filter and search products
+  // Filter products by category
   const filteredProducts = useMemo(() => {
     let filtered = allProducts;
-
-    // Search by name, description, or brand
-    if (searchTerm) {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
 
     // Filter by category
     if (selectedCategory) {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
 
-    // Filter by brands
-    if (selectedBrands.length > 0) {
-      filtered = filtered.filter(product => selectedBrands.includes(product.brand));
-    }
-
-    // Filter by price range
-    filtered = filtered.filter(product => 
-      product.price >= priceRange[0] && product.price <= priceRange[1]
-    );
-
-    // Filter by rating
-    if (ratingFilter > 0) {
-      filtered = filtered.filter(product => product.rating >= ratingFilter);
-    }
-
-    // Filter by stock status
-    if (inStockOnly) {
-      filtered = filtered.filter(product => product.inStock);
-    }
-
-    // Filter by sale items
-    if (onSaleOnly) {
-      filtered = filtered.filter(product => product.originalPrice && product.originalPrice > product.price);
-    }
-
-    // Sort products
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'price-low':
-          return a.price - b.price;
-        case 'price-high':
-          return b.price - a.price;
-        case 'rating':
-          return b.rating - a.rating;
-        case 'newest':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        case 'name':
-        default:
-          return a.name.localeCompare(b.name);
-      }
-    });
-
     return filtered;
-  }, [allProducts, searchTerm, selectedCategory, selectedBrands, priceRange, ratingFilter, inStockOnly, onSaleOnly, sortBy]);
+  }, [allProducts, selectedCategory]);
 
   // Pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -183,64 +80,7 @@ const ProductsPage: React.FC = () => {
 
 
 
-  const clearAllFilters = () => {
-    setSearchTerm('');
-    setSelectedCategory('');
-    setSelectedBrands([]);
-    setPriceRange([priceRangeData.min, priceRangeData.max]);
-    setRatingFilter(0);
-    setInStockOnly(false);
-    setOnSaleOnly(false);
-    setSortBy('name');
-    setCurrentPage(1);
-  };
 
-  const applyQuickFilter = (filters: any) => {
-    if (filters.category) setSelectedCategory(filters.category);
-    if (filters.brands) setSelectedBrands(filters.brands);
-    if (filters.priceRange) setPriceRange(filters.priceRange);
-    if (filters.rating) setRatingFilter(filters.rating);
-    if (filters.inStockOnly !== undefined) setInStockOnly(filters.inStockOnly);
-    if (filters.onSaleOnly !== undefined) setOnSaleOnly(filters.onSaleOnly);
-    if (filters.sortBy) setSortBy(filters.sortBy);
-    setCurrentPage(1);
-  };
-
-  const removeFilter = (filterType: string, value?: any) => {
-    switch (filterType) {
-      case 'search':
-        setSearchTerm('');
-        break;
-      case 'category':
-        setSelectedCategory('');
-        break;
-      case 'brand':
-        setSelectedBrands(prev => prev.filter(brand => brand !== value));
-        break;
-      case 'price':
-        setPriceRange([priceRangeData.min, priceRangeData.max]);
-        break;
-      case 'rating':
-        setRatingFilter(0);
-        break;
-      case 'stock':
-        setInStockOnly(false);
-        break;
-      case 'sale':
-        setOnSaleOnly(false);
-        break;
-    }
-    setCurrentPage(1);
-  };
-
-  const activeFiltersCount = [
-    searchTerm,
-    selectedCategory,
-    selectedBrands.length,
-    ratingFilter > 0,
-    inStockOnly,
-    onSaleOnly
-  ].filter(Boolean).length;
 
   if (isLoading) {
     return (
@@ -311,205 +151,13 @@ const ProductsPage: React.FC = () => {
           />
         )}
 
-      {/* Search Bar */}
-      <Card sx={{ mb: 3, p: 3 }}>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-          <SearchBar
-            value={searchTerm}
-            onChange={setSearchTerm}
-            onSearch={(query: string) => {
-              setSearchTerm(query);
-              setCurrentPage(1);
-            }}
-          />
-          <Button
-            variant="outlined"
-            startIcon={<FilterList />}
-            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-            sx={{ minWidth: 120 }}
-          >
-            Filter
-            {activeFiltersCount > 0 && (
-              <Badge badgeContent={activeFiltersCount} color="primary" sx={{ ml: 1 }} />
-            )}
-          </Button>
-          {activeFiltersCount > 0 && (
-            <Tooltip title="Clear all filters">
-              <IconButton onClick={clearAllFilters} color="error">
-                <Clear />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Box>
-      </Card>
 
-      {/* Search Results */}
-      <SearchResults
-        searchTerm={searchTerm}
-        resultCount={filteredProducts.length}
-        totalCount={allProducts.length}
-      />
 
-      {/* Advanced Filters */}
-      {showAdvancedFilters && (
-        <Card sx={{ mb: 3 }}>
-          <Accordion defaultExpanded>
-            <AccordionSummary expandIcon={<ExpandMore />}>
-              <Typography variant="h6">Advanced Filters</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
-                
-                {/* Category Filter */}
-                <FormControl fullWidth>
-                  <InputLabel>Category</InputLabel>
-                  <Select
-                    value={selectedCategory}
-                    label="Category"
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                  >
-                    <MenuItem value="">All Categories</MenuItem>
-                    {/* mockCategories is removed, so this will be empty or need to be fetched */}
-                    {/* For now, assuming mockCategories is replaced by a dynamic list or removed */}
-                    {/* If mockCategories is still needed, it should be re-imported or defined */}
-                    {/* For now, leaving it empty as a placeholder */}
-                  </Select>
-                </FormControl>
 
-                {/* Brand Filter */}
-                <FormControl fullWidth>
-                  <InputLabel>Brand</InputLabel>
-                  <Select
-                    multiple
-                    value={selectedBrands}
-                    label="Brand"
-                    onChange={(e) => setSelectedBrands(e.target.value as string[])}
-                    renderValue={(selected) => (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {(selected as string[]).map((value) => (
-                          <Chip key={value} label={value} size="small" />
-                        ))}
-                      </Box>
-                    )}
-                  >
-                    {uniqueBrands.map((brand) => (
-                      <MenuItem key={brand} value={brand}>
-                        <Checkbox checked={selectedBrands.indexOf(brand) > -1} />
-                        {brand}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
 
-                {/* Sort By */}
-                <FormControl fullWidth>
-                  <InputLabel>Sort By</InputLabel>
-                  <Select
-                    value={sortBy}
-                    label="Sort By"
-                    onChange={(e) => setSortBy(e.target.value)}
-                  >
-                    <MenuItem value="name">Product Name</MenuItem>
-                    <MenuItem value="price-low">Price: Low to High</MenuItem>
-                    <MenuItem value="price-high">Price: High to Low</MenuItem>
-                    <MenuItem value="rating">Highest Rating</MenuItem>
-                    <MenuItem value="newest">Newest</MenuItem>
-                  </Select>
-                </FormControl>
 
-                {/* Price Range */}
-                <Box>
-                  <Typography variant="body2" gutterBottom>
-                    Price Range: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
-                  </Typography>
-                  <Slider
-                    value={priceRange}
-                    onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
-                    valueLabelDisplay="auto"
-                    min={priceRangeData.min}
-                    max={priceRangeData.max}
-                    step={10}
-                  />
-                </Box>
 
-                {/* Rating Filter */}
-                <Box>
-                  <Typography variant="body2" gutterBottom>
-                    Đánh giá tối thiểu
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Rating
-                      value={ratingFilter}
-                      onChange={(_, newValue) => setRatingFilter(newValue || 0)}
-                      precision={0.5}
-                    />
-                    <Typography variant="body2" color="text.secondary">
-                      {ratingFilter > 0 ? `${ratingFilter}+ stars` : 'All'}
-                    </Typography>
-                  </Box>
-                </Box>
 
-                {/* Quick Filters */}
-                <Box>
-                  <Typography variant="body2" gutterBottom>
-                    Quick Filters
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={inStockOnly}
-                          onChange={(e) => setInStockOnly(e.target.checked)}
-                        />
-                      }
-                      label="In Stock Only"
-                    />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={onSaleOnly}
-                          onChange={(e) => setOnSaleOnly(e.target.checked)}
-                        />
-                      }
-                      label="On Sale Only"
-                    />
-                  </Box>
-                </Box>
-              </Box>
-            </AccordionDetails>
-          </Accordion>
-        </Card>
-      )}
-
-      {/* Active Filters */}
-      <ActiveFilters
-        filters={{
-          searchTerm,
-          selectedCategory,
-          selectedBrands,
-          priceRange,
-          ratingFilter,
-          inStockOnly,
-          onSaleOnly
-        }}
-        onRemoveFilter={removeFilter}
-        onClearAll={clearAllFilters}
-      />
-
-      {/* Quick Filters */}
-      <QuickFilters onApplyFilter={applyQuickFilter} />
-
-      {/* Results Count */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="body1" color="text.secondary">
-                      Showing {filteredProducts.length} products
-        </Typography>
-        <Chip 
-          icon={<FilterList />} 
-          label={`${filteredProducts.length} results`} 
-          variant="outlined" 
-        />
-      </Box>
 
       {/* Products Grid */}
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)', lg: 'repeat(5, 1fr)', xl: 'repeat(6, 1fr)' }, gap: 2 }}>
@@ -689,15 +337,8 @@ const ProductsPage: React.FC = () => {
             No products found
           </Typography>
           <Typography variant="body2" color="text.secondary">
-                          Try adjusting your search criteria or filters
+            Try selecting a different category
           </Typography>
-          <Button 
-            variant="outlined" 
-            onClick={clearAllFilters}
-            sx={{ mt: 2 }}
-          >
-            Clear All Filters
-          </Button>
         </Box>
       )}
       </Container>
