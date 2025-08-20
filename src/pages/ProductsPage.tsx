@@ -15,7 +15,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Product } from '../types';
 import { fetchProducts } from '../services/productService';
 import { useCart } from '../contexts/CartContext';
-import CategoryBreadcrumb from '../components/CategoryBreadcrumb';
+
 import CategoryNavigation from '../components/CategoryNavigation';
 
 const ProductsPage: React.FC = () => {
@@ -104,14 +104,7 @@ const ProductsPage: React.FC = () => {
       <Container maxWidth="lg" sx={{ py: 2 }}>
 
 
-        {/* Category Breadcrumb */}
-        {selectedCategory && (
-          <CategoryBreadcrumb
-            categoryName={selectedCategory}
-            productCount={filteredProducts.length}
-            onClear={() => setSelectedCategory('')}
-          />
-        )}
+
 
 
 
