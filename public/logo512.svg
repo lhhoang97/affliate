@@ -1,31 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <defs>
-    <style>
-      .cart-icon { fill: #ff6b35; }
-      .background { fill: #000000; }
-      .money { fill: #ffd700; }
-    </style>
-  </defs>
-  
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <!-- Background circle -->
-  <circle cx="256" cy="256" r="256" class="background"/>
+  <circle cx="256" cy="256" r="230" fill="#1976d2" stroke="#1565c0" stroke-width="8"/>
   
   <!-- Shopping cart body -->
-  <path class="cart-icon" d="M128 192h32l40 128h144l40-128h32l-48 160H176L128 192z"/>
-  
-  <!-- Shopping cart wheels -->
-  <circle cx="160" cy="384" r="32" class="cart-icon"/>
-  <circle cx="352" cy="384" r="32" class="cart-icon"/>
+  <rect x="128" y="179" width="204" height="128" rx="16" fill="#ffffff" stroke="#1565c0" stroke-width="8"/>
   
   <!-- Shopping cart handle -->
-  <path class="cart-icon" d="M192 128h128v32H192z"/>
-  <path class="cart-icon" d="M224 96h64v32h-64z"/>
+  <path d="M 154 179 Q 154 154 179 154 L 333 154 Q 358 154 358 179" fill="none" stroke="#1565c0" stroke-width="10" stroke-linecap="round"/>
   
-  <!-- Money coins inside cart -->
-  <circle cx="192" cy="288" r="16" class="money"/>
-  <circle cx="256" cy="288" r="16" class="money"/>
-  <circle cx="320" cy="288" r="16" class="money"/>
+  <!-- Cart wheels -->
+  <circle cx="166" cy="296" r="16" fill="#1565c0"/>
+  <circle cx="294" cy="296" r="16" fill="#1565c0"/>
   
   <!-- Dollar sign -->
-  <text x="256" y="352" text-anchor="middle" class="money" font-family="Arial, sans-serif" font-size="48" font-weight="bold">$</text>
+  <text x="256" y="246" font-family="Arial, sans-serif" font-size="64" font-weight="bold" text-anchor="middle" fill="#1976d2">$</text>
+  
+  <!-- Money symbol -->
+  <text x="256" y="334" font-family="Arial, sans-serif" font-size="42" font-weight="bold" text-anchor="middle" fill="#ffffff">$$</text>
 </svg>
