@@ -2,79 +2,162 @@ import React from 'react';
 import {
   Container,
   Typography,
-  Box
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const categories = [
+    {
+      id: 'electronics',
+      name: 'Electronics',
+      image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=200&fit=crop',
+      subcategories: ['Headphones', 'Laptops', 'Tablets', 'Phones', 'TVs', 'Refrigerators', 'Air Conditioners']
+    },
+    {
+      id: 'fashion',
+      name: 'Fashion',
+      image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=200&fit=crop',
+      subcategories: []
+    },
+    {
+      id: 'home-garden',
+      name: 'Home & Garden',
+      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop',
+      subcategories: []
+    },
+    {
+      id: 'sports',
+      name: 'Sports',
+      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop',
+      subcategories: []
+    },
+    {
+      id: 'beauty',
+      name: 'Beauty',
+      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=200&fit=crop',
+      subcategories: []
+    },
+    {
+      id: 'toys-games',
+      name: 'Toys & Games',
+      image: 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=300&h=200&fit=crop',
+      subcategories: []
+    },
+    {
+      id: 'automotive',
+      name: 'Automotive',
+      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=300&h=200&fit=crop',
+      subcategories: []
+    },
+    {
+      id: 'office-supplies',
+      name: 'Office Supplies',
+      image: 'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=300&h=200&fit=crop',
+      subcategories: []
+    },
+    {
+      id: 'pet-supplies',
+      name: 'Pet Supplies',
+      image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=300&h=200&fit=crop',
+      subcategories: []
+    },
+    {
+      id: 'health-wellness',
+      name: 'Health & Wellness',
+      image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop',
+      subcategories: []
+    }
+  ];
+
   return (
-    <Box sx={{ backgroundColor: '#ffffff', minHeight: 'calc(100vh - 120px)' }}>
-      <Container maxWidth="lg" sx={{ 
-        py: 8,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: 'calc(100vh - 200px)'
-      }}>
-        {/* Simple centered content matching staging.giatotday.vn */}
-        <Box sx={{ 
-          textAlign: 'center',
-          maxWidth: 600,
-          mx: 'auto'
-        }}>
-          <Box sx={{ 
-            position: 'relative',
-            width: 48,
-            height: 48,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            mx: 'auto',
-            mb: 3
-          }}>
-            <Box sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: 24,
-              height: 24,
-              backgroundColor: '#ff4444',
-              borderRadius: '50% 50% 0 50%',
-              transform: 'rotate(-45deg)'
-            }} />
-            <Box sx={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              width: 18,
-              height: 18,
-              backgroundColor: '#ffaa00',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '12px',
-              color: '#333'
-            }}>
-              ☀
-            </Box>
-          </Box>
-          
-          <Typography variant="h2" component="h1" gutterBottom sx={{ 
-            fontWeight: 'bold',
-            color: '#007bff',
-            mb: 4,
-            fontSize: { xs: '2rem', md: '3rem' },
-            textTransform: 'lowercase'
-          }}>
-            giatotday
-          </Typography>
-          
-          <Typography variant="h6" color="text.secondary" sx={{ 
-            mb: 6,
-            lineHeight: 1.6,
-            fontSize: { xs: '1rem', md: '1.25rem' }
-          }}>
-            Chào mừng bạn đến với GiaTotDay
+    <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        {/* Categories Grid */}
+        <Grid container spacing={3}>
+          {categories.map((category, index) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={category.id}>
+              <Card 
+                sx={{ 
+                  height: '100%',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+                  }
+                }}
+                onClick={() => navigate(`/products?category=${category.name}`)}
+              >
+                <CardMedia
+                  component="img"
+                  height="120"
+                  image={category.image}
+                  alt={category.name}
+                  sx={{ objectFit: 'cover' }}
+                />
+                <CardContent sx={{ p: 2 }}>
+                  <Typography variant="h6" component="h3" sx={{ 
+                    fontWeight: 600,
+                    mb: 1,
+                    color: '#333'
+                  }}>
+                    {category.name}
+                  </Typography>
+                  
+                  {/* Show subcategories for Electronics */}
+                  {category.id === 'electronics' && category.subcategories.length > 0 && (
+                    <Box sx={{ mt: 1 }}>
+                      {category.subcategories.slice(0, 7).map((sub, idx) => (
+                        <Typography 
+                          key={idx}
+                          variant="body2" 
+                          sx={{ 
+                            color: '#666',
+                            fontSize: '12px',
+                            mb: 0.5,
+                            cursor: 'pointer',
+                            '&:hover': {
+                              color: '#007bff'
+                            }
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/products?category=${sub}`);
+                          }}
+                        >
+                          {sub}
+                        </Typography>
+                      ))}
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+
+        {/* Show less button */}
+        <Box sx={{ textAlign: 'right', mt: 3 }}>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: '#666',
+              cursor: 'pointer',
+              '&:hover': {
+                color: '#007bff'
+              }
+            }}
+          >
+            Show less
           </Typography>
         </Box>
       </Container>
