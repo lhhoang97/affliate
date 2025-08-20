@@ -30,7 +30,11 @@ import {
   ThumbDown,
   Verified,
   Help,
-  Send
+  Send,
+  VolumeUp,
+  VolumeOff,
+  PlayArrow,
+  Pause
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -63,6 +67,10 @@ const ReviewsPage: React.FC = () => {
   const [selectedRating, setSelectedRating] = useState(5);
   const [reviewText, setReviewText] = useState('');
   const [reviewTitle, setReviewTitle] = useState('');
+  const [isReading, setIsReading] = useState(false);
+  const [currentReadingId, setCurrentReadingId] = useState<number | null>(null);
+  const [speechRate, setSpeechRate] = useState(1);
+  const [speechEnabled, setSpeechEnabled] = useState(true);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -75,6 +83,64 @@ const ReviewsPage: React.FC = () => {
     setSelectedRating(5);
     setReviewText('');
     setReviewTitle('');
+  };
+
+  // Text-to-Speech functions
+  const speak = (text: string, reviewId: number) => {
+    if (!speechEnabled) return;
+    
+    // Stop any current speech
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+    }
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = speechRate;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    
+    // Set voice (prefer English)
+    const voices = window.speechSynthesis.getVoices();
+    const englishVoice = voices.find(voice => voice.lang.startsWith('en'));
+    if (englishVoice) {
+      utterance.voice = englishVoice;
+    }
+    
+    utterance.onstart = () => {
+      setIsReading(true);
+      setCurrentReadingId(reviewId);
+    };
+    
+    utterance.onend = () => {
+      setIsReading(false);
+      setCurrentReadingId(null);
+    };
+    
+    utterance.onerror = () => {
+      setIsReading(false);
+      setCurrentReadingId(null);
+    };
+    
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const stopSpeaking = () => {
+    window.speechSynthesis.cancel();
+    setIsReading(false);
+    setCurrentReadingId(null);
+  };
+
+  const toggleSpeech = () => {
+    if (isReading) {
+      stopSpeaking();
+    } else {
+      setSpeechEnabled(!speechEnabled);
+    }
+  };
+
+  const handleReadReview = (review: any) => {
+    const textToRead = `${review.title}. ${review.content}`;
+    speak(textToRead, review.id);
   };
 
   const mockReviews = [
@@ -213,7 +279,7 @@ const ReviewsPage: React.FC = () => {
         </Box>
 
         {/* Action Buttons */}
-        <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+        <Box sx={{ display: 'flex', gap: 2, mb: 4, flexWrap: 'wrap' }}>
           <Button
             variant="contained"
             startIcon={<Send />}
@@ -230,6 +296,65 @@ const ReviewsPage: React.FC = () => {
             Filter Reviews
           </Button>
         </Box>
+
+        {/* Text-to-Speech Controls */}
+        <Card sx={{ mb: 4, p: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+              🔊 Audio Reading:
+            </Typography>
+            
+            <Button
+              variant={speechEnabled ? "contained" : "outlined"}
+              size="small"
+              startIcon={speechEnabled ? <VolumeUp /> : <VolumeOff />}
+              onClick={toggleSpeech}
+            >
+              {speechEnabled ? 'Enabled' : 'Disabled'}
+            </Button>
+            
+            {speechEnabled && (
+              <>
+                <Typography variant="body2" color="text.secondary">
+                  Speed:
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => setSpeechRate(Math.max(0.5, speechRate - 0.25))}
+                    disabled={speechRate <= 0.5}
+                  >
+                    -
+                  </Button>
+                  <Typography variant="body2" sx={{ minWidth: 40, textAlign: 'center' }}>
+                    {speechRate}x
+                  </Typography>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => setSpeechRate(Math.min(2, speechRate + 0.25))}
+                    disabled={speechRate >= 2}
+                  >
+                    +
+                  </Button>
+                </Box>
+              </>
+            )}
+            
+            {isReading && (
+              <Button
+                variant="outlined"
+                color="error"
+                size="small"
+                onClick={stopSpeaking}
+                startIcon={<Pause />}
+              >
+                Stop All
+              </Button>
+            )}
+          </Box>
+        </Card>
 
         {/* Reviews List */}
         <TabPanel value={tabValue} index={0}>
@@ -263,12 +388,33 @@ const ReviewsPage: React.FC = () => {
                     </Box>
                   </Box>
 
-                  <Typography variant="h6" gutterBottom>
-                    {review.title}
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>
-                    {review.content}
-                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="h6" gutterBottom>
+                        {review.title}
+                      </Typography>
+                      <Typography variant="body1">
+                        {review.content}
+                      </Typography>
+                    </Box>
+                    
+                    {/* Read Review Button */}
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={currentReadingId === review.id ? <Pause /> : <PlayArrow />}
+                      onClick={() => {
+                        if (currentReadingId === review.id) {
+                          stopSpeaking();
+                        } else {
+                          handleReadReview(review);
+                        }
+                      }}
+                      sx={{ ml: 2, minWidth: 'auto' }}
+                    >
+                      {currentReadingId === review.id ? 'Stop' : 'Read'}
+                    </Button>
+                  </Box>
 
                   {review.images.length > 0 && (
                     <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
