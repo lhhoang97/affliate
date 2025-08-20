@@ -38,9 +38,9 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ onApplyFilter }) => {
   const quickFilters: QuickFilter[] = [
     {
       id: 'electronics',
-      label: 'Điện tử',
+      label: 'Electronics',
       icon: <TrendingUp />,
-      description: 'Điện thoại, laptop, máy tính bảng',
+              description: 'Phones, laptops, tablets',
       filters: {
         category: 'Electronics',
         sortBy: 'rating'
@@ -48,9 +48,9 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ onApplyFilter }) => {
     },
     {
       id: 'fashion',
-      label: 'Thời trang',
+      label: 'Fashion',
       icon: <NewReleases />,
-      description: 'Quần áo, giày dép, phụ kiện',
+              description: 'Clothing, shoes, accessories',
       filters: {
         category: 'Fashion',
         sortBy: 'newest'
@@ -58,9 +58,9 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ onApplyFilter }) => {
     },
     {
       id: 'home-garden',
-      label: 'Nhà cửa',
+      label: 'Home & Garden',
       icon: <Inventory />,
-      description: 'Đồ gia dụng, nội thất',
+              description: 'Home appliances, furniture',
       filters: {
         category: 'Home & Garden',
         sortBy: 'name'
@@ -68,9 +68,9 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ onApplyFilter }) => {
     },
     {
       id: 'on-sale',
-      label: 'Đang giảm giá',
+              label: 'On Sale',
       icon: <LocalOffer />,
-      description: 'Sản phẩm có khuyến mãi',
+      description: 'Products on sale',
       filters: {
         onSaleOnly: true,
         sortBy: 'price-low'
@@ -78,9 +78,9 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ onApplyFilter }) => {
     },
     {
       id: 'top-rated',
-      label: 'Đánh giá cao',
+              label: 'Highly Rated',
       icon: <Star />,
-      description: 'Sản phẩm 4+ sao',
+              description: 'Products with 4+ stars',
       filters: {
         rating: 4,
         sortBy: 'rating'
@@ -88,9 +88,9 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ onApplyFilter }) => {
     },
     {
       id: 'in-stock',
-      label: 'Có sẵn',
+              label: 'In Stock',
       icon: <Inventory />,
-      description: 'Sản phẩm trong kho',
+              description: 'Products in stock',
       filters: {
         inStockOnly: true,
         sortBy: 'name'
@@ -98,9 +98,9 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ onApplyFilter }) => {
     },
     {
       id: 'budget',
-      label: 'Giá rẻ',
+      label: 'Budget',
       icon: <PriceCheck />,
-      description: 'Dưới $200',
+              description: 'Under $200',
       filters: {
         priceRange: [0, 200],
         sortBy: 'price-low'
@@ -108,9 +108,9 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ onApplyFilter }) => {
     },
     {
       id: 'premium',
-      label: 'Cao cấp',
+      label: 'Premium',
       icon: <Star />,
-      description: 'Trên $1000',
+              description: 'Over $1000',
       filters: {
         priceRange: [1000, 5000],
         sortBy: 'price-high'
@@ -121,7 +121,7 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ onApplyFilter }) => {
   return (
     <Box sx={{ mb: 3 }}>
       <Typography variant="h6" gutterBottom>
-        Bộ lọc nhanh
+        Quick Filters
       </Typography>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
         {quickFilters.map((filter) => (

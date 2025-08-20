@@ -58,7 +58,7 @@ const Footer: React.FC = () => {
             color: '#007bff',
             textTransform: 'lowercase'
           }}>
-            GiaTotDay Logo
+            ShopWithUs
           </Typography>
         </Box>
 
@@ -70,14 +70,14 @@ const Footer: React.FC = () => {
           gap: { xs: 3, md: 6 },
           mb: 4
         }}>
-          {/* Thông Tin */}
+          {/* Information */}
           <Box sx={{ textAlign: { xs: 'left', md: 'center' } }}>
             <Typography variant="subtitle2" gutterBottom sx={{ 
               fontWeight: 'bold', 
               color: '#333',
               mb: 2
             }}>
-              Thông Tin
+              Information
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Link
@@ -92,7 +92,7 @@ const Footer: React.FC = () => {
                   }
                 }}
               >
-                Về Chúng Tôi
+                About Us
               </Link>
               <Link
                 component={RouterLink}
@@ -106,7 +106,7 @@ const Footer: React.FC = () => {
                   }
                 }}
               >
-                Liên Hệ
+                Contact
               </Link>
               <Link
                 component={RouterLink}
@@ -120,19 +120,19 @@ const Footer: React.FC = () => {
                   }
                 }}
               >
-                Trung Tâm Trợ Giúp
+                Help Center
               </Link>
             </Box>
           </Box>
 
-          {/* Quy Định & Hướng Dẫn */}
+          {/* Terms & Guidelines */}
           <Box sx={{ textAlign: { xs: 'left', md: 'center' } }}>
             <Typography variant="subtitle2" gutterBottom sx={{ 
               fontWeight: 'bold', 
               color: '#333',
               mb: 2
             }}>
-              Quy Định & Hướng Dẫn
+              Terms & Guidelines
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Link
@@ -147,7 +147,7 @@ const Footer: React.FC = () => {
                   }
                 }}
               >
-                Quy Định & Hướng Dẫn
+                Terms & Conditions
               </Link>
               <Link
                 component={RouterLink}
@@ -161,7 +161,7 @@ const Footer: React.FC = () => {
                   }
                 }}
               >
-                Điều Khoản & Điều Kiện
+                Terms of Service
               </Link>
               <Link
                 component={RouterLink}
@@ -175,7 +175,7 @@ const Footer: React.FC = () => {
                   }
                 }}
               >
-                Chính Sách Bảo Mật
+                Privacy Policy
               </Link>
               <Link
                 component={RouterLink}
@@ -189,7 +189,7 @@ const Footer: React.FC = () => {
                   }
                 }}
               >
-                Chính Sách Cookie
+                Cookie Policy
               </Link>
               <Link
                 component={RouterLink}
@@ -203,7 +203,7 @@ const Footer: React.FC = () => {
                   }
                 }}
               >
-                Cài Đặt Bảo Mật
+                Security Settings
               </Link>
             </Box>
           </Box>
@@ -217,10 +217,10 @@ const Footer: React.FC = () => {
             mb: 1,
             textTransform: 'lowercase'
           }}>
-            GiaTotDay
+            ShopWithUs
           </Typography>
           <Typography variant="body2" sx={{ color: '#666' }}>
-            ©2025 GiaTotDay
+            ©2025 ShopWithUs
           </Typography>
         </Box>
       </Container>

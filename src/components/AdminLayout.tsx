@@ -58,10 +58,10 @@ const AdminLayout: React.FC = () => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <Dashboard />, path: '/admin' },
-    { text: 'Quản lý sản phẩm', icon: <Inventory />, path: '/admin/products' },
-    { text: 'Quản lý danh mục', icon: <Category />, path: '/admin/categories' },
-    { text: 'Quản lý người dùng', icon: <People />, path: '/admin/users' },
-    { text: 'Cài đặt', icon: <Settings />, path: '/admin/settings' },
+            { text: 'Product Management', icon: <Inventory />, path: '/admin/products' },
+          { text: 'Category Management', icon: <Category />, path: '/admin/categories' },
+      { text: 'User Management', icon: <People />, path: '/admin/users' },
+      { text: 'Settings', icon: <Settings />, path: '/admin/settings' },
   ];
 
   const drawer = (

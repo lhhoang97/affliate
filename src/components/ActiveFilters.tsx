@@ -47,7 +47,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   if (filters.searchTerm) {
     activeFilters.push({
       type: 'search',
-      label: `Tìm kiếm: "${filters.searchTerm}"`,
+              label: `Search: "${filters.searchTerm}"`,
       icon: <Clear />,
       value: filters.searchTerm
     });
@@ -83,7 +83,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   if (filters.ratingFilter > 0) {
     activeFilters.push({
       type: 'rating',
-      label: `${filters.ratingFilter}+ sao`,
+              label: `${filters.ratingFilter}+ stars`,
       icon: <Star />,
       value: filters.ratingFilter
     });
@@ -92,7 +92,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   if (filters.inStockOnly) {
     activeFilters.push({
       type: 'stock',
-      label: 'Chỉ sản phẩm có sẵn',
+              label: 'In Stock Only',
       icon: <Inventory />,
       value: true
     });
@@ -101,7 +101,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   if (filters.onSaleOnly) {
     activeFilters.push({
       type: 'sale',
-      label: 'Chỉ sản phẩm giảm giá',
+              label: 'On Sale Only',
       icon: <LocalOffer />,
       value: true
     });
@@ -115,9 +115,9 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
     <Box sx={{ mb: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
         <Typography variant="subtitle2" color="text.secondary">
-          Bộ lọc đang hoạt động:
+          Active Filters:
         </Typography>
-        <Tooltip title="Xóa tất cả bộ lọc">
+                    <Tooltip title="Clear all filters">
           <IconButton size="small" onClick={onClearAll} color="error">
             <Clear />
           </IconButton>

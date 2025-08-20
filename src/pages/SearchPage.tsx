@@ -97,7 +97,7 @@ const SearchPage: React.FC = () => {
                 fontSize: '18px',
                 textTransform: 'lowercase'
               }}>
-                giatotday
+                shopwithus
               </Typography>
             </Box>
             
@@ -113,7 +113,7 @@ const SearchPage: React.FC = () => {
                 value={searchTerm}
                 onChange={setSearchTerm}
                 onSearch={handleSearch}
-                placeholder="Tìm kiếm..."
+                placeholder="Search..."
               />
             </Box>
           </Box>
@@ -135,7 +135,7 @@ const SearchPage: React.FC = () => {
             {searchTerm ? (
               <>
                 <Typography variant="h6" sx={{ mb: 2, color: '#333' }}>
-                  Kết quả tìm kiếm cho "{searchTerm}"
+                  Search results for "{searchTerm}"
                 </Typography>
                 <Box sx={{ 
                   display: 'grid', 
@@ -214,10 +214,10 @@ const SearchPage: React.FC = () => {
               }}>
                 <Search sx={{ fontSize: 48, mb: 2, color: '#ccc' }} />
                 <Typography variant="h6" sx={{ mb: 1 }}>
-                  Tìm kiếm sản phẩm
+                  Search Products
                 </Typography>
                 <Typography variant="body2">
-                  Nhập từ khóa để tìm kiếm sản phẩm bạn muốn
+                  Enter keywords to search for products you want
                 </Typography>
               </Box>
             )}

@@ -72,7 +72,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
               }}
             >
               <Home fontSize="small" />
-              Trang chủ
+              Home
             </Link>
             <Link
               color="inherit"
@@ -90,7 +90,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
               }}
             >
               <Category fontSize="small" />
-              Danh mục
+              Categories
             </Link>
             <Typography sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               {categoryName}
@@ -100,7 +100,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
         
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Chip
-            label={`${productCount} sản phẩm`}
+                            label={`${productCount} products`}
             size="small"
             sx={{ 
               bgcolor: 'rgba(255,255,255,0.2)', 
@@ -108,7 +108,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
               fontWeight: 'bold'
             }}
           />
-          <Tooltip title="Xóa bộ lọc danh mục">
+          <Tooltip title="Remove category filter">
             <IconButton 
               color="inherit" 
               onClick={onClear}

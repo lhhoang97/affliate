@@ -63,7 +63,7 @@ function TabPanel(props: TabPanelProps) {
 const mockPriceComparison = [
   {
     id: 1,
-    seller: 'GiaTotDay Official',
+          seller: 'ShopWithUs Official',
     price: 2990000,
     originalPrice: 3500000,
     shipping: 'Free',
@@ -464,7 +464,7 @@ const ProductDetailPage: React.FC = () => {
           <TabPanel value={tabValue} index={2}>
             {productReviews.length === 0 ? (
               <Typography variant="body1" color="text.secondary">
-                Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá sản phẩm này!
+                No reviews yet. Be the first to review this product!
               </Typography>
             ) : (
               <Box>

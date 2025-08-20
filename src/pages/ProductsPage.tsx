@@ -261,7 +261,7 @@ const ProductsPage: React.FC = () => {
       )}
       
       <Typography variant="h3" component="h1" gutterBottom>
-        {selectedCategory ? `${selectedCategory}` : 'Tìm kiếm sản phẩm'}
+                    {selectedCategory ? `${selectedCategory}` : 'Search Products'}
       </Typography>
 
       {/* Search Bar */}
@@ -281,13 +281,13 @@ const ProductsPage: React.FC = () => {
             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
             sx={{ minWidth: 120 }}
           >
-            Bộ lọc
+            Filter
             {activeFiltersCount > 0 && (
               <Badge badgeContent={activeFiltersCount} color="primary" sx={{ ml: 1 }} />
             )}
           </Button>
           {activeFiltersCount > 0 && (
-            <Tooltip title="Xóa tất cả bộ lọc">
+            <Tooltip title="Clear all filters">
               <IconButton onClick={clearAllFilters} color="error">
                 <Clear />
               </IconButton>
@@ -308,20 +308,20 @@ const ProductsPage: React.FC = () => {
         <Card sx={{ mb: 3 }}>
           <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMore />}>
-              <Typography variant="h6">Bộ lọc nâng cao</Typography>
+              <Typography variant="h6">Advanced Filters</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
                 
                 {/* Category Filter */}
                 <FormControl fullWidth>
-                  <InputLabel>Danh mục</InputLabel>
+                  <InputLabel>Category</InputLabel>
                   <Select
                     value={selectedCategory}
-                    label="Danh mục"
+                    label="Category"
                     onChange={(e) => setSelectedCategory(e.target.value)}
                   >
-                    <MenuItem value="">Tất cả danh mục</MenuItem>
+                    <MenuItem value="">All Categories</MenuItem>
                     {/* mockCategories is removed, so this will be empty or need to be fetched */}
                     {/* For now, assuming mockCategories is replaced by a dynamic list or removed */}
                     {/* If mockCategories is still needed, it should be re-imported or defined */}
@@ -331,11 +331,11 @@ const ProductsPage: React.FC = () => {
 
                 {/* Brand Filter */}
                 <FormControl fullWidth>
-                  <InputLabel>Thương hiệu</InputLabel>
+                  <InputLabel>Brand</InputLabel>
                   <Select
                     multiple
                     value={selectedBrands}
-                    label="Thương hiệu"
+                    label="Brand"
                     onChange={(e) => setSelectedBrands(e.target.value as string[])}
                     renderValue={(selected) => (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -356,24 +356,24 @@ const ProductsPage: React.FC = () => {
 
                 {/* Sort By */}
                 <FormControl fullWidth>
-                  <InputLabel>Sắp xếp theo</InputLabel>
+                  <InputLabel>Sort By</InputLabel>
                   <Select
                     value={sortBy}
-                    label="Sắp xếp theo"
+                    label="Sort By"
                     onChange={(e) => setSortBy(e.target.value)}
                   >
-                    <MenuItem value="name">Tên sản phẩm</MenuItem>
-                    <MenuItem value="price-low">Giá: Thấp đến cao</MenuItem>
-                    <MenuItem value="price-high">Giá: Cao đến thấp</MenuItem>
-                    <MenuItem value="rating">Đánh giá cao nhất</MenuItem>
-                    <MenuItem value="newest">Mới nhất</MenuItem>
+                    <MenuItem value="name">Product Name</MenuItem>
+                    <MenuItem value="price-low">Price: Low to High</MenuItem>
+                    <MenuItem value="price-high">Price: High to Low</MenuItem>
+                    <MenuItem value="rating">Highest Rating</MenuItem>
+                    <MenuItem value="newest">Newest</MenuItem>
                   </Select>
                 </FormControl>
 
                 {/* Price Range */}
                 <Box>
                   <Typography variant="body2" gutterBottom>
-                    Khoảng giá: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
+                    Price Range: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
                   </Typography>
                   <Slider
                     value={priceRange}
@@ -397,7 +397,7 @@ const ProductsPage: React.FC = () => {
                       precision={0.5}
                     />
                     <Typography variant="body2" color="text.secondary">
-                      {ratingFilter > 0 ? `${ratingFilter}+ sao` : 'Tất cả'}
+                      {ratingFilter > 0 ? `${ratingFilter}+ stars` : 'All'}
                     </Typography>
                   </Box>
                 </Box>
@@ -405,7 +405,7 @@ const ProductsPage: React.FC = () => {
                 {/* Quick Filters */}
                 <Box>
                   <Typography variant="body2" gutterBottom>
-                    Bộ lọc nhanh
+                    Quick Filters
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <FormControlLabel
@@ -415,7 +415,7 @@ const ProductsPage: React.FC = () => {
                           onChange={(e) => setInStockOnly(e.target.checked)}
                         />
                       }
-                      label="Chỉ sản phẩm có sẵn"
+                      label="In Stock Only"
                     />
                     <FormControlLabel
                       control={
@@ -424,7 +424,7 @@ const ProductsPage: React.FC = () => {
                           onChange={(e) => setOnSaleOnly(e.target.checked)}
                         />
                       }
-                      label="Chỉ sản phẩm giảm giá"
+                      label="On Sale Only"
                     />
                   </Box>
                 </Box>
@@ -455,11 +455,11 @@ const ProductsPage: React.FC = () => {
       {/* Results Count */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="body1" color="text.secondary">
-          Hiển thị {filteredProducts.length} sản phẩm
+                      Showing {filteredProducts.length} products
         </Typography>
         <Chip 
           icon={<FilterList />} 
-          label={`${filteredProducts.length} kết quả`} 
+          label={`${filteredProducts.length} results`} 
           variant="outlined" 
         />
       </Box>
@@ -513,7 +513,7 @@ const ProductsPage: React.FC = () => {
                   }}
                 >
                   <Typography variant="h6" color="white" sx={{ fontWeight: 'bold' }}>
-                    Hết hàng
+                    Out of Stock
                   </Typography>
                 </Box>
               )}
@@ -569,7 +569,7 @@ const ProductsPage: React.FC = () => {
                 }}
                 disabled={!product.inStock}
               >
-                {product.inStock ? 'Thêm vào giỏ' : 'Hết hàng'}
+                {product.inStock ? 'Add to Cart' : 'Out of Stock'}
               </Button>
             </CardContent>
           </Card>
@@ -594,17 +594,17 @@ const ProductsPage: React.FC = () => {
       {filteredProducts.length === 0 && (
         <Box sx={{ textAlign: 'center', py: 8 }}>
           <Typography variant="h6" color="text.secondary" gutterBottom>
-            Không tìm thấy sản phẩm
+            No products found
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Hãy thử điều chỉnh tiêu chí tìm kiếm hoặc bộ lọc
+                          Try adjusting your search criteria or filters
           </Typography>
           <Button 
             variant="outlined" 
             onClick={clearAllFilters}
             sx={{ mt: 2 }}
           >
-            Xóa tất cả bộ lọc
+            Clear All Filters
           </Button>
         </Box>
       )}

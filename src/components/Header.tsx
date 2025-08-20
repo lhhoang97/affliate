@@ -112,7 +112,7 @@ const Header: React.FC = () => {
             fontSize: '18px',
             textTransform: 'lowercase'
           }}>
-            giatotday
+            shopwithus
           </Typography>
         </Box>
       </Box>
@@ -135,7 +135,7 @@ const Header: React.FC = () => {
               }
             }}
           >
-            Sản phẩm
+            Products
           </Typography>
           <Typography
             component={RouterLink}
@@ -152,7 +152,7 @@ const Header: React.FC = () => {
               }
             }}
           >
-            Ưu đãi
+            Deals
           </Typography>
           <Typography
             component={RouterLink}
@@ -169,7 +169,7 @@ const Header: React.FC = () => {
               }
             }}
           >
-            Về chúng tôi
+            About Us
           </Typography>
           <Typography
             component={RouterLink}
@@ -186,7 +186,7 @@ const Header: React.FC = () => {
               }
             }}
           >
-            Liên hệ
+            Contact
           </Typography>
         </Box>
       </Box>
@@ -202,7 +202,7 @@ const Header: React.FC = () => {
           color: '#666',
           textAlign: 'center'
         }}>
-          ©2025 GiaTotDay
+          ©2025 ShopWithUs
         </Typography>
       </Box>
     </Box>
@@ -263,19 +263,19 @@ const Header: React.FC = () => {
                   ☀
                 </Box>
               </Box>
-              <Typography
-                component={RouterLink}
-                to="/"
-                sx={{
-                  textDecoration: 'none',
-                  color: '#007bff',
-                  fontWeight: 'bold',
-                  fontSize: '18px',
-                  textTransform: 'lowercase'
-                }}
-              >
-                giatotday
-              </Typography>
+                        <Typography
+            component={RouterLink}
+            to="/"
+            sx={{
+              textDecoration: 'none',
+              color: '#007bff',
+              fontWeight: 'bold',
+              fontSize: '18px',
+              textTransform: 'lowercase'
+            }}
+          >
+            shopwithus
+          </Typography>
             </Box>
           </Box>
           
@@ -291,7 +291,7 @@ const Header: React.FC = () => {
               value={searchTerm}
               onChange={setSearchTerm}
               onSearch={handleSearch}
-              placeholder="Tìm kiếm..."
+              placeholder="Search..."
             />
           </Box>
           

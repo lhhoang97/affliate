@@ -80,9 +80,18 @@ const HomePage: React.FC = () => {
     <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Categories Grid */}
-        <Grid container spacing={3}>
+        <Box sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: { 
+            xs: '1fr', 
+            sm: 'repeat(2, 1fr)', 
+            md: 'repeat(3, 1fr)', 
+            lg: 'repeat(4, 1fr)' 
+          }, 
+          gap: 3 
+        }}>
           {categories.map((category, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={category.id}>
+            <Box key={category.id}>
               <Card 
                 sx={{ 
                   height: '100%',
@@ -141,9 +150,9 @@ const HomePage: React.FC = () => {
                   )}
                 </CardContent>
               </Card>
-            </Grid>
+            </Box>
           ))}
-        </Grid>
+        </Box>
 
         {/* Show less button */}
         <Box sx={{ textAlign: 'right', mt: 3 }}>

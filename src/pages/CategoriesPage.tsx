@@ -57,10 +57,10 @@ const CategoriesPage: React.FC = () => {
       {/* Header */}
       <Box sx={{ textAlign: 'center', mb: 6 }}>
         <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-          Danh mục sản phẩm
+                      Product Categories
         </Typography>
         <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
-          Khám phá các danh mục sản phẩm đa dạng với đánh giá và thông tin chi tiết
+                      Explore diverse product categories with reviews and detailed information
         </Typography>
       </Box>
 
@@ -68,7 +68,7 @@ const CategoriesPage: React.FC = () => {
       <Box sx={{ mb: 4, p: 3 }}>
         <TextField
           fullWidth
-          placeholder="Tìm kiếm danh mục..."
+                        placeholder="Search categories..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
@@ -96,9 +96,9 @@ const CategoriesPage: React.FC = () => {
       {/* Tabs */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
         <Tabs value={selectedTab} onChange={(_, newValue) => setSelectedTab(newValue)}>
-          <Tab label="Tất cả danh mục" />
-          <Tab label="Danh mục nổi bật" />
-          <Tab label="Danh mục mới" />
+                      <Tab label="All Categories" />
+                      <Tab label="Featured Categories" />
+                      <Tab label="New Categories" />
         </Tabs>
       </Box>
 
@@ -114,10 +114,10 @@ const CategoriesPage: React.FC = () => {
         }}>
           <Category sx={{ fontSize: 48, mb: 2, color: '#ccc' }} />
           <Typography variant="h6" sx={{ mb: 1 }}>
-            Không có danh mục
+            No categories
           </Typography>
           <Typography variant="body2">
-            Danh sách danh mục đã được ẩn
+            Category list has been hidden
           </Typography>
         </Box>
       </TabPanel>
@@ -133,10 +133,10 @@ const CategoriesPage: React.FC = () => {
         }}>
           <TrendingUp sx={{ fontSize: 48, mb: 2, color: '#ccc' }} />
           <Typography variant="h6" sx={{ mb: 1 }}>
-            Không có danh mục nổi bật
+            No featured categories
           </Typography>
           <Typography variant="body2">
-            Danh sách danh mục đã được ẩn
+            Category list has been hidden
           </Typography>
         </Box>
       </TabPanel>
@@ -152,10 +152,10 @@ const CategoriesPage: React.FC = () => {
         }}>
           <NewReleases sx={{ fontSize: 48, mb: 2, color: '#ccc' }} />
           <Typography variant="h6" sx={{ mb: 1 }}>
-            Không có danh mục mới
+            No new categories
           </Typography>
           <Typography variant="body2">
-            Danh sách danh mục đã được ẩn
+            Category list has been hidden
           </Typography>
         </Box>
       </TabPanel>
