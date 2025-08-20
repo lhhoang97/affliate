@@ -148,6 +148,123 @@ export const mockProducts: Product[] = [
     createdAt: '2024-01-18T10:00:00Z',
     updatedAt: '2024-01-18T10:00:00Z'
   },
+  // Additional iPhone Products to match reference
+  {
+    id: 'iphone-14',
+    name: 'Apple iPhone 14 128GB',
+    description: 'Latest iPhone with A15 Bionic chip and advanced camera system.',
+    price: 899,
+    originalPrice: 999,
+    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+    rating: 4.8,
+    reviewCount: 1456,
+    category: 'Electronics',
+    brand: 'Apple',
+    inStock: true,
+    features: ['A15 Bionic chip', 'Advanced camera system', 'Face ID', 'Emergency SOS'],
+    specifications: {
+      'Screen Size': '6.1 inches',
+      'Storage': '128GB',
+      'Color': 'Multiple colors',
+      'Chip': 'A15 Bionic',
+      'Camera': '12MP Dual camera'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400'
+    ],
+    tags: ['smartphone', 'apple', 'iphone', '5g'],
+    createdAt: '2024-01-19T10:00:00Z',
+    updatedAt: '2024-01-19T10:00:00Z'
+  },
+  {
+    id: 'iphone-15',
+    name: 'Apple iPhone 15 128GB',
+    description: 'Revolutionary iPhone with A16 Bionic chip and USB-C.',
+    price: 999,
+    originalPrice: 1099,
+    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+    rating: 4.9,
+    reviewCount: 2034,
+    category: 'Electronics',
+    brand: 'Apple',
+    inStock: true,
+    features: ['A16 Bionic chip', 'USB-C connector', 'Face ID', 'Dynamic Island'],
+    specifications: {
+      'Screen Size': '6.1 inches',
+      'Storage': '128GB',
+      'Color': 'Multiple colors',
+      'Chip': 'A16 Bionic',
+      'Camera': '48MP Main camera'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400'
+    ],
+    tags: ['smartphone', 'apple', 'iphone', '5g'],
+    createdAt: '2024-01-20T10:00:00Z',
+    updatedAt: '2024-01-20T10:00:00Z'
+  },
+  {
+    id: 'iphone-15-pro',
+    name: 'Apple iPhone 15 Pro 128GB',
+    description: 'Professional iPhone with A17 Pro chip and titanium design.',
+    price: 1199,
+    originalPrice: 1299,
+    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+    rating: 4.9,
+    reviewCount: 1789,
+    category: 'Electronics',
+    brand: 'Apple',
+    inStock: true,
+    features: ['A17 Pro chip', 'Titanium design', 'Pro camera system', 'Action button'],
+    specifications: {
+      'Screen Size': '6.1 inches',
+      'Storage': '128GB',
+      'Color': 'Multiple colors',
+      'Chip': 'A17 Pro',
+      'Camera': '48MP Pro camera'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400'
+    ],
+    tags: ['smartphone', 'apple', 'iphone', '5g'],
+    createdAt: '2024-01-21T10:00:00Z',
+    updatedAt: '2024-01-21T10:00:00Z'
+  },
+  {
+    id: 'iphone-15-pro-max',
+    name: 'Apple iPhone 15 Pro Max 256GB',
+    description: 'The most advanced iPhone with A17 Pro chip and pro camera system.',
+    price: 1399,
+    originalPrice: 1499,
+    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+    rating: 4.9,
+    reviewCount: 2341,
+    category: 'Electronics',
+    brand: 'Apple',
+    inStock: true,
+    features: ['A17 Pro chip', 'Titanium design', 'Pro camera system', '5x Telephoto'],
+    specifications: {
+      'Screen Size': '6.7 inches',
+      'Storage': '256GB',
+      'Color': 'Multiple colors',
+      'Chip': 'A17 Pro',
+      'Camera': '48MP Pro camera'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400'
+    ],
+    tags: ['smartphone', 'apple', 'iphone', '5g'],
+    createdAt: '2024-01-22T10:00:00Z',
+    updatedAt: '2024-01-22T10:00:00Z'
+  },
   {
     id: '1',
     name: 'iPhone 15 Pro Max',
