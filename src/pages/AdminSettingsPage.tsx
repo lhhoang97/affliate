@@ -14,15 +14,15 @@ const AdminSettingsPage: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h5" fontWeight="bold" gutterBottom>Cài đặt hệ thống</Typography>
+      <Typography variant="h5" fontWeight="bold" gutterBottom>System Settings</Typography>
 
       <Card sx={{ mb: 2 }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom>Thông tin chung</Typography>
+          <Typography variant="h6" gutterBottom>General Information</Typography>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
-            <TextField label="Tên website" value={siteName} onChange={(e) => setSiteName(e.target.value)} fullWidth />
+            <TextField label="Website name" value={siteName} onChange={(e) => setSiteName(e.target.value)} fullWidth />
             <Box>
-              <Typography variant="body2" gutterBottom>Tiền tệ</Typography>
+              <Typography variant="body2" gutterBottom>Currency</Typography>
               <Select value={currency} onChange={(e) => setCurrency(e.target.value as string)} fullWidth>
                 <MenuItem value="USD">USD</MenuItem>
                 <MenuItem value="VND">VND</MenuItem>
@@ -35,13 +35,13 @@ const AdminSettingsPage: React.FC = () => {
 
       <Card sx={{ mb: 2 }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom>Bảo trì & Quyền</Typography>
-          <FormControlLabel control={<Switch checked={maintenance} onChange={(e) => setMaintenance(e.target.checked)} />} label="Chế độ bảo trì" />
-          <FormControlLabel control={<Switch checked={allowRegistration} onChange={(e) => setAllowRegistration(e.target.checked)} />} label="Cho phép đăng ký tài khoản" />
+          <Typography variant="h6" gutterBottom>Maintenance & Permissions</Typography>
+          <FormControlLabel control={<Switch checked={maintenance} onChange={(e) => setMaintenance(e.target.checked)} />} label="Maintenance mode" />
+                      <FormControlLabel control={<Switch checked={allowRegistration} onChange={(e) => setAllowRegistration(e.target.checked)} />} label="Allow user registration" />
         </CardContent>
       </Card>
 
-      <Button variant="contained" onClick={saveSettings}>Lưu cài đặt</Button>
+              <Button variant="contained" onClick={saveSettings}>Save Settings</Button>
     </Box>
   );
 };

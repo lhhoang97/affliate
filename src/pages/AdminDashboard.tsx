@@ -91,7 +91,7 @@ const AdminDashboard: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box>
                 <Typography color="text.secondary" gutterBottom>
-                  Tổng sản phẩm
+                  Total Products
                 </Typography>
                 <Typography variant="h4" component="div">
                   {stats.totalProducts}
@@ -109,7 +109,7 @@ const AdminDashboard: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box>
                 <Typography color="text.secondary" gutterBottom>
-                  Danh mục
+                  Categories
                 </Typography>
                 <Typography variant="h4" component="div">
                   {stats.totalCategories}
@@ -127,7 +127,7 @@ const AdminDashboard: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box>
                 <Typography color="text.secondary" gutterBottom>
-                  Người dùng
+                  Users
                 </Typography>
                 <Typography variant="h4" component="div">
                   {stats.totalUsers}
@@ -145,7 +145,7 @@ const AdminDashboard: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box>
                 <Typography color="text.secondary" gutterBottom>
-                  Đơn hàng
+                  Orders
                 </Typography>
                 <Typography variant="h4" component="div">
                   {stats.totalOrders}
@@ -164,7 +164,7 @@ const AdminDashboard: React.FC = () => {
         <Card>
           <CardContent>
             <Typography variant="h6" gutterBottom>
-              Thao tác nhanh
+              Quick Actions
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <Button
@@ -172,21 +172,21 @@ const AdminDashboard: React.FC = () => {
                 startIcon={<Add />}
                 onClick={() => window.location.href = '/admin/products'}
               >
-                Thêm sản phẩm
+                Add Product
               </Button>
               <Button
                 variant="outlined"
                 startIcon={<Category />}
                 onClick={() => window.location.href = '/admin/categories'}
               >
-                Quản lý danh mục
+                Manage Categories
               </Button>
               <Button
                 variant="outlined"
                 startIcon={<People />}
                 onClick={() => window.location.href = '/admin/users'}
               >
-                Quản lý người dùng
+                Manage Users
               </Button>
             </Box>
           </CardContent>
@@ -199,7 +199,7 @@ const AdminDashboard: React.FC = () => {
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography>Đánh giá trung bình:</Typography>
+                <Typography>Average Rating:</Typography>
                 <Chip 
                   icon={<Star />} 
                   label={`${stats.averageRating} ⭐`} 
@@ -208,7 +208,7 @@ const AdminDashboard: React.FC = () => {
                 />
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography>Sản phẩm hết hàng:</Typography>
+                <Typography>Out of Stock:</Typography>
                 <Chip 
                   label={stats.outOfStock} 
                   color="error" 
@@ -216,7 +216,7 @@ const AdminDashboard: React.FC = () => {
                 />
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography>Tỷ lệ có hàng:</Typography>
+                <Typography>In Stock Rate:</Typography>
                 <Chip 
                   label={`${((stats.totalProducts - stats.outOfStock) / stats.totalProducts * 100).toFixed(1)}%`} 
                   color="success" 
@@ -233,7 +233,7 @@ const AdminDashboard: React.FC = () => {
         <Card>
           <CardContent>
             <Typography variant="h6" gutterBottom>
-              Sản phẩm mới nhất
+              Latest Products
             </Typography>
             <List>
               {recentProducts.map((product, index) => (
@@ -258,7 +258,7 @@ const AdminDashboard: React.FC = () => {
             </List>
             <CardActions>
               <Button size="small" onClick={() => window.location.href = '/admin/products'}>
-                Xem tất cả
+                View All
               </Button>
             </CardActions>
           </CardContent>
@@ -267,7 +267,7 @@ const AdminDashboard: React.FC = () => {
         <Card>
           <CardContent>
             <Typography variant="h6" gutterBottom>
-              Sản phẩm đánh giá cao
+              Top Rated Products
             </Typography>
             <List>
               {topRatedProducts.map((product, index) => (

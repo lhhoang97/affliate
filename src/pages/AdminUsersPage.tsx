@@ -119,12 +119,12 @@ const AdminUsersPage: React.FC = () => {
   return (
     <Box>
       <Typography variant="h5" gutterBottom fontWeight="bold">
-        Quản lý người dùng
+        User Management
       </Typography>
 
       <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
         <TextField
-          label="Tìm kiếm người dùng"
+          label="Search users"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -134,11 +134,11 @@ const AdminUsersPage: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Tên</TableCell>
+              <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Vai trò</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell align="right">Hành động</TableCell>
+              <TableCell>Role</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -167,19 +167,19 @@ const AdminUsersPage: React.FC = () => {
       </TableContainer>
 
       <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle>Cập nhật vai trò</DialogTitle>
+        <DialogTitle>Update Role</DialogTitle>
         <DialogContent>
           <FormControl fullWidth>
-            <InputLabel>Vai trò</InputLabel>
-            <Select value={role} label="Vai trò" onChange={(e) => setRole(e.target.value as any)}>
+            <InputLabel>Role</InputLabel>
+            <Select value={role} label="Role" onChange={(e) => setRole(e.target.value as any)}>
               <MenuItem value="user">User</MenuItem>
               <MenuItem value="admin">Admin</MenuItem>
             </Select>
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditOpen(false)}>Hủy</Button>
-          <Button variant="contained" onClick={handleSave}>Lưu</Button>
+          <Button onClick={() => setEditOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
     </Box>

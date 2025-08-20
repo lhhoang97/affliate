@@ -271,7 +271,7 @@ const AdminProductsPage: React.FC = () => {
 
   const handleSave = async () => {
     if (!formData.name || !formData.description || !formData.category || !formData.brand) {
-      setSnackbar({ open: true, message: 'Vui lòng điền đầy đủ thông tin bắt buộc', severity: 'error' });
+      setSnackbar({ open: true, message: 'Please fill in all required information', severity: 'error' });
       return;
     }
 
@@ -296,7 +296,7 @@ const AdminProductsPage: React.FC = () => {
           affiliateLink: formData.affiliateLink,
         });
         setProducts(prev => prev.map(p => p.id === editingProduct.id ? updated : p));
-        setSnackbar({ open: true, message: 'Cập nhật sản phẩm thành công!', severity: 'success' });
+        setSnackbar({ open: true, message: 'Product updated successfully!', severity: 'success' });
       } else {
         const created = await createProduct({
           name: formData.name,
@@ -317,22 +317,22 @@ const AdminProductsPage: React.FC = () => {
           affiliateLink: formData.affiliateLink,
         });
         setProducts(prev => [...prev, created]);
-        setSnackbar({ open: true, message: 'Thêm sản phẩm mới thành công!', severity: 'success' });
+        setSnackbar({ open: true, message: 'New product added successfully!', severity: 'success' });
       }
       handleCloseDialog();
     } catch (e) {
-      setSnackbar({ open: true, message: 'Có lỗi khi lưu sản phẩm', severity: 'error' });
+      setSnackbar({ open: true, message: 'Error saving product', severity: 'error' });
     }
   };
 
   const handleDelete = async (productId: string) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+    if (window.confirm('Are you sure you want to delete this product?')) {
       try {
         await deleteProductApi(productId);
         setProducts(prev => prev.filter(p => p.id !== productId));
-        setSnackbar({ open: true, message: 'Xóa sản phẩm thành công!', severity: 'success' });
+        setSnackbar({ open: true, message: 'Product deleted successfully!', severity: 'success' });
       } catch (e) {
-        setSnackbar({ open: true, message: 'Có lỗi khi xóa sản phẩm', severity: 'error' });
+        setSnackbar({ open: true, message: 'Error deleting product', severity: 'error' });
       }
     }
   };
