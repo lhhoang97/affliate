@@ -51,6 +51,8 @@ export interface Category {
   image: string;
   productCount: number;
   slug: string;
+  icon?: string;
+  letter?: string;
 }
 
 export interface FilterOptions {

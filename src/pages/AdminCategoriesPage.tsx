@@ -8,9 +8,33 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid
 } from '@mui/material';
-import { Add, LabelOutlined } from '@mui/icons-material';
+import { 
+  Add, 
+  LabelOutlined,
+  AcUnit,
+  Print,
+  Speaker,
+  Watch,
+  Tablet,
+  Phone,
+  Headphones,
+  Laptop,
+  Computer,
+  Tv,
+  Camera,
+  Gamepad,
+  Keyboard,
+  Mouse,
+  Monitor,
+  Router
+} from '@mui/icons-material';
 import { Category } from '../types';
 import { fetchCategories, createCategory, updateCategory, deleteCategory } from '../services/productService';
 
@@ -19,7 +43,13 @@ const AdminCategoriesPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
-  const [form, setForm] = useState({ name: '', description: '', image: '' });
+  const [form, setForm] = useState({ 
+    name: '', 
+    description: '', 
+    image: '',
+    icon: 'AcUnit',
+    letter: 'A'
+  });
   const [visibleCount, setVisibleCount] = useState(8);
 
   const load = async () => {
@@ -37,13 +67,19 @@ const AdminCategoriesPage: React.FC = () => {
 
   const openCreate = () => {
     setEditing(null);
-    setForm({ name: '', description: '', image: '' });
+    setForm({ name: '', description: '', image: '', icon: 'AcUnit', letter: 'A' });
     setDialogOpen(true);
   };
 
   const openEdit = (c: Category) => {
     setEditing(c);
-    setForm({ name: c.name, description: c.description || '', image: c.image || '' });
+    setForm({ 
+      name: c.name, 
+      description: c.description || '', 
+      image: c.image || '',
+      icon: 'AcUnit',
+      letter: 'A'
+    });
     setDialogOpen(true);
   };
 
@@ -70,19 +106,60 @@ const AdminCategoriesPage: React.FC = () => {
     }
   };
 
+  const iconOptions = [
+    { value: 'AcUnit', label: 'Air Conditioner', icon: <AcUnit /> },
+    { value: 'Print', label: 'Printer', icon: <Print /> },
+    { value: 'Speaker', label: 'Speaker', icon: <Speaker /> },
+    { value: 'Watch', label: 'Watch', icon: <Watch /> },
+    { value: 'Tablet', label: 'Tablet', icon: <Tablet /> },
+    { value: 'Phone', label: 'Phone', icon: <Phone /> },
+    { value: 'Headphones', label: 'Headphones', icon: <Headphones /> },
+    { value: 'Laptop', label: 'Laptop', icon: <Laptop /> },
+    { value: 'Computer', label: 'Computer', icon: <Computer /> },
+    { value: 'Tv', label: 'TV', icon: <Tv /> },
+    { value: 'Camera', label: 'Camera', icon: <Camera /> },
+    { value: 'Gamepad', label: 'Gaming', icon: <Gamepad /> },
+    { value: 'Keyboard', label: 'Keyboard', icon: <Keyboard /> },
+    { value: 'Mouse', label: 'Mouse', icon: <Mouse /> },
+    { value: 'Monitor', label: 'Monitor', icon: <Monitor /> },
+    { value: 'Router', label: 'Router', icon: <Router /> },
+  ];
+
+  const getIconComponent = (iconName: string) => {
+    const iconMap: { [key: string]: React.ReactNode } = {
+      AcUnit: <AcUnit />,
+      Print: <Print />,
+      Speaker: <Speaker />,
+      Watch: <Watch />,
+      Tablet: <Tablet />,
+      Phone: <Phone />,
+      Headphones: <Headphones />,
+      Laptop: <Laptop />,
+      Computer: <Computer />,
+      Tv: <Tv />,
+      Camera: <Camera />,
+      Gamepad: <Gamepad />,
+      Keyboard: <Keyboard />,
+      Mouse: <Mouse />,
+      Monitor: <Monitor />,
+      Router: <Router />,
+    };
+    return iconMap[iconName] || <LabelOutlined />;
+  };
+
   const filtered = categories.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h5" fontWeight="bold">Quản lý danh mục</Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={openCreate}>Thêm danh mục</Button>
+        <Typography variant="h5" fontWeight="bold">Category Management</Typography>
+        <Button variant="contained" startIcon={<Add />} onClick={openCreate}>Add Category</Button>
       </Box>
-      <TextField label="Tìm kiếm" value={search} onChange={(e) => setSearch(e.target.value)} sx={{ mb: 2 }} />
+      <TextField label="Search categories" value={search} onChange={(e) => setSearch(e.target.value)} sx={{ mb: 2 }} />
 
       <Box sx={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
         gap: 2,
         mb: 2
       }}>
@@ -97,35 +174,36 @@ const AdminCategoriesPage: React.FC = () => {
               boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
             }
           }} onClick={() => openEdit(c)}>
-            <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-              {c.image ? (
-                <Box sx={{ 
-                  width: 40, 
-                  height: 40, 
-                  borderRadius: 1, 
-                  overflow: 'hidden', 
-                  flexShrink: 0,
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                }}>
-                  <img src={c.image} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </Box>
-              ) : (
-                <Box sx={{ 
-                  width: 40, 
-                  height: 40, 
-                  borderRadius: 1, 
-                  backgroundColor: '#6c757d',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  flexShrink: 0 
-                }}>
-                  <LabelOutlined sx={{ color: 'white', fontSize: 20 }} />
-                </Box>
-              )}
-              <Typography variant="subtitle1" sx={{ fontWeight: 500, flex: 1 }}>
-                {c.name}
-              </Typography>
+            <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              {/* Icon Display */}
+              <Box sx={{ 
+                width: 60, 
+                height: 60, 
+                borderRadius: '50%', 
+                backgroundColor: '#007bff',
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: 24
+              }}>
+                {getIconComponent(c.icon || 'LabelOutlined')}
+              </Box>
+              
+              {/* Category Info */}
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                  {c.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  Letter: {c.letter || 'A'}
+                </Typography>
+                {c.description && (
+                  <Typography variant="body2" color="text.secondary">
+                    {c.description}
+                  </Typography>
+                )}
+              </Box>
             </Box>
           </Card>
         ))}
@@ -152,18 +230,18 @@ const AdminCategoriesPage: React.FC = () => {
         </Box>
       )}
 
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>{editing ? 'Sửa danh mục' : 'Thêm danh mục'}</DialogTitle>
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>{editing ? 'Edit Category' : 'Add Category'}</DialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
             <TextField
-              label="Tên danh mục"
+              label="Category Name"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               fullWidth
             />
             <TextField
-              label="Mô tả"
+              label="Description"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               fullWidth
@@ -171,16 +249,69 @@ const AdminCategoriesPage: React.FC = () => {
               rows={3}
             />
             <TextField
-              label="Ảnh (URL)"
+              label="Image URL"
               value={form.image}
               onChange={(e) => setForm({ ...form, image: e.target.value })}
               fullWidth
             />
+            
+            {/* Icon Selection */}
+            <FormControl fullWidth>
+              <InputLabel>Icon</InputLabel>
+              <Select
+                value={form.icon}
+                label="Icon"
+                onChange={(e) => setForm({ ...form, icon: e.target.value })}
+              >
+                {iconOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Box sx={{ color: '#007bff' }}>
+                        {option.icon}
+                      </Box>
+                      <Typography>{option.label}</Typography>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Letter Input */}
+            <TextField
+              label="Letter (for display)"
+              value={form.letter}
+              onChange={(e) => setForm({ ...form, letter: e.target.value })}
+              fullWidth
+              inputProps={{ maxLength: 1 }}
+              helperText="Single letter to display when icon is not selected"
+            />
+
+            {/* Icon Preview */}
+            <Box sx={{ textAlign: 'center', p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+              <Typography variant="subtitle2" sx={{ mb: 2 }}>Icon Preview</Typography>
+              <Box sx={{ 
+                width: 60, 
+                height: 60, 
+                borderRadius: '50%', 
+                backgroundColor: '#007bff',
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: 24,
+                mx: 'auto'
+              }}>
+                {getIconComponent(form.icon)}
+              </Box>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                Letter: {form.letter}
+              </Typography>
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Hủy</Button>
-          <Button variant="contained" onClick={handleSave}>Lưu</Button>
+          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
     </Box>
