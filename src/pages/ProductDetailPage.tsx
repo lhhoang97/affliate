@@ -32,7 +32,9 @@ import {
   Share,
   LocalShipping,
   Verified,
-  CheckCircle
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight
 } from '@mui/icons-material';
 import { mockProducts, mockReviews } from '../utils/mockData';
 import { useCart } from '../contexts/CartContext';
@@ -128,6 +130,7 @@ const ProductDetailPage: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [tabValue, setTabValue] = useState(0);
   const [selectedSeller, setSelectedSeller] = useState(mockPriceComparison[0]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { addToCart } = useCart();
 
   // Find product by ID
@@ -162,6 +165,21 @@ const ProductDetailPage: React.FC = () => {
     }
   };
 
+  // Image slider functions
+  const allImages = [product.image, ...(product.images || [])].filter(Boolean);
+  
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+  };
+
+  const goToImage = (index: number) => {
+    setCurrentImageIndex(index);
+  };
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
@@ -190,35 +208,102 @@ const ProductDetailPage: React.FC = () => {
         </Box>
 
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 4 }}>
-          {/* Product Images */}
+          {/* Product Images Slider */}
           <Box>
-            <Card sx={{ borderRadius: 2, overflow: 'hidden' }}>
-              <CardMedia
-                component="img"
-                height="400"
-                image={product.image}
-                alt={product.name}
-                sx={{ objectFit: 'cover' }}
-              />
-              <Box sx={{ p: 2, display: 'flex', gap: 1 }}>
-                {product.images?.slice(0, 4).map((image, index) => (
-                  <CardMedia
-                    key={index}
-                    component="img"
-                    height="80"
-                    image={image}
-                    alt={`${product.name} ${index + 1}`}
-                    sx={{ 
-                      width: 80, 
-                      objectFit: 'cover', 
-                      cursor: 'pointer',
-                      border: '2px solid transparent',
-                      borderRadius: 1,
-                      '&:hover': { borderColor: 'primary.main' }
+            <Card sx={{ borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
+              {/* Main Image */}
+              <Box sx={{ position: 'relative', height: 400 }}>
+                <CardMedia
+                  component="img"
+                  height="400"
+                  image={allImages[currentImageIndex]}
+                  alt={`${product.name} ${currentImageIndex + 1}`}
+                  sx={{ objectFit: 'cover' }}
+                />
+                
+                {/* Navigation Arrows */}
+                {allImages.length > 1 && (
+                  <>
+                    <IconButton
+                      onClick={prevImage}
+                      sx={{
+                        position: 'absolute',
+                        left: 8,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.9)' }
+                      }}
+                    >
+                      <ChevronLeft />
+                    </IconButton>
+                    <IconButton
+                      onClick={nextImage}
+                      sx={{
+                        position: 'absolute',
+                        right: 8,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.9)' }
+                      }}
+                    >
+                      <ChevronRight />
+                    </IconButton>
+                  </>
+                )}
+                
+                {/* Image Counter */}
+                {allImages.length > 1 && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 16,
+                      right: 16,
+                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                      color: 'white',
+                      px: 2,
+                      py: 0.5,
+                      borderRadius: 2,
+                      fontSize: '0.875rem'
                     }}
-                  />
-                ))}
+                  >
+                    {currentImageIndex + 1} / {allImages.length}
+                  </Box>
+                )}
               </Box>
+              
+              {/* Thumbnail Navigation */}
+              {allImages.length > 1 && (
+                <Box sx={{ p: 2, display: 'flex', gap: 1, overflowX: 'auto' }}>
+                  {allImages.map((image, index) => (
+                    <Box
+                      key={index}
+                      onClick={() => goToImage(index)}
+                      sx={{
+                        minWidth: 80,
+                        height: 80,
+                        cursor: 'pointer',
+                        border: `2px solid ${currentImageIndex === index ? '#1976d2' : 'transparent'}`,
+                        borderRadius: 1,
+                        overflow: 'hidden',
+                        '&:hover': { borderColor: '#1976d2' },
+                        transition: 'border-color 0.2s'
+                      }}
+                    >
+                      <img
+                        src={image}
+                        alt={`${product.name} thumbnail ${index + 1}`}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }}
+                      />
+                    </Box>
+                  ))}
+                </Box>
+              )}
             </Card>
           </Box>
 
