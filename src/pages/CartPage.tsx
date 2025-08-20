@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Typography,
@@ -12,14 +12,50 @@ import {
   Divider,
   Alert
 } from '@mui/material';
-import { Add, Remove, Delete } from '@mui/icons-material';
+import { Add, Remove, Delete, ShoppingCart } from '@mui/icons-material';
 import { useCart } from '../contexts/CartContext';
 
 const CartPage: React.FC = () => {
   const { items, totalItems, totalPrice, updateQuantity, removeFromCart, clearCart } = useCart();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
     updateQuantity(productId, newQuantity);
+  };
+
+  const handleCheckout = () => {
+    setIsCheckingOut(true);
+    
+    // Find the first product with affiliate link
+    const firstItem = items[0];
+    if (firstItem && firstItem.product.affiliateLink) {
+      // Redirect to affiliate link
+      window.open(firstItem.product.affiliateLink, '_blank', 'noopener,noreferrer');
+    } else if (firstItem && (firstItem.product as any).externalUrl) {
+      // Fallback to external URL
+      window.open((firstItem.product as any).externalUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      // Default affiliate link
+      const defaultAffiliateLink = `https://shopwithus.com/checkout?ref=cart&items=${items.map(item => item.productId).join(',')}`;
+      window.open(defaultAffiliateLink, '_blank', 'noopener,noreferrer');
+    }
+    
+    // Clear cart after checkout
+    setTimeout(() => {
+      clearCart();
+      setIsCheckingOut(false);
+    }, 1000);
+  };
+
+  const handleIndividualCheckout = (product: any) => {
+    if (product.affiliateLink) {
+      window.open(product.affiliateLink, '_blank', 'noopener,noreferrer');
+    } else if ((product as any).externalUrl) {
+      window.open((product as any).externalUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      const defaultLink = `https://shopwithus.com/product/${product.id}?ref=cart`;
+      window.open(defaultLink, '_blank', 'noopener,noreferrer');
+    }
   };
 
   if (items.length === 0) {
@@ -67,7 +103,7 @@ const CartPage: React.FC = () => {
                       ${item.product.price}
                     </Typography>
 
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                       <IconButton
                         size="small"
                         onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
@@ -100,6 +136,18 @@ const CartPage: React.FC = () => {
                       >
                         <Delete />
                       </IconButton>
+                      
+                      {/* Individual Checkout Button */}
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="primary"
+                        startIcon={<ShoppingCart />}
+                        onClick={() => handleIndividualCheckout(item.product)}
+                        sx={{ ml: 1 }}
+                      >
+                        Buy Now
+                      </Button>
                     </Box>
                   </Box>
                   <Box sx={{ textAlign: 'right' }}>
@@ -145,9 +193,20 @@ const CartPage: React.FC = () => {
               </Typography>
             </Box>
 
-            <Button variant="contained" fullWidth size="large">
-              Proceed to Checkout
+            <Button 
+              variant="contained" 
+              fullWidth 
+              size="large"
+              onClick={handleCheckout}
+              disabled={isCheckingOut}
+              startIcon={<ShoppingCart />}
+            >
+              {isCheckingOut ? 'Redirecting...' : 'Proceed to Checkout'}
             </Button>
+            
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block', textAlign: 'center' }}>
+              You will be redirected to the seller's checkout page
+            </Typography>
           </CardContent>
         </Card>
       </Box>
