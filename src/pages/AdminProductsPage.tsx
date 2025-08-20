@@ -34,7 +34,8 @@ import {
   Delete,
   Visibility,
   Save,
-  Search
+  Search,
+  CloudUpload
 } from '@mui/icons-material';
 import { Product, Category } from '../types';
 import { fetchProducts, fetchCategories, createProduct, updateProduct, deleteProduct as deleteProductApi } from '../services/productService';
@@ -457,11 +458,42 @@ const AdminProductsPage: React.FC = () => {
             {filteredProducts.map((product) => (
               <TableRow key={product.id}>
                 <TableCell>
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 4 }}
-                  />
+                  <Box sx={{ display: 'flex', gap: 0.5 }}>
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 4 }}
+                    />
+                    {product.images && product.images.length > 0 && (
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                        {product.images.slice(0, 2).map((img, index) => (
+                          <img 
+                            key={index}
+                            src={img} 
+                            alt={`${product.name} ${index + 1}`}
+                            style={{ width: 25, height: 25, objectFit: 'cover', borderRadius: 2 }}
+                          />
+                        ))}
+                        {product.images.length > 2 && (
+                          <Box 
+                            sx={{ 
+                              width: 25, 
+                              height: 25, 
+                              bgcolor: 'grey.300', 
+                              borderRadius: 2,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '0.6rem',
+                              color: 'grey.600'
+                            }}
+                          >
+                            +{product.images.length - 2}
+                          </Box>
+                        )}
+                      </Box>
+                    )}
+                  </Box>
                 </TableCell>
                 <TableCell>
                   <Typography variant="subtitle2" fontWeight="bold">
@@ -660,11 +692,11 @@ const AdminProductsPage: React.FC = () => {
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mt: 1 }}>
             <TextField
               fullWidth
-              label="Product Image URL *"
+              label="Main Product Image URL *"
               value={formData.image}
               onChange={(e) => handleInputChange('image', e.target.value)}
               margin="normal"
-              helperText="Direct link to product image"
+              helperText="Direct link to main product image"
             />
             <TextField
               fullWidth
@@ -674,6 +706,119 @@ const AdminProductsPage: React.FC = () => {
               margin="normal"
               helperText="Link to original product page"
             />
+          </Box>
+          
+          {/* Image Preview */}
+          {formData.image && (
+            <Box sx={{ mt: 2, mb: 2 }}>
+              <Typography variant="subtitle2" gutterBottom>
+                Main Image Preview:
+              </Typography>
+              <img 
+                src={formData.image} 
+                alt="Product preview"
+                style={{ 
+                  maxWidth: '200px', 
+                  maxHeight: '200px', 
+                  objectFit: 'cover', 
+                  borderRadius: '8px',
+                  border: '1px solid #ddd'
+                }}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </Box>
+          )}
+          
+          {/* Image Upload Guide */}
+          <Box sx={{ mt: 2, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+            <Typography variant="subtitle2" gutterBottom color="primary">
+              📸 Image Upload Guide:
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              • Use direct image URLs (ending with .jpg, .png, .webp)
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              • Recommended services: Imgur, Cloudinary, or your own server
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              • Example: https://i.imgur.com/example.jpg
+            </Typography>
+          </Box>
+          
+          {/* Additional Images */}
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle2" gutterBottom>
+              Additional Product Images:
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {formData.images.map((img, index) => (
+                <Box key={index} sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label={`Image ${index + 1} URL`}
+                    value={img}
+                    onChange={(e) => {
+                      const newImages = [...formData.images];
+                      newImages[index] = e.target.value;
+                      handleInputChange('images', newImages);
+                    }}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={() => {
+                      const newImages = formData.images.filter((_, i) => i !== index);
+                      handleInputChange('images', newImages);
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </Box>
+              ))}
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  handleInputChange('images', [...formData.images, '']);
+                }}
+                sx={{ alignSelf: 'flex-start' }}
+              >
+                Add Image URL
+              </Button>
+            </Box>
+            
+            {/* Additional Images Preview */}
+            {formData.images.filter(img => img.trim()).length > 0 && (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Additional Images Preview:
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                  {formData.images.filter(img => img.trim()).map((img, index) => (
+                    <Box key={index} sx={{ position: 'relative' }}>
+                      <img 
+                        src={img} 
+                        alt={`Product ${index + 1}`}
+                        style={{ 
+                          width: '100px', 
+                          height: '100px', 
+                          objectFit: 'cover', 
+                          borderRadius: '4px',
+                          border: '1px solid #ddd'
+                        }}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+            )}
           </Box>
           
           <TextField
