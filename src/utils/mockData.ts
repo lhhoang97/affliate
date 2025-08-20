@@ -148,6 +148,239 @@ export const mockProducts: Product[] = [
     createdAt: '2024-01-18T10:00:00Z',
     updatedAt: '2024-01-18T10:00:00Z'
   },
+  // Additional Electronics Products to match reference
+  {
+    id: 'laptop-dell',
+    name: 'Dell XPS 13 Laptop',
+    description: 'Premium ultrabook with 13-inch display and Intel processor.',
+    price: 1299,
+    originalPrice: 1499,
+    image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400',
+    rating: 4.7,
+    reviewCount: 1234,
+    category: 'Electronics',
+    brand: 'Dell',
+    inStock: true,
+    features: ['Intel i7 processor', '13-inch display', '16GB RAM', '512GB SSD'],
+    specifications: {
+      'Processor': 'Intel i7-1165G7',
+      'RAM': '16GB',
+      'Storage': '512GB SSD',
+      'Display': '13.4-inch FHD',
+      'Weight': '1.2kg'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400',
+      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400',
+      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400'
+    ],
+    tags: ['laptop', 'dell', 'ultrabook', 'business'],
+    createdAt: '2024-01-23T10:00:00Z',
+    updatedAt: '2024-01-23T10:00:00Z'
+  },
+  {
+    id: 'laptop-macbook',
+    name: 'MacBook Pro 14-inch',
+    description: 'Professional laptop with M2 Pro chip and Liquid Retina display.',
+    price: 1999,
+    originalPrice: 2199,
+    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
+    rating: 4.9,
+    reviewCount: 2156,
+    category: 'Electronics',
+    brand: 'Apple',
+    inStock: true,
+    features: ['M2 Pro chip', '14-inch Liquid Retina', '16GB RAM', '512GB SSD'],
+    specifications: {
+      'Processor': 'M2 Pro',
+      'RAM': '16GB',
+      'Storage': '512GB SSD',
+      'Display': '14-inch Liquid Retina',
+      'Weight': '1.6kg'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400'
+    ],
+    tags: ['laptop', 'apple', 'macbook', 'professional'],
+    createdAt: '2024-01-24T10:00:00Z',
+    updatedAt: '2024-01-24T10:00:00Z'
+  },
+  {
+    id: 'tablet-ipad',
+    name: 'iPad Pro 12.9-inch',
+    description: 'Professional tablet with M2 chip and Liquid Retina XDR display.',
+    price: 1099,
+    originalPrice: 1199,
+    image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400',
+    rating: 4.8,
+    reviewCount: 1892,
+    category: 'Electronics',
+    brand: 'Apple',
+    inStock: true,
+    features: ['M2 chip', '12.9-inch display', 'Face ID', 'Apple Pencil support'],
+    specifications: {
+      'Processor': 'M2',
+      'Storage': '128GB',
+      'Display': '12.9-inch Liquid Retina XDR',
+      'Camera': '12MP Ultra Wide',
+      'Weight': '682g'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400',
+      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400',
+      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400'
+    ],
+    tags: ['tablet', 'apple', 'ipad', 'professional'],
+    createdAt: '2024-01-25T10:00:00Z',
+    updatedAt: '2024-01-25T10:00:00Z'
+  },
+  {
+    id: 'headphones-sony',
+    name: 'Sony WH-1000XM4',
+    description: 'Premium noise-cancelling headphones with exceptional sound quality.',
+    price: 349,
+    originalPrice: 399,
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
+    rating: 4.8,
+    reviewCount: 3456,
+    category: 'Electronics',
+    brand: 'Sony',
+    inStock: true,
+    features: ['Noise cancelling', '30-hour battery', 'Touch controls', 'Quick charge'],
+    specifications: {
+      'Type': 'Over-ear',
+      'Connectivity': 'Bluetooth 5.0',
+      'Battery': '30 hours',
+      'Weight': '254g',
+      'Noise Cancelling': 'Yes'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400'
+    ],
+    tags: ['headphones', 'sony', 'noise-cancelling', 'wireless'],
+    createdAt: '2024-01-26T10:00:00Z',
+    updatedAt: '2024-01-26T10:00:00Z'
+  },
+  {
+    id: 'watch-apple',
+    name: 'Apple Watch Series 8',
+    description: 'Advanced smartwatch with health monitoring and fitness tracking.',
+    price: 399,
+    originalPrice: 449,
+    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
+    rating: 4.7,
+    reviewCount: 2789,
+    category: 'Electronics',
+    brand: 'Apple',
+    inStock: true,
+    features: ['Health monitoring', 'Fitness tracking', 'GPS', 'Water resistant'],
+    specifications: {
+      'Display': 'Always-On Retina',
+      'Battery': '18 hours',
+      'Size': '45mm',
+      'GPS': 'Built-in',
+      'Water Resistance': '50m'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400'
+    ],
+    tags: ['smartwatch', 'apple', 'fitness', 'health'],
+    createdAt: '2024-01-27T10:00:00Z',
+    updatedAt: '2024-01-27T10:00:00Z'
+  },
+  {
+    id: 'speaker-jbl',
+    name: 'JBL Flip 6 Portable Speaker',
+    description: 'Waterproof portable speaker with powerful sound and long battery life.',
+    price: 129,
+    originalPrice: 149,
+    image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400',
+    rating: 4.6,
+    reviewCount: 1567,
+    category: 'Electronics',
+    brand: 'JBL',
+    inStock: true,
+    features: ['Waterproof', '12-hour battery', 'PartyBoost', 'Bluetooth 5.1'],
+    specifications: {
+      'Power': '30W',
+      'Battery': '12 hours',
+      'Waterproof': 'IPX7',
+      'Weight': '550g',
+      'Connectivity': 'Bluetooth 5.1'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400',
+      'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400',
+      'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400'
+    ],
+    tags: ['speaker', 'jbl', 'portable', 'waterproof'],
+    createdAt: '2024-01-28T10:00:00Z',
+    updatedAt: '2024-01-28T10:00:00Z'
+  },
+  {
+    id: 'printer-hp',
+    name: 'HP LaserJet Pro M404n',
+    description: 'Fast monochrome laser printer for home and office use.',
+    price: 199,
+    originalPrice: 249,
+    image: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400',
+    rating: 4.5,
+    reviewCount: 892,
+    category: 'Electronics',
+    brand: 'HP',
+    inStock: true,
+    features: ['Fast printing', 'Wireless connectivity', 'Duplex printing', 'Mobile printing'],
+    specifications: {
+      'Print Speed': '40 ppm',
+      'Resolution': '1200 x 1200 dpi',
+      'Connectivity': 'USB, Ethernet, Wireless',
+      'Paper Size': 'A4',
+      'Weight': '7.5kg'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400',
+      'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400',
+      'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400'
+    ],
+    tags: ['printer', 'hp', 'laser', 'office'],
+    createdAt: '2024-01-29T10:00:00Z',
+    updatedAt: '2024-01-29T10:00:00Z'
+  },
+  {
+    id: 'ac-samsung',
+    name: 'Samsung WindFree Air Conditioner',
+    description: 'Smart air conditioner with WindFree technology and energy efficiency.',
+    price: 899,
+    originalPrice: 1099,
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+    rating: 4.6,
+    reviewCount: 567,
+    category: 'Electronics',
+    brand: 'Samsung',
+    inStock: true,
+    features: ['WindFree technology', 'Smart control', 'Energy efficient', 'WiFi enabled'],
+    specifications: {
+      'Cooling Capacity': '12000 BTU',
+      'Energy Rating': 'A+++',
+      'Noise Level': '19dB',
+      'Coverage': '35-40 sqm',
+      'Weight': '12kg'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400'
+    ],
+    tags: ['air-conditioner', 'samsung', 'smart', 'energy-efficient'],
+    createdAt: '2024-01-30T10:00:00Z',
+    updatedAt: '2024-01-30T10:00:00Z'
+  },
   // Additional iPhone Products to match reference
   {
     id: 'iphone-14',

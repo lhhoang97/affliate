@@ -262,6 +262,46 @@ const ProductsPage: React.FC = () => {
       />
       
       <Container maxWidth="lg" sx={{ py: 4 }}>
+        {/* Page Title */}
+        <Box sx={{ 
+          textAlign: 'center', 
+          mb: 4,
+          pt: 2
+        }}>
+          <Typography
+            variant="h3"
+            sx={{
+              fontSize: { xs: '28px', sm: '32px', md: '36px' },
+              fontWeight: 'bold',
+              color: '#333',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              mb: 1
+            }}
+          >
+            {selectedCategory === 'phone' ? 'Điện Thoại' : 
+             selectedCategory === 'laptop' ? 'Laptop' :
+             selectedCategory === 'tablet' ? 'Tablet' :
+             selectedCategory === 'headphones' ? 'Tai nghe' :
+             selectedCategory === 'watch' ? 'Đồng Hồ' :
+             selectedCategory === 'speaker' ? 'Loa' :
+             selectedCategory === 'printer' ? 'Máy In' :
+             selectedCategory === 'air-conditioner' ? 'Máy Lạnh' :
+             'Thiết bị điện tử'}
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              fontSize: '16px',
+              color: '#666',
+              maxWidth: '600px',
+              mx: 'auto'
+            }}
+          >
+            Khám phá các sản phẩm chất lượng cao với giá tốt nhất
+          </Typography>
+        </Box>
+
         {/* Category Breadcrumb */}
         {selectedCategory && (
           <CategoryBreadcrumb
@@ -270,10 +310,6 @@ const ProductsPage: React.FC = () => {
             onClear={() => setSelectedCategory('')}
           />
         )}
-        
-        <Typography variant="h3" component="h1" gutterBottom>
-          {selectedCategory ? `${selectedCategory}` : 'Search Products'}
-        </Typography>
 
       {/* Search Bar */}
       <Card sx={{ mb: 3, p: 3 }}>
