@@ -355,93 +355,31 @@ const AdminProductsPage: React.FC = () => {
         Product Management
       </Typography>
 
-      {/* Category Quick Add Section */}
+      {/* Quick Add Product Button */}
       <Card sx={{ mb: 4, p: 3 }}>
-        <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-          Quick Add Products by Category
-        </Typography>
-        <Box sx={{ 
-          display: 'grid', 
-          gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(4, 1fr)', md: 'repeat(4, 1fr)' }, 
-          gap: 2 
-        }}>
-          {predefinedCategories.map((category) => (
-            <Box key={category.id}>
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  setExpandedCategory(expandedCategory === category.id ? null : category.id);
-                }}
-                sx={{
-                  py: 2,
-                  width: '100%',
-                  borderColor: category.color,
-                  color: category.color,
-                  '&:hover': {
-                    borderColor: category.color,
-                    backgroundColor: `${category.color}10`,
-                    color: category.color
-                  }
-                }}
-              >
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {category.name}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {expandedCategory === category.id ? 'Hide Subcategories' : 'Show Subcategories'}
-                  </Typography>
-                </Box>
-              </Button>
-              
-              {/* Subcategories */}
-              {expandedCategory === category.id && (
-                <Box sx={{ mt: 2, p: 2, border: `1px solid ${category.color}20`, borderRadius: 1, backgroundColor: `${category.color}05` }}>
-                  <Typography variant="subtitle2" sx={{ mb: 2, color: category.color, fontWeight: 600 }}>
-                    {category.name} Subcategories:
-                  </Typography>
-                  <Box sx={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)' }, 
-                    gap: 1 
-                  }}>
-                    {category.subcategories.map((subcategory) => (
-                      <Button
-                        key={subcategory}
-                        variant="text"
-                        size="small"
-                        onClick={() => {
-                          setFormData(prev => ({ 
-                            ...prev, 
-                            category: category.name,
-                            subcategory: subcategory 
-                          }));
-                          handleOpenDialog();
-                        }}
-                        sx={{
-                          py: 1,
-                          px: 1,
-                          fontSize: '0.75rem',
-                          color: category.color,
-                          '&:hover': {
-                            backgroundColor: `${category.color}15`,
-                          }
-                        }}
-                      >
-                        {subcategory}
-                      </Button>
-                    ))}
-                  </Box>
-                </Box>
-              )}
-            </Box>
-          ))}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            Product Management
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => handleOpenDialog()}
+            sx={{
+              backgroundColor: '#007bff',
+              '&:hover': {
+                backgroundColor: '#0056b3'
+              }
+            }}
+          >
+            Add New Product
+          </Button>
         </Box>
       </Card>
 
       {/* Search and Filter */}
       <Card sx={{ mb: 4, p: 3 }}>
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr 1fr 1fr 1fr' }, gap: 2, alignItems: 'center' }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr 1fr 1fr' }, gap: 2, alignItems: 'center' }}>
           <TextField
             fullWidth
             placeholder="Search products..."
@@ -490,14 +428,6 @@ const AdminProductsPage: React.FC = () => {
           <Typography variant="body2" color="text.secondary">
             Total: {filteredProducts.length} products
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            fullWidth
-            onClick={() => handleOpenDialog()}
-          >
-            Add New
-          </Button>
         </Box>
       </Card>
 
@@ -605,7 +535,7 @@ const AdminProductsPage: React.FC = () => {
       </TableContainer>
 
       {/* Add/Edit Product Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="lg" fullWidth>
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
         <DialogTitle>
           {editingProduct ? 'Edit Product' : 'Add New Product'}
         </DialogTitle>
@@ -629,15 +559,15 @@ const AdminProductsPage: React.FC = () => {
           
           <TextField
             fullWidth
-            label="Description *"
+            label="Description"
             value={formData.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
             multiline
-            rows={3}
+            rows={2}
             margin="normal"
           />
           
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr 1fr' }, gap: 2, mt: 1 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mt: 1 }}>
             <TextField
               fullWidth
               label="Price *"
@@ -654,6 +584,9 @@ const AdminProductsPage: React.FC = () => {
               onChange={(e) => handleInputChange('originalPrice', Number(e.target.value))}
               margin="normal"
             />
+          </Box>
+          
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mt: 1 }}>
             <FormControl fullWidth margin="normal">
               <InputLabel>Category *</InputLabel>
               <Select
@@ -664,6 +597,7 @@ const AdminProductsPage: React.FC = () => {
                   handleInputChange('subcategory', ''); // Reset subcategory when category changes
                 }}
               >
+                <MenuItem value="">Select Category</MenuItem>
                 {predefinedCategories.map((category) => (
                   <MenuItem key={category.id} value={category.name}>
                     {category.name}
@@ -671,39 +605,35 @@ const AdminProductsPage: React.FC = () => {
                 ))}
               </Select>
             </FormControl>
+            
+            {formData.category && (
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Subcategory</InputLabel>
+                <Select
+                  value={formData.subcategory || ''}
+                  label="Subcategory"
+                  onChange={(e) => handleInputChange('subcategory', e.target.value)}
+                >
+                  <MenuItem value="">Select Subcategory (Optional)</MenuItem>
+                  {predefinedCategories
+                    .find(cat => cat.name === formData.category)
+                    ?.subcategories.map((subcategory) => (
+                      <MenuItem key={subcategory} value={subcategory}>
+                        {subcategory}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            )}
           </Box>
-          
-          {/* Subcategory Selection */}
-          {formData.category && (
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Subcategory</InputLabel>
-              <Select
-                value={formData.subcategory || ''}
-                label="Subcategory"
-                onChange={(e) => handleInputChange('subcategory', e.target.value)}
-              >
-                <MenuItem value="">
-                  <em>Select a subcategory (optional)</em>
-                </MenuItem>
-                {predefinedCategories
-                  .find(cat => cat.name === formData.category)
-                  ?.subcategories.map((subcategory) => (
-                    <MenuItem key={subcategory} value={subcategory}>
-                      {subcategory}
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
-          )}
           
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mt: 1 }}>
             <TextField
               fullWidth
-              label="Main Image URL *"
+              label="Product Image URL *"
               value={formData.image}
               onChange={(e) => handleInputChange('image', e.target.value)}
               margin="normal"
-              helperText="Product image URL"
             />
             <TextField
               fullWidth
@@ -711,7 +641,6 @@ const AdminProductsPage: React.FC = () => {
               value={formData.externalUrl}
               onChange={(e) => handleInputChange('externalUrl', e.target.value)}
               margin="normal"
-              helperText="Your affiliate link to the product"
             />
           </Box>
           
@@ -745,31 +674,6 @@ const AdminProductsPage: React.FC = () => {
             label="In Stock"
             sx={{ mt: 2 }}
           />
-          
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Product Features
-            </Typography>
-            {formData.features.map((feature, index) => (
-              <Box key={index} sx={{ display: 'flex', gap: 1, mb: 1 }}>
-                <TextField
-                  fullWidth
-                  label={`Feature ${index + 1}`}
-                  value={feature}
-                  onChange={(e) => handleFeaturesChange(index, e.target.value)}
-                />
-                <IconButton 
-                  color="error" 
-                  onClick={() => removeFeature(index)}
-                >
-                  <Delete />
-                </IconButton>
-              </Box>
-            ))}
-            <Button startIcon={<Add />} onClick={addFeature}>
-              Add Feature
-            </Button>
-          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
