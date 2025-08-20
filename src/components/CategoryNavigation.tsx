@@ -20,13 +20,13 @@ interface Category {
 }
 
 const categories: Category[] = [
-  { id: 'air-conditioner', name: 'Máy Lạnh', icon: <AcUnit />, letter: 'M' },
-  { id: 'printer', name: 'Máy In', icon: <Print />, letter: 'M' },
-  { id: 'speaker', name: 'Loa', icon: <Speaker />, letter: 'L' },
-  { id: 'watch', name: 'Đồng Hồ', icon: <Watch />, letter: 'Đ' },
+  { id: 'air-conditioner', name: 'Air Conditioner', icon: <AcUnit />, letter: 'A' },
+  { id: 'printer', name: 'Printer', icon: <Print />, letter: 'P' },
+  { id: 'speaker', name: 'Speaker', icon: <Speaker />, letter: 'S' },
+  { id: 'watch', name: 'Watch', icon: <Watch />, letter: 'W' },
   { id: 'tablet', name: 'Tablet', icon: <Tablet />, letter: 'T' },
-  { id: 'phone', name: 'Điện Thoại', icon: <Phone />, letter: 'Đ' },
-  { id: 'headphones', name: 'Tai nghe', icon: <Headphones />, letter: 'T' },
+  { id: 'phone', name: 'Phone', icon: <Phone />, letter: 'P' },
+  { id: 'headphones', name: 'Headphones', icon: <Headphones />, letter: 'H' },
   { id: 'laptop', name: 'Laptop', icon: <Laptop />, letter: 'L' },
 ];
 
@@ -75,7 +75,7 @@ const CategoryNavigation: React.FC<CategoryNavigationProps> = ({
             letterSpacing: '1px'
           }}
         >
-          Thiết bị điện tử
+          Electronics
         </Typography>
       </Box>
 

@@ -189,9 +189,9 @@ const ProductsPage: React.FC = () => {
                   mb: 1
                 }}
               >
-                {product.category === 'Electronics' ? 'ĐIỆN THOẠI THÔNG MINH' : 
-                 product.category === 'Fashion' ? 'THỜI TRANG' :
-                 product.category === 'Home & Garden' ? 'NHÀ CỬA' :
+                {product.category === 'Electronics' ? 'SMARTPHONE' : 
+                 product.category === 'Fashion' ? 'FASHION' :
+                 product.category === 'Home & Garden' ? 'HOME & GARDEN' :
                  product.category.toUpperCase()}
               </Typography>
               
