@@ -9,7 +9,13 @@ import {
   Button,
   Chip,
   Rating,
-  LinearProgress
+  LinearProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Divider,
+  TextField
 } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Product } from '../types';
@@ -45,6 +51,13 @@ const ProductsPage: React.FC = () => {
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl || '');
   const [currentPage, setCurrentPage] = useState(1);
+  const [guestCheckoutOpen, setGuestCheckoutOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [guestInfo, setGuestInfo] = useState({
+    name: '',
+    email: '',
+    phone: ''
+  });
   
   const itemsPerPage = 12;
 
@@ -69,9 +82,45 @@ const ProductsPage: React.FC = () => {
 
   const handleAddToCart = (product: Product) => {
     addToCart(product, 1);
-    if (product.externalUrl) {
-      window.open(product.externalUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleGuestBuyNow = (product: Product) => {
+    setSelectedProduct(product);
+    setGuestCheckoutOpen(true);
+  };
+
+  const handleGuestCheckout = () => {
+    if (!selectedProduct) return;
+    
+    // Validate guest info
+    if (!guestInfo.name || !guestInfo.email || !guestInfo.phone) {
+      alert('Please fill in all required information');
+      return;
     }
+
+    // Save guest info to localStorage
+    localStorage.setItem('guestInfo', JSON.stringify(guestInfo));
+    
+    // Close dialog
+    setGuestCheckoutOpen(false);
+    
+    // Open affiliate link
+    if (selectedProduct.affiliateLink) {
+      window.open(selectedProduct.affiliateLink, '_blank', 'noopener,noreferrer');
+    } else if (selectedProduct.externalUrl) {
+      window.open(selectedProduct.externalUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      // Fallback to default affiliate link
+      const affiliateLink = `https://techmart.vn/product/${selectedProduct.id}?ref=shopwithus`;
+      window.open(affiliateLink, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handleGuestInfoChange = (field: string, value: string) => {
+    setGuestInfo(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleProductClick = (productId: string) => {
@@ -267,28 +316,54 @@ const ProductsPage: React.FC = () => {
                 )}
               </Box>
               
-              {/* Add to Cart Button */}
-              <Button
-                variant="contained"
-                fullWidth
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddToCart(product);
-                }}
-                disabled={!product.inStock}
-                sx={{
-                  backgroundColor: '#007bff',
-                  '&:hover': {
-                    backgroundColor: '#0056b3'
-                  },
-                  '&:disabled': {
-                    backgroundColor: '#ccc'
-                  }
-                }}
-              >
-                {product.inStock ? 'Add to Cart' : 'Out of Stock'}
-              </Button>
+              {/* Action Buttons */}
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToCart(product);
+                  }}
+                  disabled={!product.inStock}
+                  sx={{
+                    flex: 1,
+                    borderColor: '#007bff',
+                    color: '#007bff',
+                    '&:hover': {
+                      borderColor: '#0056b3',
+                      backgroundColor: '#f8f9fa'
+                    },
+                    '&:disabled': {
+                      borderColor: '#ccc',
+                      color: '#ccc'
+                    }
+                  }}
+                >
+                  Add to Cart
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleGuestBuyNow(product);
+                  }}
+                  disabled={!product.inStock}
+                  sx={{
+                    flex: 1,
+                    backgroundColor: '#007bff',
+                    '&:hover': {
+                      backgroundColor: '#0056b3'
+                    },
+                    '&:disabled': {
+                      backgroundColor: '#ccc'
+                    }
+                  }}
+                >
+                  Buy Now
+                </Button>
+              </Box>
             </CardContent>
           </Card>
         ))}
@@ -386,6 +461,93 @@ const ProductsPage: React.FC = () => {
         </Box>
       )}
       </Container>
+
+      {/* Guest Checkout Dialog */}
+      <Dialog 
+        open={guestCheckoutOpen} 
+        onClose={() => setGuestCheckoutOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <Typography variant="h6" fontWeight="bold">
+            Quick Checkout
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Enter your information to proceed to the seller's website
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 2 }}>
+            {selectedProduct && (
+              <>
+                <Typography variant="subtitle1" gutterBottom fontWeight="medium">
+                  Product: {selectedProduct.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Price: ${selectedProduct.price.toLocaleString()}
+                </Typography>
+              </>
+            )}
+            
+            <Divider sx={{ my: 3 }} />
+            
+            <Typography variant="h6" gutterBottom fontWeight="medium">
+              Contact Information
+            </Typography>
+            
+            <TextField
+              fullWidth
+              label="Full Name *"
+              value={guestInfo.name}
+              onChange={(e) => handleGuestInfoChange('name', e.target.value)}
+              margin="normal"
+              required
+            />
+            
+            <TextField
+              fullWidth
+              label="Email Address *"
+              type="email"
+              value={guestInfo.email}
+              onChange={(e) => handleGuestInfoChange('email', e.target.value)}
+              margin="normal"
+              required
+            />
+            
+            <TextField
+              fullWidth
+              label="Phone Number *"
+              value={guestInfo.phone}
+              onChange={(e) => handleGuestInfoChange('phone', e.target.value)}
+              margin="normal"
+              required
+            />
+            
+            <Box sx={{ mt: 3, p: 2, backgroundColor: '#f8f9fa', borderRadius: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                <strong>Note:</strong> You will be redirected to the seller's website to complete your purchase. 
+                Your information will be used to pre-fill the checkout form on their website.
+              </Typography>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setGuestCheckoutOpen(false)}
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleGuestCheckout}
+            variant="contained"
+            sx={{ backgroundColor: '#007bff', '&:hover': { backgroundColor: '#0056b3' } }}
+          >
+            Continue to Checkout
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

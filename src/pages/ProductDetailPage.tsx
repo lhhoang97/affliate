@@ -22,7 +22,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Divider
 } from '@mui/material';
 import {
   Add,
@@ -131,6 +136,12 @@ const ProductDetailPage: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
   const [selectedSeller, setSelectedSeller] = useState(mockPriceComparison[0]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [guestCheckoutOpen, setGuestCheckoutOpen] = useState(false);
+  const [guestInfo, setGuestInfo] = useState({
+    name: '',
+    email: '',
+    phone: ''
+  });
   const { addToCart } = useCart();
 
   // Find product by ID
@@ -163,6 +174,42 @@ const ProductDetailPage: React.FC = () => {
       const affiliateLink = `https://techmart.vn/product/${product.id}?ref=shopwithus`;
       window.open(affiliateLink, '_blank', 'noopener,noreferrer');
     }
+  };
+
+  const handleGuestBuyNow = () => {
+    setGuestCheckoutOpen(true);
+  };
+
+  const handleGuestCheckout = () => {
+    // Validate guest info
+    if (!guestInfo.name || !guestInfo.email || !guestInfo.phone) {
+      alert('Please fill in all required information');
+      return;
+    }
+
+    // Save guest info to localStorage for potential future use
+    localStorage.setItem('guestInfo', JSON.stringify(guestInfo));
+    
+    // Close dialog
+    setGuestCheckoutOpen(false);
+    
+    // Open affiliate link
+    if (selectedSeller.affiliateLink) {
+      window.open(selectedSeller.affiliateLink, '_blank', 'noopener,noreferrer');
+    } else if ((product as any).externalUrl) {
+      window.open((product as any).externalUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      // Fallback to default affiliate link
+      const affiliateLink = `https://techmart.vn/product/${product.id}?ref=shopwithus`;
+      window.open(affiliateLink, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handleGuestInfoChange = (field: string, value: string) => {
+    setGuestInfo(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   // Image slider functions
@@ -392,7 +439,7 @@ const ProductDetailPage: React.FC = () => {
                   variant="contained"
                   size="large"
                   startIcon={<ShoppingCart />}
-                  onClick={handleAddToCart}
+                  onClick={handleGuestBuyNow}
                   disabled={!product.inStock}
                   sx={{ 
                     flex: 1,
@@ -431,7 +478,7 @@ const ProductDetailPage: React.FC = () => {
                 startIcon={<Favorite />}
                 sx={{ borderColor: '#007bff', color: '#007bff' }}
               >
-                Yêu thích
+                Favorite
               </Button>
               <Button 
                 variant="outlined" 
@@ -627,6 +674,89 @@ const ProductDetailPage: React.FC = () => {
           </TabPanel>
         </Box>
       </Container>
+
+      {/* Guest Checkout Dialog */}
+      <Dialog 
+        open={guestCheckoutOpen} 
+        onClose={() => setGuestCheckoutOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <Typography variant="h6" fontWeight="bold">
+            Quick Checkout
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Enter your information to proceed to the seller's website
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 2 }}>
+            <Typography variant="subtitle1" gutterBottom fontWeight="medium">
+              Product: {product.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Seller: {selectedSeller.seller} | Price: {formatPrice(selectedSeller.price)}
+            </Typography>
+            
+            <Divider sx={{ my: 3 }} />
+            
+            <Typography variant="h6" gutterBottom fontWeight="medium">
+              Contact Information
+            </Typography>
+            
+            <TextField
+              fullWidth
+              label="Full Name *"
+              value={guestInfo.name}
+              onChange={(e) => handleGuestInfoChange('name', e.target.value)}
+              margin="normal"
+              required
+            />
+            
+            <TextField
+              fullWidth
+              label="Email Address *"
+              type="email"
+              value={guestInfo.email}
+              onChange={(e) => handleGuestInfoChange('email', e.target.value)}
+              margin="normal"
+              required
+            />
+            
+            <TextField
+              fullWidth
+              label="Phone Number *"
+              value={guestInfo.phone}
+              onChange={(e) => handleGuestInfoChange('phone', e.target.value)}
+              margin="normal"
+              required
+            />
+            
+            <Box sx={{ mt: 3, p: 2, backgroundColor: '#f8f9fa', borderRadius: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                <strong>Note:</strong> You will be redirected to {selectedSeller.seller}'s website to complete your purchase. 
+                Your information will be used to pre-fill the checkout form on their website.
+              </Typography>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setGuestCheckoutOpen(false)}
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleGuestCheckout}
+            variant="contained"
+            sx={{ backgroundColor: '#007bff', '&:hover': { backgroundColor: '#0056b3' } }}
+          >
+            Continue to {selectedSeller.seller}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
