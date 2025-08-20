@@ -37,7 +37,11 @@ function mapDbCategory(row: any): Category {
 }
 
 export async function fetchProducts(): Promise<Product[]> {
-  if (!isSupabaseConfigured) return mockProducts;
+  if (!isSupabaseConfigured) {
+    // Get products from localStorage
+    const savedProducts = JSON.parse(localStorage.getItem('mockProducts') || '[]');
+    return [...mockProducts, ...savedProducts];
+  }
   
   try {
     const { data, error } = await supabase.from('products').select('*');
@@ -151,6 +155,15 @@ export async function createProduct(input: Omit<Product, 'id' | 'createdAt' | 'u
       updatedAt: now, 
       ...input 
     } as Product;
+    
+    // Get existing products from localStorage
+    const existingProducts = JSON.parse(localStorage.getItem('mockProducts') || '[]');
+    const allProducts = [...existingProducts, newProduct];
+    
+    // Save to localStorage
+    localStorage.setItem('mockProducts', JSON.stringify(allProducts));
+    
+    // Add to current session
     mockProducts.push(newProduct);
     return newProduct;
   }
@@ -188,19 +201,36 @@ export async function createProduct(input: Omit<Product, 'id' | 'createdAt' | 'u
 export async function updateProduct(id: string, input: Partial<Omit<Product, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Product> {
   if (!isSupabaseConfigured) {
     const now = new Date().toISOString();
-    const productIndex = mockProducts.findIndex(p => p.id === id);
+    
+    // Check in mockProducts first
+    let productIndex = mockProducts.findIndex(p => p.id === id);
+    let productArray = mockProducts;
+    
+    if (productIndex === -1) {
+      // Check in localStorage
+      const savedProducts = JSON.parse(localStorage.getItem('mockProducts') || '[]');
+      productIndex = savedProducts.findIndex((p: Product) => p.id === id);
+      productArray = savedProducts;
+    }
     
     if (productIndex === -1) {
       throw new Error('Product not found');
     }
     
     const updatedProduct = { 
-      ...mockProducts[productIndex], 
+      ...productArray[productIndex], 
       ...input, 
       updatedAt: now 
     } as Product;
     
-    mockProducts[productIndex] = updatedProduct;
+    // Update in the appropriate array
+    if (productArray === mockProducts) {
+      mockProducts[productIndex] = updatedProduct;
+    } else {
+      productArray[productIndex] = updatedProduct;
+      localStorage.setItem('mockProducts', JSON.stringify(productArray));
+    }
+    
     return updatedProduct;
   }
 
@@ -235,9 +265,20 @@ export async function updateProduct(id: string, input: Partial<Omit<Product, 'id
 
 export async function deleteProduct(id: string): Promise<void> {
   if (!isSupabaseConfigured) {
-    const productIndex = mockProducts.findIndex(p => p.id === id);
+    // Check in mockProducts first
+    let productIndex = mockProducts.findIndex(p => p.id === id);
+    
     if (productIndex !== -1) {
       mockProducts.splice(productIndex, 1);
+    } else {
+      // Check in localStorage
+      const savedProducts = JSON.parse(localStorage.getItem('mockProducts') || '[]');
+      productIndex = savedProducts.findIndex((p: Product) => p.id === id);
+      
+      if (productIndex !== -1) {
+        savedProducts.splice(productIndex, 1);
+        localStorage.setItem('mockProducts', JSON.stringify(savedProducts));
+      }
     }
     return;
   }
