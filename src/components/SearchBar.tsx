@@ -21,7 +21,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   value,
   onChange,
   onSearch,
-  placeholder = "Search..."
+  placeholder = "Bạn ơi, bạn muốn tìm gì?"
 }) => {
   const anchorRef = useRef<HTMLDivElement>(null);
 

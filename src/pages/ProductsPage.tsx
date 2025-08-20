@@ -38,6 +38,7 @@ import QuickFilters from '../components/QuickFilters';
 import ActiveFilters from '../components/ActiveFilters';
 import CategoryBreadcrumb from '../components/CategoryBreadcrumb';
 import SearchResults from '../components/SearchResults';
+import CategoryNavigation from '../components/CategoryNavigation';
 
 const ProductsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -250,19 +251,29 @@ const ProductsPage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Category Breadcrumb */}
-      {selectedCategory && (
-        <CategoryBreadcrumb
-          categoryName={selectedCategory}
-          productCount={filteredProducts.length}
-          onClear={() => setSelectedCategory('')}
-        />
-      )}
+    <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+      {/* Category Navigation */}
+      <CategoryNavigation 
+        selectedCategory={selectedCategory}
+        onCategorySelect={(categoryId) => {
+          setSelectedCategory(categoryId);
+          setCurrentPage(1);
+        }}
+      />
       
-      <Typography variant="h3" component="h1" gutterBottom>
-                    {selectedCategory ? `${selectedCategory}` : 'Search Products'}
-      </Typography>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        {/* Category Breadcrumb */}
+        {selectedCategory && (
+          <CategoryBreadcrumb
+            categoryName={selectedCategory}
+            productCount={filteredProducts.length}
+            onClear={() => setSelectedCategory('')}
+          />
+        )}
+        
+        <Typography variant="h3" component="h1" gutterBottom>
+          {selectedCategory ? `${selectedCategory}` : 'Search Products'}
+        </Typography>
 
       {/* Search Bar */}
       <Card sx={{ mb: 3, p: 3 }}>
@@ -608,7 +619,8 @@ const ProductsPage: React.FC = () => {
           </Button>
         </Box>
       )}
-    </Container>
+      </Container>
+    </Box>
   );
 };
 

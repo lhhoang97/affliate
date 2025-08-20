@@ -9,6 +9,7 @@ import {
   CardMedia
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import CategoryNavigation from '../components/CategoryNavigation';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -78,6 +79,9 @@ const HomePage: React.FC = () => {
 
   return (
     <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+      {/* Category Navigation */}
+      <CategoryNavigation />
+      
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Categories Grid */}
         <Box sx={{ 
