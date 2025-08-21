@@ -10,7 +10,6 @@ import {
   Button
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import CategorySubcategories from '../components/CategorySubcategories';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -144,14 +143,7 @@ const HomePage: React.FC = () => {
           </Typography>
         </Box>
 
-        {/* Featured Category Subcategories */}
-        {orderedCategories.length > 0 && (
-          <CategorySubcategories
-            categoryName={orderedCategories[0].name}
-            subcategories={orderedCategories[0].subcategories}
-            color="#007bff"
-          />
-        )}
+
 
         {/* Categories Grid */}
         <Box sx={{ 
