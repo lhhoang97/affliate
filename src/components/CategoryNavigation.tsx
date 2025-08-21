@@ -142,18 +142,59 @@ const CategoryNavigation: React.FC<CategoryNavigationProps> = ({
   const getMainCategory = (): string => {
     if (!selectedCategory) return 'electronics';
     
+    const lowerSelected = selectedCategory.toLowerCase();
+    
+    // Direct mapping for common cases
+    const directMapping: { [key: string]: string } = {
+      'electronics': 'electronics',
+      'fashion': 'fashion',
+      'home-garden': 'home-garden',
+      'home & garden': 'home-garden',
+      'sports': 'sports',
+      'beauty': 'beauty',
+      'toys-games': 'toys-games',
+      'toys & games': 'toys-games',
+      'automotive': 'automotive',
+      'office-supplies': 'office-supplies',
+      'office supplies': 'office-supplies',
+      'pet-supplies': 'pet-supplies',
+      'pet supplies': 'pet-supplies',
+      'health-wellness': 'health-wellness',
+      'health & wellness': 'health-wellness'
+    };
+    
+    // Check direct mapping first
+    if (directMapping[lowerSelected]) {
+      return directMapping[lowerSelected];
+    }
+    
     // Check if selectedCategory is a main category
-    if (categorySubcategories[selectedCategory.toLowerCase()]) {
-      return selectedCategory.toLowerCase();
+    if (categorySubcategories[lowerSelected]) {
+      return lowerSelected;
     }
     
     // Check if selectedCategory is a subcategory
     for (const [mainCategory, subcategories] of Object.entries(categorySubcategories)) {
-      if (subcategories.some(sub => sub.id === selectedCategory.toLowerCase() || sub.name.toLowerCase() === selectedCategory.toLowerCase())) {
+      if (subcategories.some(sub => 
+        sub.id === lowerSelected || 
+        sub.name.toLowerCase() === lowerSelected ||
+        sub.name.toLowerCase().replace(/\s+/g, '-') === lowerSelected
+      )) {
         return mainCategory;
       }
     }
     
+    // Try to match partial names
+    for (const [mainCategory, subcategories] of Object.entries(categorySubcategories)) {
+      if (subcategories.some(sub => 
+        sub.name.toLowerCase().includes(lowerSelected) ||
+        lowerSelected.includes(sub.name.toLowerCase())
+      )) {
+        return mainCategory;
+      }
+    }
+    
+    console.log('Category not found for:', selectedCategory, 'falling back to electronics');
     return 'electronics'; // Default fallback
   };
 
@@ -161,6 +202,15 @@ const CategoryNavigation: React.FC<CategoryNavigationProps> = ({
   const currentSubcategories = categorySubcategories[mainCategory] || categorySubcategories['electronics'];
   const categoryColor = categoryColors[mainCategory] || '#007bff';
   const categoryName = mainCategory.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+  // Debug logging
+  console.log('CategoryNavigation Debug:', {
+    selectedCategory,
+    mainCategory,
+    categoryName,
+    subcategoriesCount: currentSubcategories.length,
+    subcategories: currentSubcategories.map(sub => sub.name)
+  });
 
   const handleCategoryClick = (categoryId: string) => {
     if (onCategorySelect) {
