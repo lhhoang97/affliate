@@ -17,7 +17,7 @@ INSERT INTO profiles (
   created_at,
   updated_at
 ) VALUES (
-  'YOUR_USER_ID_HERE', -- Replace with actual User ID from Supabase Auth
+  '36e2c0ba-9d84-4834-a03a-facea24aa45a', -- Replace with actual User ID from Supabase Auth
   'hoang@shopwithus.com',
   'Hoang Admin',
   'admin',

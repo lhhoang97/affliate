@@ -31,6 +31,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
+import SupabaseTest from './components/SupabaseTest';
 
 // Create a theme instance
 const theme = createTheme({
@@ -125,6 +126,7 @@ function App() {
                       <Route path="/privacy" element={<PrivacyPolicyPage />} />
                       <Route path="/login" element={<LoginPage />} />
                       <Route path="/register" element={<RegisterPage />} />
+                      <Route path="/test-supabase" element={<SupabaseTest />} />
                       
                       {/* Protected Routes */}
                       <Route path="/cart" element={
