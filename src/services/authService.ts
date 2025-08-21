@@ -35,6 +35,20 @@ export async function signInWithSupabase(credentials: LoginCredentials): Promise
       };
     }
     
+    // Mock hoang admin user for testing
+    if (credentials.email === 'hoang@shopwithus.com' && credentials.password === 'hoang123@') {
+      return {
+        id: '36e2c0ba-9d84-4834-a03a-facea24aa45a',
+        name: 'Hoang Admin',
+        email: 'hoang@shopwithus.com',
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50',
+        isVerified: true,
+        role: 'admin',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    }
+    
     // Mock regular user
     if (credentials.email === 'user@example.com' && credentials.password === 'user123') {
       return {
