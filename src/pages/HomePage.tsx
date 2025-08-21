@@ -105,20 +105,39 @@ const HomePage: React.FC = () => {
   // Function to get category color based on category name
   const getCategoryColor = (categoryName: string): string => {
     const colorMap: { [key: string]: string } = {
-      'Electronics': '#007bff',
-      'Fashion': '#e91e63',
-      'Home & Garden': '#4caf50',
-      'Sports': '#ff9800',
-      'Books & Media': '#9c27b0',
-      'Toys & Games': '#f44336',
-      'Health & Beauty': '#ff6b9d',
-      'Automotive': '#795548',
-      'Office Supplies': '#607d8b',
-      'Pet Supplies': '#8bc34a',
-      'Health & Wellness': '#00bcd4',
-      'Beauty': '#ff6b9d'
+      'Electronics': '#2563eb', // Blue
+      'Fashion': '#ec4899', // Pink
+      'Home & Garden': '#059669', // Emerald
+      'Sports': '#ea580c', // Orange
+      'Books & Media': '#7c3aed', // Purple
+      'Toys & Games': '#dc2626', // Red
+      'Health & Beauty': '#f43f5e', // Rose
+      'Automotive': '#92400e', // Amber
+      'Office Supplies': '#475569', // Slate
+      'Pet Supplies': '#16a34a', // Green
+      'Health & Wellness': '#0891b2', // Cyan
+      'Beauty': '#f43f5e' // Rose
     };
-    return colorMap[categoryName] || '#666666';
+    return colorMap[categoryName] || '#6b7280';
+  };
+
+  // Function to get category background color
+  const getCategoryBgColor = (categoryName: string): string => {
+    const colorMap: { [key: string]: string } = {
+      'Electronics': '#dbeafe', // Light blue
+      'Fashion': '#fce7f3', // Light pink
+      'Home & Garden': '#d1fae5', // Light emerald
+      'Sports': '#fed7aa', // Light orange
+      'Books & Media': '#e9d5ff', // Light purple
+      'Toys & Games': '#fecaca', // Light red
+      'Health & Beauty': '#ffe4e6', // Light rose
+      'Automotive': '#fef3c7', // Light amber
+      'Office Supplies': '#f1f5f9', // Light slate
+      'Pet Supplies': '#dcfce7', // Light green
+      'Health & Wellness': '#cffafe', // Light cyan
+      'Beauty': '#ffe4e6' // Light rose
+    };
+    return colorMap[categoryName] || '#f3f4f6';
   };
 
   const loadCategories = () => {
@@ -254,11 +273,14 @@ const HomePage: React.FC = () => {
                               alignItems: 'center',
                               cursor: 'pointer',
                               transition: 'all 0.3s ease',
-                              p: 0.8,
-                              borderRadius: 1,
+                              p: 1,
+                              borderRadius: 2,
+                              backgroundColor: getCategoryBgColor(category.name),
+                              border: `1px solid ${getCategoryColor(category.name)}20`,
                               '&:hover': {
-                                backgroundColor: `${getCategoryColor(category.name)}10`,
-                                transform: 'translateX(4px)'
+                                backgroundColor: `${getCategoryColor(category.name)}15`,
+                                transform: 'translateX(6px)',
+                                boxShadow: `0 2px 8px ${getCategoryColor(category.name)}30`
                               }
                             }}
                             onClick={(e) => {
@@ -268,29 +290,29 @@ const HomePage: React.FC = () => {
                           >
                             {/* Circle with letter */}
                             <Box sx={{ 
-                              width: 28,
-                              height: 28,
+                              width: 32,
+                              height: 32,
                               borderRadius: '50%',
-                              background: `linear-gradient(135deg, ${getCategoryColor(category.name)}20, ${getCategoryColor(category.name)}40)`,
+                              background: `linear-gradient(135deg, ${getCategoryColor(category.name)}, ${getCategoryColor(category.name)}dd)`,
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              mr: 1.2,
-                              border: `1.5px solid ${getCategoryColor(category.name)}30`,
-                              boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                              mr: 1.5,
+                              border: `2px solid ${getCategoryColor(category.name)}`,
+                              boxShadow: `0 2px 6px ${getCategoryColor(category.name)}40`,
                               transition: 'all 0.3s ease',
                               '&:hover': {
-                                boxShadow: `0 2px 8px ${getCategoryColor(category.name)}40`,
-                                transform: 'scale(1.05)'
+                                boxShadow: `0 4px 12px ${getCategoryColor(category.name)}60`,
+                                transform: 'scale(1.1)'
                               }
                             }}>
                               <Typography 
                                 variant="body2" 
                                 sx={{ 
                                   fontWeight: 'bold',
-                                  color: getCategoryColor(category.name),
-                                  fontSize: '14px',
-                                  textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                                  color: '#ffffff',
+                                  fontSize: '16px',
+                                  textShadow: '0 1px 3px rgba(0,0,0,0.3)'
                                 }}
                               >
                                 {sub.charAt(0)}
@@ -300,9 +322,9 @@ const HomePage: React.FC = () => {
                             <Typography 
                               variant="body2" 
                               sx={{
-                                color: '#333',
-                                fontSize: '13px',
-                                fontWeight: 500,
+                                color: getCategoryColor(category.name),
+                                fontSize: '14px',
+                                fontWeight: 600,
                                 flex: 1,
                                 textAlign: 'left'
                               }}
@@ -316,10 +338,11 @@ const HomePage: React.FC = () => {
                             sx={{ 
                               display: 'flex',
                               alignItems: 'center',
-                              p: 0.8,
-                              borderRadius: 1,
+                              p: 1,
+                              borderRadius: 2,
                               backgroundColor: '#f8f9fa',
-                              border: '1px solid #e9ecef'
+                              border: '1px solid #e9ecef',
+                              opacity: 0.8
                             }}
                           >
                             <Box sx={{
