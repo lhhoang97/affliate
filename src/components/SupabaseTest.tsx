@@ -38,7 +38,7 @@ const SupabaseTest: React.FC = () => {
         if (isSupabaseConfigured) {
           // Test 3: Connection
           try {
-            const { data, error } = await supabase.from('profiles').select('*');
+            const { error } = await supabase.from('profiles').select('*');
             results.connection = !error;
           } catch (err) {
             console.error('Connection test failed:', err);
@@ -46,7 +46,7 @@ const SupabaseTest: React.FC = () => {
 
           // Test 4: Authentication
           try {
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { error } = await supabase.auth.signInWithPassword({
               email: 'hoang@shopwithus.com',
               password: 'hoang123@'
             });
