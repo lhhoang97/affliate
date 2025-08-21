@@ -87,6 +87,9 @@ const HomePage: React.FC = () => {
   ];
 
   useEffect(() => {
+    // Force reset localStorage for testing
+    localStorage.removeItem('categoryOrder');
+    
     const savedOrder = localStorage.getItem('categoryOrder');
     console.log('HomePage Debug - savedOrder:', savedOrder);
     console.log('HomePage Debug - categories length:', categories.length);
