@@ -46,8 +46,13 @@ const ProductsPage: React.FC = () => {
     return () => { isMounted = false; };
   }, []);
 
+  // Update selectedCategory when URL changes
+  useEffect(() => {
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl);
+    }
+  }, [categoryFromUrl]);
 
-  
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl || '');
   const [currentPage, setCurrentPage] = useState(1);
