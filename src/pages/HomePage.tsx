@@ -88,16 +88,30 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     const savedOrder = localStorage.getItem('categoryOrder');
+    console.log('HomePage Debug - savedOrder:', savedOrder);
+    console.log('HomePage Debug - categories length:', categories.length);
+    
     if (savedOrder) {
       const orderArray = JSON.parse(savedOrder);
+      console.log('HomePage Debug - orderArray:', orderArray);
       const ordered = orderArray
-        .map((categoryId: string) => categories.find(c => c.id === categoryId))
+        .map((categoryId: string) => categories.find((c: any) => c.id === categoryId))
         .filter(Boolean);
+      console.log('HomePage Debug - ordered categories:', ordered.length, ordered.map((c: any) => c.name));
       setOrderedCategories(ordered);
     } else {
+      console.log('HomePage Debug - no saved order, using default categories');
       setOrderedCategories(categories);
     }
   }, []);
+
+  // Debug logging
+  console.log('HomePage Debug - Final state:', {
+    orderedCategoriesLength: orderedCategories.length,
+    showAllCategories,
+    displayCount: showAllCategories ? orderedCategories.length : Math.min(8, orderedCategories.length),
+    categories: orderedCategories.map((c: any) => c.name)
+  });
 
   return (
     <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
