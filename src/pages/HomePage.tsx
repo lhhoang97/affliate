@@ -19,61 +19,61 @@ const HomePage: React.FC = () => {
       id: 'electronics',
       name: 'Electronics',
       image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=200&fit=crop',
-      subcategories: ['Smartphones', 'Laptops & Computers', 'Tablets & iPads', 'TVs & Monitors', 'Headphones & Audio', 'Cameras & Photography', 'Gaming Consoles']
+      subcategories: ['HEADPHONES', 'LAPTOP', 'TABLET', 'PHONE', 'TV', 'REFRIGERATOR', 'AIR CONDITIONER']
     },
     {
       id: 'fashion',
       name: 'Fashion',
       image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=200&fit=crop',
-      subcategories: ['Men\'s Clothing', 'Women\'s Clothing', 'Kids & Baby', 'Shoes & Sneakers', 'Bags & Handbags', 'Jewelry & Watches']
+      subcategories: ['MEN', 'WOMEN', 'KIDS', 'SHOES', 'BAGS', 'JEWELRY', 'ACCESSORIES']
     },
     {
       id: 'home-garden',
       name: 'Home & Garden',
       image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop',
-      subcategories: ['Furniture & Decor', 'Kitchen & Dining', 'Bedding & Bath', 'Garden & Outdoor', 'Lighting & Lamps']
+      subcategories: ['FURNITURE', 'KITCHEN', 'BEDDING', 'GARDEN', 'LIGHTING', 'STORAGE']
     },
     {
       id: 'sports',
       name: 'Sports',
       image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop',
-      subcategories: ['Fitness & Exercise', 'Team Sports', 'Outdoor Recreation', 'Swimming & Water Sports', 'Cycling & Bikes']
+      subcategories: ['FITNESS', 'TEAM SPORTS', 'OUTDOOR', 'SWIMMING', 'CYCLING', 'RUNNING']
     },
     {
       id: 'beauty',
       name: 'Beauty',
       image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=200&fit=crop',
-      subcategories: ['Skincare & Beauty', 'Makeup & Cosmetics', 'Hair Care & Styling', 'Personal Care', 'Fragrances & Perfumes']
+      subcategories: ['SKINCARE', 'MAKEUP', 'HAIR CARE', 'PERSONAL CARE', 'VITAMINS', 'FRAGRANCES']
     },
     {
       id: 'toys-games',
       name: 'Toys & Games',
       image: 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=300&h=200&fit=crop',
-      subcategories: ['Action Figures & Collectibles', 'Board Games & Puzzles', 'Educational Toys', 'Building Sets & LEGO', 'Video Games']
+      subcategories: ['ACTION FIGURES', 'BOARD GAMES', 'EDUCATIONAL', 'LEGO', 'DOLLS', 'VIDEO GAMES']
     },
     {
       id: 'automotive',
       name: 'Automotive',
       image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=300&h=200&fit=crop',
-      subcategories: ['Car Parts & Accessories', 'Car Care & Maintenance', 'Motorcycle & Powersports', 'Truck & SUV', 'Car Electronics']
+      subcategories: ['CAR PARTS', 'CAR CARE', 'MOTORCYCLE', 'TRUCK', 'TOOLS', 'ELECTRONICS']
     },
     {
       id: 'office-supplies',
       name: 'Office Supplies',
       image: 'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=300&h=200&fit=crop',
-      subcategories: ['Paper & Notebooks', 'Pens & Writing', 'Desk Accessories', 'Filing & Storage', 'Office Furniture']
+      subcategories: ['PAPER', 'PENS', 'DESK', 'FILING', 'FURNITURE']
     },
     {
       id: 'pet-supplies',
       name: 'Pet Supplies',
       image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=300&h=200&fit=crop',
-      subcategories: ['Dog Supplies', 'Cat Supplies', 'Pet Food & Treats', 'Pet Toys & Games', 'Pet Health & Care']
+      subcategories: ['DOG', 'CAT', 'FOOD', 'TOYS', 'HEALTH']
     },
     {
       id: 'health-wellness',
       name: 'Health & Wellness',
       image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop',
-      subcategories: ['Vitamins & Supplements', 'Fitness & Wellness', 'Medical & Health', 'Personal Care', 'Wellness Products']
+      subcategories: ['VITAMINS', 'FITNESS', 'MEDICAL', 'CARE', 'WELLNESS']
     }
   ];
 
