@@ -106,6 +106,14 @@ const AdminCategoriesPage: React.FC = () => {
       ]
     },
     {
+      id: 'health-beauty',
+      name: 'Health & Beauty',
+      color: '#ff6b9d',
+      subcategories: [
+        'SKINCARE', 'MAKEUP', 'HAIR CARE', 'PERSONAL CARE', 'VITAMINS', 'FRAGRANCES', 'SUPPLEMENTS', 'FITNESS'
+      ]
+    },
+    {
       id: 'automotive',
       name: 'Automotive',
       color: '#795548',

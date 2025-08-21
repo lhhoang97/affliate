@@ -110,6 +110,16 @@ const categorySubcategories: { [key: string]: Category[] } = {
     { id: 'medical', name: 'Medical', icon: <HealthAndSafety />, letter: 'M' },
     { id: 'care', name: 'Care', icon: <HealthAndSafety />, letter: 'C' },
     { id: 'wellness', name: 'Wellness', icon: <HealthAndSafety />, letter: 'W' },
+  ],
+  'health-beauty': [
+    { id: 'skincare', name: 'Skincare', icon: <Spa />, letter: 'S' },
+    { id: 'makeup', name: 'Makeup', icon: <Spa />, letter: 'M' },
+    { id: 'hair-care', name: 'Hair Care', icon: <Spa />, letter: 'H' },
+    { id: 'personal-care', name: 'Personal Care', icon: <Spa />, letter: 'P' },
+    { id: 'vitamins', name: 'Vitamins', icon: <HealthAndSafety />, letter: 'V' },
+    { id: 'fragrances', name: 'Fragrances', icon: <Spa />, letter: 'F' },
+    { id: 'supplements', name: 'Supplements', icon: <HealthAndSafety />, letter: 'S' },
+    { id: 'fitness', name: 'Fitness', icon: <FitnessCenter />, letter: 'F' },
   ]
 };
 
@@ -124,7 +134,8 @@ const categoryColors: { [key: string]: string } = {
   'automotive': '#795548',
   'office-supplies': '#607d8b',
   'pet-supplies': '#8bc34a',
-  'health-wellness': '#9c27b0'
+  'health-wellness': '#9c27b0',
+  'health-beauty': '#ff6b9d'
 };
 
 interface CategoryNavigationProps {
@@ -160,7 +171,9 @@ const CategoryNavigation: React.FC<CategoryNavigationProps> = ({
       'pet-supplies': 'pet-supplies',
       'pet supplies': 'pet-supplies',
       'health-wellness': 'health-wellness',
-      'health & wellness': 'health-wellness'
+      'health & wellness': 'health-wellness',
+      'health-beauty': 'health-beauty',
+      'health & beauty': 'health-beauty'
     };
     
     // Check direct mapping first

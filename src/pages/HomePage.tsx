@@ -75,6 +75,12 @@ const HomePage: React.FC = () => {
       name: 'Health & Wellness',
       image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop',
       subcategories: ['VITAMINS', 'FITNESS', 'MEDICAL', 'CARE', 'WELLNESS']
+    },
+    {
+      id: 'health-beauty',
+      name: 'Health & Beauty',
+      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=200&fit=crop',
+      subcategories: ['SKINCARE', 'MAKEUP', 'HAIR CARE', 'PERSONAL CARE', 'VITAMINS', 'FRAGRANCES', 'SUPPLEMENTS', 'FITNESS']
     }
   ];
 
