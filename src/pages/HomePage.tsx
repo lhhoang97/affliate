@@ -247,18 +247,7 @@ const HomePage: React.FC = () => {
                   {/* Show subcategories for all categories */}
                   {category.subcategories.length > 0 && (
                     <Box sx={{ mt: 2 }}>
-                      <Typography 
-                        variant="body2" 
-              sx={{
-                          color: '#666',
-                          fontSize: '12px',
-                          fontWeight: 500,
-                          mb: 1.5,
-                          textAlign: 'center'
-                        }}
-                      >
-                        Subcategories
-                      </Typography>
+                      
                                     <Box sx={{ 
                         display: 'flex',
                         flexDirection: 'column',
