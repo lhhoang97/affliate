@@ -19,61 +19,61 @@ const HomePage: React.FC = () => {
       id: 'electronics',
       name: 'Electronics',
       image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=200&fit=crop',
-      subcategories: ['Headphones', 'Laptops', 'Tablets', 'Phones', 'TVs', 'Refrigerators', 'Air Conditioners']
+      subcategories: ['Smartphones', 'Laptops & Computers', 'Tablets & iPads', 'TVs & Monitors', 'Headphones & Audio', 'Cameras & Photography', 'Gaming Consoles']
     },
     {
       id: 'fashion',
       name: 'Fashion',
       image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=200&fit=crop',
-      subcategories: []
+      subcategories: ['Men\'s Clothing', 'Women\'s Clothing', 'Kids & Baby', 'Shoes & Sneakers', 'Bags & Handbags', 'Jewelry & Watches']
     },
     {
       id: 'home-garden',
       name: 'Home & Garden',
       image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop',
-      subcategories: []
+      subcategories: ['Furniture & Decor', 'Kitchen & Dining', 'Bedding & Bath', 'Garden & Outdoor', 'Lighting & Lamps']
     },
     {
       id: 'sports',
       name: 'Sports',
       image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop',
-      subcategories: []
+      subcategories: ['Fitness & Exercise', 'Team Sports', 'Outdoor Recreation', 'Swimming & Water Sports', 'Cycling & Bikes']
     },
     {
       id: 'beauty',
       name: 'Beauty',
       image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=200&fit=crop',
-      subcategories: []
+      subcategories: ['Skincare & Beauty', 'Makeup & Cosmetics', 'Hair Care & Styling', 'Personal Care', 'Fragrances & Perfumes']
     },
     {
       id: 'toys-games',
       name: 'Toys & Games',
       image: 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=300&h=200&fit=crop',
-      subcategories: []
+      subcategories: ['Action Figures & Collectibles', 'Board Games & Puzzles', 'Educational Toys', 'Building Sets & LEGO', 'Video Games']
     },
     {
       id: 'automotive',
       name: 'Automotive',
       image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=300&h=200&fit=crop',
-      subcategories: []
+      subcategories: ['Car Parts & Accessories', 'Car Care & Maintenance', 'Motorcycle & Powersports', 'Truck & SUV', 'Car Electronics']
     },
     {
       id: 'office-supplies',
       name: 'Office Supplies',
       image: 'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=300&h=200&fit=crop',
-      subcategories: []
+      subcategories: ['Paper & Notebooks', 'Pens & Writing', 'Desk Accessories', 'Filing & Storage', 'Office Furniture']
     },
     {
       id: 'pet-supplies',
       name: 'Pet Supplies',
       image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=300&h=200&fit=crop',
-      subcategories: []
+      subcategories: ['Dog Supplies', 'Cat Supplies', 'Pet Food & Treats', 'Pet Toys & Games', 'Pet Health & Care']
     },
     {
       id: 'health-wellness',
       name: 'Health & Wellness',
       image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop',
-      subcategories: []
+      subcategories: ['Vitamins & Supplements', 'Fitness & Wellness', 'Medical & Health', 'Personal Care', 'Wellness Products']
     }
   ];
 
@@ -137,10 +137,10 @@ const HomePage: React.FC = () => {
                     {category.name}
                   </Typography>
                   
-                  {/* Show subcategories for Electronics */}
-                  {category.id === 'electronics' && category.subcategories.length > 0 && (
+                  {/* Show subcategories for all categories */}
+                  {category.subcategories.length > 0 && (
                     <Box sx={{ mt: 1 }}>
-                      {category.subcategories.slice(0, 7).map((sub: string, idx: number) => (
+                      {category.subcategories.slice(0, 5).map((sub: string, idx: number) => (
                         <Typography 
                           key={idx}
                           variant="body2" 

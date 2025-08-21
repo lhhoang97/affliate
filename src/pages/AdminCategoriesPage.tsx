@@ -71,8 +71,8 @@ const AdminCategoriesPage: React.FC = () => {
       name: 'Electronics',
       color: '#007bff',
       subcategories: [
-        'Headphones', 'Laptops', 'Tablets', 'Phones', 'TVs', 
-        'Refrigerators', 'Air Conditioners', 'Printers', 'Speakers', 'Watches'
+        'Smartphones', 'Laptops & Computers', 'Tablets & iPads', 'TVs & Monitors', 
+        'Headphones & Audio', 'Cameras & Photography', 'Gaming Consoles', 'Smart Home', 'Wearables'
       ]
     },
     {
@@ -80,8 +80,8 @@ const AdminCategoriesPage: React.FC = () => {
       name: 'Fashion',
       color: '#e91e63',
       subcategories: [
-        'Men\'s Clothing', 'Women\'s Clothing', 'Kids\' Clothing', 'Shoes',
-        'Bags', 'Accessories', 'Jewelry', 'Watches', 'Sunglasses'
+        'Men\'s Clothing', 'Women\'s Clothing', 'Kids & Baby', 'Shoes & Sneakers',
+        'Bags & Handbags', 'Jewelry & Watches', 'Accessories', 'Sunglasses', 'Luxury Fashion'
       ]
     },
     {
@@ -89,8 +89,8 @@ const AdminCategoriesPage: React.FC = () => {
       name: 'Home & Garden',
       color: '#4caf50',
       subcategories: [
-        'Furniture', 'Kitchen Appliances', 'Garden Tools', 'Lighting',
-        'Decor', 'Bedding', 'Bathroom', 'Storage', 'Outdoor Living'
+        'Furniture & Decor', 'Kitchen & Dining', 'Bedding & Bath', 'Garden & Outdoor',
+        'Lighting & Lamps', 'Storage & Organization', 'Home Appliances', 'Tools & Hardware'
       ]
     },
     {
@@ -98,8 +98,8 @@ const AdminCategoriesPage: React.FC = () => {
       name: 'Sports & Outdoors',
       color: '#ff9800',
       subcategories: [
-        'Fitness Equipment', 'Team Sports', 'Outdoor Gear', 'Swimming',
-        'Cycling', 'Running', 'Yoga', 'Hiking', 'Camping'
+        'Fitness & Exercise', 'Team Sports', 'Outdoor Recreation', 'Swimming & Water Sports',
+        'Cycling & Bikes', 'Running & Athletics', 'Yoga & Wellness', 'Hiking & Camping'
       ]
     },
     {
@@ -107,8 +107,8 @@ const AdminCategoriesPage: React.FC = () => {
       name: 'Books & Media',
       color: '#9c27b0',
       subcategories: [
-        'Fiction', 'Non-Fiction', 'Educational', 'Children\'s Books',
-        'Magazines', 'E-books', 'Audiobooks', 'Music', 'Movies'
+        'Fiction Books', 'Non-Fiction Books', 'Educational & Textbooks', 'Children\'s Books',
+        'Magazines & Newspapers', 'E-books & Digital', 'Audiobooks', 'Music & Vinyl', 'Movies & TV Shows'
       ]
     },
     {
@@ -116,8 +116,8 @@ const AdminCategoriesPage: React.FC = () => {
       name: 'Toys & Games',
       color: '#f44336',
       subcategories: [
-        'Action Figures', 'Board Games', 'Puzzles', 'Educational Toys',
-        'Building Sets', 'Dolls', 'Remote Control', 'Arts & Crafts'
+        'Action Figures & Collectibles', 'Board Games & Puzzles', 'Educational Toys', 'Building Sets & LEGO',
+        'Dolls & Stuffed Animals', 'Remote Control Toys', 'Arts & Crafts', 'Video Games'
       ]
     },
     {
@@ -125,8 +125,8 @@ const AdminCategoriesPage: React.FC = () => {
       name: 'Health & Beauty',
       color: '#00bcd4',
       subcategories: [
-        'Skincare', 'Makeup', 'Hair Care', 'Personal Care',
-        'Vitamins', 'Fitness Trackers', 'Medical Devices', 'Wellness'
+        'Skincare & Beauty', 'Makeup & Cosmetics', 'Hair Care & Styling', 'Personal Care',
+        'Vitamins & Supplements', 'Fitness & Wellness', 'Medical & Health', 'Fragrances & Perfumes'
       ]
     },
     {
@@ -134,8 +134,8 @@ const AdminCategoriesPage: React.FC = () => {
       name: 'Automotive',
       color: '#795548',
       subcategories: [
-        'Car Parts', 'Car Care', 'Motorcycle', 'Truck Accessories',
-        'Tools', 'Electronics', 'Safety', 'Performance'
+        'Car Parts & Accessories', 'Car Care & Maintenance', 'Motorcycle & Powersports', 'Truck & SUV',
+        'Tools & Equipment', 'Car Electronics', 'Safety & Security', 'Performance & Racing'
       ]
     }
   ];
