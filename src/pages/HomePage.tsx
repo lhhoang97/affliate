@@ -9,6 +9,7 @@ import {
   CardMedia
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import CategorySubcategories from '../components/CategorySubcategories';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -94,6 +95,15 @@ const HomePage: React.FC = () => {
   return (
     <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
       <Container maxWidth="xl" sx={{ py: 4 }}>
+        {/* Featured Category Subcategories */}
+        {orderedCategories.length > 0 && (
+          <CategorySubcategories
+            categoryName={orderedCategories[0].name}
+            subcategories={orderedCategories[0].subcategories}
+            color="#007bff"
+          />
+        )}
+
         {/* Categories Grid */}
         <Box sx={{ 
           display: 'grid', 
@@ -139,28 +149,73 @@ const HomePage: React.FC = () => {
                   
                   {/* Show subcategories for all categories */}
                   {category.subcategories.length > 0 && (
-                    <Box sx={{ mt: 1 }}>
-                      {category.subcategories.slice(0, 5).map((sub: string, idx: number) => (
-                        <Typography 
-                          key={idx}
-                          variant="body2" 
-                          sx={{ 
-                            color: '#666',
-                            fontSize: '12px',
-                            mb: 0.5,
-                            cursor: 'pointer',
-                            '&:hover': {
-                              color: '#007bff'
-                            }
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/products?category=${sub}`);
-                          }}
-                        >
-                          {sub}
-                        </Typography>
-                      ))}
+                    <Box sx={{ mt: 2 }}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        gap: 1, 
+                        flexWrap: 'wrap',
+                        justifyContent: 'center'
+                      }}>
+                        {category.subcategories.slice(0, 7).map((sub: string, idx: number) => (
+                          <Box
+                            key={idx}
+                            sx={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              cursor: 'pointer',
+                              transition: 'transform 0.2s',
+                              '&:hover': {
+                                transform: 'scale(1.05)'
+                              }
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/products?category=${sub}`);
+                            }}
+                          >
+                            {/* Circle with letter */}
+                            <Box sx={{
+                              width: 32,
+                              height: 32,
+                              borderRadius: '50%',
+                              backgroundColor: '#f0f0f0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              mb: 0.5,
+                              border: '1px solid #e0e0e0'
+                            }}>
+                              <Typography 
+                                variant="body2" 
+                                sx={{ 
+                                  fontWeight: 'bold',
+                                  color: '#333',
+                                  fontSize: '14px'
+                                }}
+                              >
+                                {sub.charAt(0)}
+                              </Typography>
+                            </Box>
+                            {/* Subcategory name */}
+                            <Typography 
+                              variant="caption" 
+                              sx={{ 
+                                color: '#666',
+                                fontSize: '10px',
+                                textAlign: 'center',
+                                lineHeight: 1.2,
+                                maxWidth: 40,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              {sub}
+                            </Typography>
+                          </Box>
+                        ))}
+                      </Box>
                     </Box>
                   )}
                 </CardContent>
