@@ -16,7 +16,8 @@ const HomePage: React.FC = () => {
   const [orderedCategories, setOrderedCategories] = useState<any[]>([]);
   const [showAllCategories, setShowAllCategories] = useState(false);
 
-  const categories = [
+  // Default categories fallback
+  const defaultCategories = [
     {
       id: 'electronics',
       name: 'Electronics',
@@ -85,26 +86,66 @@ const HomePage: React.FC = () => {
     }
   ];
 
-  useEffect(() => {
-    // Force reset localStorage for testing
-    localStorage.removeItem('categoryOrder');
-    
+  // Get categories from localStorage or use default
+  const getCategories = () => {
+    const savedCategories = localStorage.getItem('homepageCategories');
+    if (savedCategories) {
+      try {
+        return JSON.parse(savedCategories);
+      } catch (error) {
+        console.error('Error parsing saved categories:', error);
+        return defaultCategories;
+      }
+    }
+    return defaultCategories;
+  };
+
+  const categories = getCategories();
+
+  const loadCategories = () => {
+    const currentCategories = getCategories();
     const savedOrder = localStorage.getItem('categoryOrder');
     console.log('HomePage Debug - savedOrder:', savedOrder);
-    console.log('HomePage Debug - categories length:', categories.length);
+    console.log('HomePage Debug - categories length:', currentCategories.length);
     
     if (savedOrder) {
       const orderArray = JSON.parse(savedOrder);
       console.log('HomePage Debug - orderArray:', orderArray);
       const ordered = orderArray
-        .map((categoryId: string) => categories.find((c: any) => c.id === categoryId))
+        .map((categoryId: string) => currentCategories.find((c: any) => c.id === categoryId))
         .filter(Boolean);
       console.log('HomePage Debug - ordered categories:', ordered.length, ordered.map((c: any) => c.name));
       setOrderedCategories(ordered);
     } else {
       console.log('HomePage Debug - no saved order, using default categories');
-      setOrderedCategories(categories);
+      setOrderedCategories(currentCategories);
     }
+  };
+
+  useEffect(() => {
+    loadCategories();
+    
+    // Listen for storage changes
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'categoryOrder' || e.key === 'homepageCategories') {
+        console.log('HomePage Debug - Storage changed, reloading categories');
+        loadCategories();
+      }
+    };
+    
+    // Also listen for custom events from admin panel
+    const handleCategoryOrderChange = () => {
+      console.log('HomePage Debug - Category order changed event received');
+      loadCategories();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('categoryOrderChanged', handleCategoryOrderChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('categoryOrderChanged', handleCategoryOrderChange);
+    };
   }, []);
 
   // Debug logging

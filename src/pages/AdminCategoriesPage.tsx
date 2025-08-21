@@ -334,6 +334,18 @@ const AdminCategoriesPage: React.FC = () => {
 
   const saveCategoryOrder = () => {
     localStorage.setItem('categoryOrder', JSON.stringify(categoryOrder));
+    
+    // Also update the categories array in localStorage to match the order
+    const orderedCategories = categoryOrder
+      .map(categoryId => localCategories.find(c => c.id === categoryId))
+      .filter(Boolean);
+    
+    // Save the ordered categories to localStorage so HomePage can use them
+    localStorage.setItem('homepageCategories', JSON.stringify(orderedCategories));
+    
+    // Dispatch custom event to notify HomePage
+    window.dispatchEvent(new CustomEvent('categoryOrderChanged'));
+    
     setShowOrderDialog(false);
     setSnackbar({ open: true, message: 'Category order saved successfully!', severity: 'success' });
   };
