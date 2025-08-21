@@ -118,30 +118,7 @@ const HomePage: React.FC = () => {
   return (
     <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        {/* Hero Section */}
-        <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography 
-            variant="h2" 
-            sx={{ 
-              fontWeight: 'bold',
-              color: '#333',
-              mb: 2,
-              fontSize: { xs: '2rem', sm: '3rem', md: '4rem' }
-            }}
-          >
-            Welcome to ShopWithUs
-          </Typography>
-          <Typography 
-            variant="h5" 
-            sx={{ 
-              color: '#666',
-              mb: 4,
-              fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' }
-            }}
-          >
-            Discover amazing products at great prices
-          </Typography>
-        </Box>
+
 
 
 
