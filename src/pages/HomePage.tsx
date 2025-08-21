@@ -79,7 +79,6 @@ const HomePage: React.FC = () => {
   ];
 
   useEffect(() => {
-    // Load category order from localStorage
     const savedOrder = localStorage.getItem('categoryOrder');
     if (savedOrder) {
       const orderArray = JSON.parse(savedOrder);
@@ -94,7 +93,32 @@ const HomePage: React.FC = () => {
 
   return (
     <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        {/* Hero Section */}
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography 
+            variant="h2" 
+            sx={{ 
+              fontWeight: 'bold',
+              color: '#333',
+              mb: 2,
+              fontSize: { xs: '2rem', sm: '3rem', md: '4rem' }
+            }}
+          >
+            Welcome to ShopWithUs
+          </Typography>
+          <Typography 
+            variant="h5" 
+            sx={{ 
+              color: '#666',
+              mb: 4,
+              fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' }
+            }}
+          >
+            Discover amazing products at great prices
+          </Typography>
+        </Box>
+
         {/* Featured Category Subcategories */}
         {orderedCategories.length > 0 && (
           <CategorySubcategories
@@ -204,11 +228,7 @@ const HomePage: React.FC = () => {
                                 color: '#666',
                                 fontSize: '10px',
                                 textAlign: 'center',
-                                lineHeight: 1.2,
-                                maxWidth: 40,
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap'
+                                lineHeight: 1.2
                               }}
                             >
                               {sub}
@@ -222,22 +242,6 @@ const HomePage: React.FC = () => {
               </Card>
             </Box>
           ))}
-        </Box>
-
-        {/* Show less button */}
-        <Box sx={{ textAlign: 'right', mt: 3 }}>
-          <Typography 
-            variant="body2" 
-            sx={{ 
-              color: '#666',
-              cursor: 'pointer',
-              '&:hover': {
-                color: '#007bff'
-              }
-            }}
-          >
-            Show less
-          </Typography>
         </Box>
       </Container>
     </Box>

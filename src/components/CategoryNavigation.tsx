@@ -164,8 +164,6 @@ const CategoryNavigation: React.FC<CategoryNavigationProps> = ({
           </Box>
         ))}
       </Box>
-
-
     </Box>
   );
 };

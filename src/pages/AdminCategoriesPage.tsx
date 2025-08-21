@@ -1,66 +1,49 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
   Card,
-  TextField,
+  CardContent,
   Button,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Grid
+  TextField,
+  IconButton,
+  Chip,
+  Alert,
+  Snackbar,
+  Tooltip
 } from '@mui/material';
-import { 
-  Add, 
-  LabelOutlined,
-  AcUnit,
-  Print,
-  Speaker,
-  Watch,
-  Tablet,
-  Phone,
-  Headphones,
-  Laptop,
-  Computer,
-  Tv,
-  Camera,
-  Gamepad,
-  Keyboard,
-  Mouse,
-  Monitor,
-  Router,
+import {
+  Add,
+  Edit,
   Delete,
-  DragIndicator,
+  Visibility,
   Save,
-  Cancel
+  Cancel,
+  DragIndicator
 } from '@mui/icons-material';
 import { Category } from '../types';
 import { fetchCategories, createCategory, updateCategory, deleteCategory } from '../services/productService';
 
 const AdminCategoriesPage: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [subcategoryDialogOpen, setSubcategoryDialogOpen] = useState(false);
-  const [editing, setEditing] = useState<Category | null>(null);
-  const [editingSubcategory, setEditingSubcategory] = useState<{categoryId: string, subcategory: string} | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [form, setForm] = useState({ 
-    name: '', 
-    description: '', 
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
     image: '',
-    icon: 'AcUnit',
-    letter: 'A'
+    slug: ''
   });
-  const [subcategoryForm, setSubcategoryForm] = useState({
-    name: ''
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error'
   });
-  const [visibleCount, setVisibleCount] = useState(8);
   const [categoryOrder, setCategoryOrder] = useState<string[]>([]);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
 
@@ -136,121 +119,75 @@ const AdminCategoriesPage: React.FC = () => {
     try {
       const data = await fetchCategories();
       setCategories(data);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     load();
-    // Load category order from localStorage
     const savedOrder = localStorage.getItem('categoryOrder');
     if (savedOrder) {
       setCategoryOrder(JSON.parse(savedOrder));
     } else {
-      // Default order based on predefined categories
       const defaultOrder = predefinedCategories.map(c => c.id);
       setCategoryOrder(defaultOrder);
       localStorage.setItem('categoryOrder', JSON.stringify(defaultOrder));
     }
   }, []);
 
-  const openCreate = () => {
-    setEditing(null);
-    setForm({ name: '', description: '', image: '', icon: 'AcUnit', letter: 'A' });
-    setDialogOpen(true);
-  };
-
-  const openEdit = (c: Category) => {
-    setEditing(c);
-    setForm({ 
-      name: c.name, 
-      description: c.description || '', 
-      image: c.image || '',
-      icon: 'AcUnit',
-      letter: 'A'
-    });
+  const handleOpenDialog = (category?: any) => {
+    if (category) {
+      setEditingCategory(category);
+      setFormData({
+        name: category.name,
+        description: category.description || '',
+        image: category.image || '',
+        slug: category.slug || ''
+      });
+    } else {
+      setEditingCategory(null);
+      setFormData({ name: '', description: '', image: '', slug: '' });
+    }
     setDialogOpen(true);
   };
 
   const handleSave = async () => {
     try {
-      if (editing) {
-        await updateCategory(editing.id, { ...form });
+      if (editingCategory) {
+        await updateCategory(editingCategory.id, formData);
+        setSnackbar({ open: true, message: 'Category updated successfully!', severity: 'success' });
       } else {
-        await createCategory({ name: form.name, description: form.description, image: form.image, slug: undefined as any });
+        await createCategory(formData);
+        setSnackbar({ open: true, message: 'Category created successfully!', severity: 'success' });
       }
       setDialogOpen(false);
       load();
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      setSnackbar({ open: true, message: 'Error saving category', severity: 'error' });
     }
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteCategory(id);
-      load();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // Subcategory management functions
-  const openSubcategoryCreate = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-    setEditingSubcategory(null);
-    setSubcategoryForm({ name: '' });
-    setSubcategoryDialogOpen(true);
-  };
-
-  const openSubcategoryEdit = (categoryId: string, subcategory: string) => {
-    setSelectedCategory(categoryId);
-    setEditingSubcategory({ categoryId, subcategory });
-    setSubcategoryForm({ name: subcategory });
-    setSubcategoryDialogOpen(true);
-  };
-
-  const handleSubcategorySave = () => {
-    const category = predefinedCategories.find(c => c.id === selectedCategory);
-    if (category) {
-      if (editingSubcategory) {
-        // Update subcategory
-        const index = category.subcategories.indexOf(editingSubcategory.subcategory);
-        if (index > -1) {
-          category.subcategories[index] = subcategoryForm.name;
-        }
-      } else {
-        // Add new subcategory
-        category.subcategories.push(subcategoryForm.name);
-      }
-      setSubcategoryDialogOpen(false);
-      // Force re-render
-      setCategories([...categories]);
-    }
-  };
-
-  const handleSubcategoryDelete = (categoryId: string, subcategory: string) => {
-    if (window.confirm(`Are you sure you want to delete subcategory "${subcategory}"?`)) {
-      const category = predefinedCategories.find(c => c.id === categoryId);
-      if (category) {
-        const index = category.subcategories.indexOf(subcategory);
-        if (index > -1) {
-          category.subcategories.splice(index, 1);
-          // Force re-render
-          setCategories([...categories]);
-        }
+  const handleDelete = async (categoryId: string) => {
+    if (window.confirm('Are you sure you want to delete this category?')) {
+      try {
+        await deleteCategory(categoryId);
+        setSnackbar({ open: true, message: 'Category deleted successfully!', severity: 'success' });
+        load();
+      } catch (error) {
+        setSnackbar({ open: true, message: 'Error deleting category', severity: 'error' });
       }
     }
   };
 
-  // Category ordering functions
   const openOrderDialog = () => {
     setShowOrderDialog(true);
   };
 
   const handleDragStart = (e: React.DragEvent, categoryId: string) => {
-    e.dataTransfer.setData('categoryId', categoryId);
+    e.dataTransfer.setData('text/plain', categoryId);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -259,29 +196,27 @@ const AdminCategoriesPage: React.FC = () => {
 
   const handleDrop = (e: React.DragEvent, targetCategoryId: string) => {
     e.preventDefault();
-    const draggedCategoryId = e.dataTransfer.getData('categoryId');
+    const draggedCategoryId = e.dataTransfer.getData('text/plain');
     
-    if (draggedCategoryId === targetCategoryId) return;
-
-    const newOrder = [...categoryOrder];
-    const draggedIndex = newOrder.indexOf(draggedCategoryId);
-    const targetIndex = newOrder.indexOf(targetCategoryId);
-
-    // Remove dragged item from its current position
-    newOrder.splice(draggedIndex, 1);
-    // Insert dragged item at target position
-    newOrder.splice(targetIndex, 0, draggedCategoryId);
-
-    setCategoryOrder(newOrder);
+    if (draggedCategoryId !== targetCategoryId) {
+      const newOrder = [...categoryOrder];
+      const draggedIndex = newOrder.indexOf(draggedCategoryId);
+      const targetIndex = newOrder.indexOf(targetCategoryId);
+      
+      newOrder.splice(draggedIndex, 1);
+      newOrder.splice(targetIndex, 0, draggedCategoryId);
+      
+      setCategoryOrder(newOrder);
+    }
   };
 
   const saveCategoryOrder = () => {
     localStorage.setItem('categoryOrder', JSON.stringify(categoryOrder));
     setShowOrderDialog(false);
+    setSnackbar({ open: true, message: 'Category order saved successfully!', severity: 'success' });
   };
 
   const cancelOrderChanges = () => {
-    // Reset to saved order
     const savedOrder = localStorage.getItem('categoryOrder');
     if (savedOrder) {
       setCategoryOrder(JSON.parse(savedOrder));
@@ -307,53 +242,19 @@ const AdminCategoriesPage: React.FC = () => {
     }
   };
 
-  const iconOptions = [
-    { value: 'AcUnit', label: 'Air Conditioner', icon: <AcUnit /> },
-    { value: 'Print', label: 'Printer', icon: <Print /> },
-    { value: 'Speaker', label: 'Speaker', icon: <Speaker /> },
-    { value: 'Watch', label: 'Watch', icon: <Watch /> },
-    { value: 'Tablet', label: 'Tablet', icon: <Tablet /> },
-    { value: 'Phone', label: 'Phone', icon: <Phone /> },
-    { value: 'Headphones', label: 'Headphones', icon: <Headphones /> },
-    { value: 'Laptop', label: 'Laptop', icon: <Laptop /> },
-    { value: 'Computer', label: 'Computer', icon: <Computer /> },
-    { value: 'Tv', label: 'TV', icon: <Tv /> },
-    { value: 'Camera', label: 'Camera', icon: <Camera /> },
-    { value: 'Gamepad', label: 'Gaming', icon: <Gamepad /> },
-    { value: 'Keyboard', label: 'Keyboard', icon: <Keyboard /> },
-    { value: 'Mouse', label: 'Mouse', icon: <Mouse /> },
-    { value: 'Monitor', label: 'Monitor', icon: <Monitor /> },
-    { value: 'Router', label: 'Router', icon: <Router /> },
-  ];
-
-  const getIconComponent = (iconName: string) => {
-    const iconMap: { [key: string]: React.ReactNode } = {
-      AcUnit: <AcUnit />,
-      Print: <Print />,
-      Speaker: <Speaker />,
-      Watch: <Watch />,
-      Tablet: <Tablet />,
-      Phone: <Phone />,
-      Headphones: <Headphones />,
-      Laptop: <Laptop />,
-      Computer: <Computer />,
-      Tv: <Tv />,
-      Camera: <Camera />,
-      Gamepad: <Gamepad />,
-      Keyboard: <Keyboard />,
-      Mouse: <Mouse />,
-      Monitor: <Monitor />,
-      Router: <Router />,
-    };
-    return iconMap[iconName] || <LabelOutlined />;
-  };
-
-  const filtered = categories.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
+  if (loading) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Typography>Loading categories...</Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h5" fontWeight="bold">Category Management</Typography>
+    <Box sx={{ p: 3 }}>
+      {/* Header */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" fontWeight="bold">Category Management</Typography>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button 
             variant="outlined" 
@@ -363,239 +264,173 @@ const AdminCategoriesPage: React.FC = () => {
           >
             Manage Order
           </Button>
-          <Button variant="contained" startIcon={<Add />} onClick={openCreate}>Add Category</Button>
+          <Button 
+            variant="contained" 
+            startIcon={<Add />}
+            onClick={() => handleOpenDialog()}
+            sx={{ backgroundColor: '#007bff', '&:hover': { backgroundColor: '#0056b3' } }}
+          >
+            Add Category
+          </Button>
         </Box>
       </Box>
-      <TextField label="Search categories" value={search} onChange={(e) => setSearch(e.target.value)} sx={{ mb: 2 }} />
 
-      <Box sx={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-        gap: 3,
-        mb: 2
+      {/* Categories Grid */}
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' }, 
+        gap: 3 
       }}>
         {categoryOrder
           .map(categoryId => predefinedCategories.find(c => c.id === categoryId))
           .filter((category): category is typeof predefinedCategories[0] => Boolean(category))
           .map((category) => (
-          <Card key={category.id} sx={{ 
-            borderRadius: 2, 
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            '&:hover': {
-              transform: 'translateY(-2px)',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-            }
-          }}>
-            <Box sx={{ p: 3 }}>
-              {/* Category Header */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                <Box sx={{ 
-                  width: 50, 
-                  height: 50, 
-                  borderRadius: '50%', 
-                  backgroundColor: category.color,
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: 20,
-                  fontWeight: 'bold'
-                }}>
-                  {category.name.charAt(0)}
-                </Box>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: category.color }}>
-                    {category.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {category.subcategories.length} subcategories
-                  </Typography>
-                </Box>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={() => openSubcategoryCreate(category.id)}
-                  sx={{ borderColor: category.color, color: category.color }}
-                >
-                  Add Sub
-                </Button>
-              </Box>
-              
-              {/* Subcategories List */}
-              <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
-                {category.subcategories.map((subcategory, index) => (
-                  <Box key={index} sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'space-between',
-                    p: 1,
-                    mb: 1,
-                    borderRadius: 1,
-                    backgroundColor: `${category.color}10`,
-                    '&:hover': {
-                      backgroundColor: `${category.color}20`
-                    }
-                  }}>
-                    <Typography variant="body2" sx={{ flex: 1 }}>
-                      {subcategory}
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 0.5 }}>
-                      <Button
-                        size="small"
-                        variant="text"
-                        onClick={() => openSubcategoryEdit(category.id, subcategory)}
-                        sx={{ minWidth: 'auto', p: 0.5 }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="text"
-                        color="error"
-                        onClick={() => handleSubcategoryDelete(category.id, subcategory)}
-                        sx={{ minWidth: 'auto', p: 0.5 }}
-                      >
-                        Delete
-                      </Button>
+            <Card key={category.id} sx={{ 
+              border: '1px solid #e0e0e0',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                transform: 'translateY(-2px)'
+              }
+            }}>
+              <CardContent>
+                {/* Category Header */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      backgroundColor: category.color,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontWeight: 'bold',
+                      fontSize: '18px'
+                    }}>
+                      {category.name.charAt(0)}
+                    </Box>
+                    <Box>
+                      <Typography variant="h6" fontWeight="bold" sx={{ color: '#333' }}>
+                        {category.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {category.subcategories.length} subcategories
+                      </Typography>
                     </Box>
                   </Box>
-                ))}
-              </Box>
-            </Box>
-          </Card>
-        ))}
-      </Box>
-      
-      {filtered.length > visibleCount && (
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Button 
-            variant="text" 
-            onClick={() => setVisibleCount(v => v + 8)}
-            sx={{ 
-              color: '#6c757d',
-              backgroundColor: '#f8f9fa',
-              borderRadius: 2,
-              px: 3,
-              py: 1,
-              '&:hover': {
-                backgroundColor: '#e9ecef'
-              }
-            }}
-          >
-            Show more
-          </Button>
-        </Box>
-      )}
+                  
+                  {/* Action Buttons */}
+                  <Box sx={{ display: 'flex', gap: 0.5 }}>
+                    <Tooltip title="View Details">
+                      <IconButton size="small" sx={{ color: '#666' }}>
+                        <Visibility />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit Category">
+                      <IconButton size="small" sx={{ color: '#007bff' }}>
+                        <Edit />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete Category">
+                      <IconButton 
+                        size="small" 
+                        sx={{ color: '#dc3545' }}
+                        onClick={() => handleDelete(category.id)}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Box>
 
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>{editing ? 'Edit Category' : 'Add Category'}</DialogTitle>
+                {/* Subcategories */}
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="body2" fontWeight="medium" sx={{ mb: 1, color: '#666' }}>
+                    Subcategories:
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {category.subcategories.slice(0, 4).map((sub, index) => (
+                      <Chip
+                        key={index}
+                        label={sub}
+                        size="small"
+                        sx={{
+                          backgroundColor: `${category.color}15`,
+                          color: category.color,
+                          border: `1px solid ${category.color}30`,
+                          fontSize: '10px',
+                          height: '20px'
+                        }}
+                      />
+                    ))}
+                    {category.subcategories.length > 4 && (
+                      <Chip
+                        label={`+${category.subcategories.length - 4} more`}
+                        size="small"
+                        sx={{
+                          backgroundColor: '#f0f0f0',
+                          color: '#666',
+                          fontSize: '10px',
+                          height: '20px'
+                        }}
+                      />
+                    )}
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+      </Box>
+
+      {/* Add/Edit Category Dialog */}
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <Typography variant="h6" fontWeight="bold">
+            {editingCategory ? 'Edit Category' : 'Add New Category'}
+          </Typography>
+        </DialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
+          <Box sx={{ pt: 2 }}>
             <TextField
-              label="Category Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
               fullWidth
+              label="Category Name *"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              margin="normal"
+              required
             />
             <TextField
-              label="Description"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
               fullWidth
+              label="Description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              margin="normal"
               multiline
               rows={3}
             />
             <TextField
+              fullWidth
               label="Image URL"
-              value={form.image}
-              onChange={(e) => setForm({ ...form, image: e.target.value })}
-              fullWidth
-            />
-            
-            {/* Icon Selection */}
-            <FormControl fullWidth>
-              <InputLabel>Icon</InputLabel>
-              <Select
-                value={form.icon}
-                label="Icon"
-                onChange={(e) => setForm({ ...form, icon: e.target.value })}
-              >
-                {iconOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Box sx={{ color: '#007bff' }}>
-                        {option.icon}
-                      </Box>
-                      <Typography>{option.label}</Typography>
-                    </Box>
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            {/* Letter Input */}
-            <TextField
-              label="Letter (for display)"
-              value={form.letter}
-              onChange={(e) => setForm({ ...form, letter: e.target.value })}
-              fullWidth
-              inputProps={{ maxLength: 1 }}
-              helperText="Single letter to display when icon is not selected"
-            />
-
-            {/* Icon Preview */}
-            <Box sx={{ textAlign: 'center', p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-              <Typography variant="subtitle2" sx={{ mb: 2 }}>Icon Preview</Typography>
-              <Box sx={{ 
-                width: 60, 
-                height: 60, 
-                borderRadius: '50%', 
-                backgroundColor: '#007bff',
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: 24,
-                mx: 'auto'
-              }}>
-                {getIconComponent(form.icon)}
-              </Box>
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                Letter: {form.letter}
-              </Typography>
-            </Box>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave}>Save</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Subcategory Dialog */}
-      <Dialog open={subcategoryDialogOpen} onClose={() => setSubcategoryDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {editingSubcategory ? 'Edit Subcategory' : 'Add Subcategory'}
-        </DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              Category: {predefinedCategories.find(c => c.id === selectedCategory)?.name}
-            </Typography>
-            <TextField
-              label="Subcategory Name"
-              value={subcategoryForm.name}
-              onChange={(e) => setSubcategoryForm({ ...subcategoryForm, name: e.target.value })}
-              fullWidth
-              autoFocus
+              value={formData.image}
+              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+              margin="normal"
+              helperText="Optional: URL to category image"
             />
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSubcategoryDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSubcategorySave}>
-            {editingSubcategory ? 'Update' : 'Add'}
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={() => setDialogOpen(false)} variant="outlined" startIcon={<Cancel />}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSave} 
+            variant="contained" 
+            startIcon={<Save />}
+            sx={{ backgroundColor: '#007bff', '&:hover': { backgroundColor: '#0056b3' } }}
+          >
+            {editingCategory ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -608,12 +443,8 @@ const AdminCategoriesPage: React.FC = () => {
         fullWidth
       >
         <DialogTitle>
-          <Typography variant="h6" fontWeight="bold">
-            Manage Category Order
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Drag and drop categories to reorder them, or use the arrow buttons
-          </Typography>
+          <Typography variant="h6" fontWeight="bold">Manage Category Order</Typography>
+          <Typography variant="body2" color="text.secondary">Drag and drop categories to reorder them, or use the arrow buttons</Typography>
         </DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 2 }}>
@@ -634,95 +465,61 @@ const AdminCategoriesPage: React.FC = () => {
                     p: 2,
                     mb: 2,
                     border: '1px solid #e0e0e0',
-                    borderRadius: 2,
-                    backgroundColor: '#f8f9fa',
+                    borderRadius: 1,
+                    backgroundColor: '#fafafa',
                     cursor: 'grab',
                     '&:hover': {
-                      backgroundColor: '#e9ecef',
-                      transform: 'translateY(-1px)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                    },
-                    '&:active': {
-                      cursor: 'grabbing'
+                      backgroundColor: '#f0f0f0'
                     }
                   }}
                 >
-                  {/* Drag Handle */}
                   <DragIndicator sx={{ color: '#666', cursor: 'grab' }} />
-                  
-                  {/* Category Info */}
-                  <Box sx={{ 
-                    width: 40, 
-                    height: 40, 
-                    borderRadius: '50%', 
+                  <Box sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
                     backgroundColor: category.color,
-                    display: 'flex', 
-                    alignItems: 'center', 
+                    display: 'flex',
+                    alignItems: 'center',
                     justifyContent: 'center',
                     color: 'white',
-                    fontSize: 16,
                     fontWeight: 'bold'
                   }}>
                     {category.name.charAt(0)}
                   </Box>
-                  
                   <Box sx={{ flex: 1 }}>
-                    <Typography variant="subtitle1" fontWeight="medium">
-                      {category.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {category.subcategories.length} subcategories
-                    </Typography>
+                    <Typography variant="subtitle1" fontWeight="medium">{category.name}</Typography>
+                    <Typography variant="body2" color="text.secondary">{category.subcategories.length} subcategories</Typography>
                   </Box>
-                  
-                  {/* Position Info */}
-                  <Typography variant="body2" color="text.secondary" sx={{ minWidth: 60 }}>
-                    Position {index + 1}
-                  </Typography>
-                  
-                  {/* Move Buttons */}
+                  <Typography variant="body2" color="text.secondary" sx={{ minWidth: 60 }}>Position {index + 1}</Typography>
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => moveCategoryUp(category.id)}
-                      disabled={index === 0}
-                      sx={{ minWidth: 'auto', px: 1 }}
-                    >
-                      ↑
-                    </Button>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => moveCategoryDown(category.id)}
-                      disabled={index === categoryOrder.length - 1}
-                      sx={{ minWidth: 'auto', px: 1 }}
-                    >
-                      ↓
-                    </Button>
+                    <Button size="small" variant="outlined" onClick={() => moveCategoryUp(category.id)} disabled={index === 0}>↑</Button>
+                    <Button size="small" variant="outlined" onClick={() => moveCategoryDown(category.id)} disabled={index === categoryOrder.length - 1}>↓</Button>
                   </Box>
                 </Box>
               ))}
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 3 }}>
-          <Button 
-            onClick={cancelOrderChanges}
-            variant="outlined"
-            startIcon={<Cancel />}
-          >
-            Cancel
-          </Button>
-          <Button 
-            onClick={saveCategoryOrder}
-            variant="contained"
-            startIcon={<Save />}
-            sx={{ backgroundColor: '#007bff', '&:hover': { backgroundColor: '#0056b3' } }}
-          >
-            Save Order
-          </Button>
+          <Button onClick={cancelOrderChanges} variant="outlined" startIcon={<Cancel />}>Cancel</Button>
+          <Button onClick={saveCategoryOrder} variant="contained" startIcon={<Save />} sx={{ backgroundColor: '#007bff', '&:hover': { backgroundColor: '#0056b3' } }}>Save Order</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
