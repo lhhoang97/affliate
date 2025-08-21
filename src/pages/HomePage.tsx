@@ -102,6 +102,25 @@ const HomePage: React.FC = () => {
 
   const categories = getCategories();
 
+  // Function to get category color based on category name
+  const getCategoryColor = (categoryName: string): string => {
+    const colorMap: { [key: string]: string } = {
+      'Electronics': '#007bff',
+      'Fashion': '#e91e63',
+      'Home & Garden': '#4caf50',
+      'Sports': '#ff9800',
+      'Books & Media': '#9c27b0',
+      'Toys & Games': '#f44336',
+      'Health & Beauty': '#ff6b9d',
+      'Automotive': '#795548',
+      'Office Supplies': '#607d8b',
+      'Pet Supplies': '#8bc34a',
+      'Health & Wellness': '#00bcd4',
+      'Beauty': '#ff6b9d'
+    };
+    return colorMap[categoryName] || '#666666';
+  };
+
   const loadCategories = () => {
     const currentCategories = getCategories();
     const savedOrder = localStorage.getItem('categoryOrder');
@@ -209,13 +228,25 @@ const HomePage: React.FC = () => {
                   {/* Show subcategories for all categories */}
                   {category.subcategories.length > 0 && (
                     <Box sx={{ mt: 2 }}>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          color: '#666',
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          mb: 1.5,
+                          textAlign: 'center'
+                        }}
+                      >
+                        Subcategories
+                      </Typography>
                       <Box sx={{ 
-                        display: 'flex', 
-                        gap: 1, 
-                        flexWrap: 'wrap',
-                        justifyContent: 'center'
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(60px, 1fr))',
+                        gap: 1.5,
+                        maxWidth: '100%'
                       }}>
-                        {category.subcategories.slice(0, 7).map((sub: string, idx: number) => (
+                        {category.subcategories.slice(0, 8).map((sub: string, idx: number) => (
                           <Box
                             key={idx}
                             sx={{
@@ -223,9 +254,12 @@ const HomePage: React.FC = () => {
                               flexDirection: 'column',
                               alignItems: 'center',
                               cursor: 'pointer',
-                              transition: 'transform 0.2s',
+                              transition: 'all 0.3s ease',
+                              p: 0.5,
+                              borderRadius: 1,
                               '&:hover': {
-                                transform: 'scale(1.05)'
+                                transform: 'translateY(-2px)',
+                                backgroundColor: 'rgba(0,0,0,0.02)'
                               }
                             }}
                             onClick={(e) => {
@@ -235,22 +269,29 @@ const HomePage: React.FC = () => {
                           >
                             {/* Circle with letter */}
                             <Box sx={{
-                              width: 32,
-                              height: 32,
+                              width: 36,
+                              height: 36,
                               borderRadius: '50%',
-                              backgroundColor: '#f0f0f0',
+                              background: `linear-gradient(135deg, ${getCategoryColor(category.name)}20, ${getCategoryColor(category.name)}40)`,
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              mb: 0.5,
-                              border: '1px solid #e0e0e0'
+                              mb: 0.8,
+                              border: `2px solid ${getCategoryColor(category.name)}30`,
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                              transition: 'all 0.3s ease',
+                              '&:hover': {
+                                boxShadow: `0 4px 12px ${getCategoryColor(category.name)}40`,
+                                transform: 'scale(1.1)'
+                              }
                             }}>
                               <Typography 
                                 variant="body2" 
                                 sx={{ 
                                   fontWeight: 'bold',
-                                  color: '#333',
-                                  fontSize: '14px'
+                                  color: getCategoryColor(category.name),
+                                  fontSize: '16px',
+                                  textShadow: '0 1px 2px rgba(0,0,0,0.1)'
                                 }}
                               >
                                 {sub.charAt(0)}
@@ -260,16 +301,65 @@ const HomePage: React.FC = () => {
                             <Typography 
                               variant="caption" 
                               sx={{ 
-                                color: '#666',
-                                fontSize: '10px',
+                                color: '#555',
+                                fontSize: '11px',
                                 textAlign: 'center',
-                                lineHeight: 1.2
+                                lineHeight: 1.2,
+                                fontWeight: 500,
+                                maxWidth: '100%',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
                               }}
                             >
                               {sub}
                             </Typography>
                           </Box>
                         ))}
+                        {category.subcategories.length > 8 && (
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              p: 0.5
+                            }}
+                          >
+                            <Box sx={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: '50%',
+                              backgroundColor: '#f0f0f0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              mb: 0.8,
+                              border: '2px solid #e0e0e0'
+                            }}>
+                              <Typography 
+                                variant="body2" 
+                                sx={{ 
+                                  fontWeight: 'bold',
+                                  color: '#999',
+                                  fontSize: '14px'
+                                }}
+                              >
+                                +{category.subcategories.length - 8}
+                              </Typography>
+                            </Box>
+                            <Typography 
+                              variant="caption" 
+                              sx={{ 
+                                color: '#999',
+                                fontSize: '11px',
+                                textAlign: 'center'
+                              }}
+                            >
+                              More
+                            </Typography>
+                          </Box>
+                        )}
                       </Box>
                     </Box>
                   )}
