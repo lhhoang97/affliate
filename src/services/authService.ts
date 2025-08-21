@@ -1,69 +1,11 @@
 import { AuthUser, LoginCredentials, RegisterCredentials } from '../types';
 import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
 
-// Mock auth service for development when Supabase is not configured
-const mockUser: AuthUser = {
-  id: 'mock-user-id',
-  name: 'Mock User',
-  email: 'mock@example.com',
-  avatar: undefined,
-  isVerified: true,
-  role: 'user',
-  phone: undefined,
-  address: undefined,
-  bio: undefined,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
+
 
 export async function signInWithSupabase(credentials: LoginCredentials): Promise<AuthUser> {
   if (!isSupabaseConfigured) {
-    // Fallback to mock authentication
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Mock admin user for testing
-    if (credentials.email === 'admin@shopwithus.com' && credentials.password === 'admin123456') {
-      return {
-        id: 'admin-1',
-        name: 'Admin User',
-        email: 'admin@shopwithus.com',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50',
-        isVerified: true,
-        role: 'admin',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-    }
-    
-    // Mock hoang admin user for testing
-    if (credentials.email === 'hoang@shopwithus.com' && credentials.password === 'hoang123@') {
-      return {
-        id: '36e2c0ba-9d84-4834-a03a-facea24aa45a',
-        name: 'Hoang Admin',
-        email: 'hoang@shopwithus.com',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50',
-        isVerified: true,
-        role: 'admin',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-    }
-    
-    // Mock regular user
-    if (credentials.email === 'user@example.com' && credentials.password === 'user123') {
-      return {
-        id: 'user-1',
-        name: 'Regular User',
-        email: 'user@example.com',
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=50',
-        isVerified: true,
-        role: 'user',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-    }
-    
-    throw new Error('Invalid email or password');
+    throw new Error('Supabase is not configured. Please check your environment variables.');
   }
 
   try {
@@ -106,23 +48,7 @@ export async function signInWithSupabase(credentials: LoginCredentials): Promise
 
 export async function signUpWithSupabase(credentials: RegisterCredentials): Promise<AuthUser> {
   if (!isSupabaseConfigured) {
-    // Fallback to mock registration
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    if (credentials.password !== credentials.confirmPassword) {
-      throw new Error('Passwords do not match');
-    }
-    
-    return {
-      id: `user-${Date.now()}`,
-      name: credentials.name,
-      email: credentials.email,
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50',
-      isVerified: false,
-      role: 'user',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    throw new Error('Supabase is not configured. Please check your environment variables.');
   }
 
   try {
@@ -176,10 +102,7 @@ export async function signUpWithSupabase(credentials: RegisterCredentials): Prom
 
 export async function signOutWithSupabase(): Promise<void> {
   if (!isSupabaseConfigured) {
-    // Fallback to mock logout
-    await new Promise(resolve => setTimeout(resolve, 200));
-    console.log('Mock sign out successful');
-    return;
+    throw new Error('Supabase is not configured. Please check your environment variables.');
   }
 
   try {
@@ -193,15 +116,7 @@ export async function signOutWithSupabase(): Promise<void> {
 
 export async function updateProfileWithSupabase(userId: string, profileData: Partial<AuthUser>): Promise<AuthUser> {
   if (!isSupabaseConfigured) {
-    // Fallback to mock profile update
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    return {
-      ...mockUser,
-      ...profileData,
-      id: userId,
-      updatedAt: new Date().toISOString(),
-    };
+    throw new Error('Supabase is not configured. Please check your environment variables.');
   }
 
   try {
@@ -242,9 +157,7 @@ export async function updateProfileWithSupabase(userId: string, profileData: Par
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
   if (!isSupabaseConfigured) {
-    // Fallback to mock current user
-    await new Promise(resolve => setTimeout(resolve, 200));
-    return mockUser;
+    throw new Error('Supabase is not configured. Please check your environment variables.');
   }
 
   try {
