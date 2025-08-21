@@ -17,12 +17,12 @@
 INSERT INTO profiles (
   id,
   email,
-  full_name,
+  name,
   role,
   created_at,
   updated_at
 ) VALUES (
-  'YOUR_USER_ID_HERE', -- Replace with actual User ID from Supabase Auth
+  '36e2c0ba-9d84-4834-a03a-facea24aa45a', -- Replace with actual User ID from Supabase Auth
   'admin@shopwithus.com',
   'Admin User',
   'admin',

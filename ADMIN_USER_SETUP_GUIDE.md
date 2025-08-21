@@ -34,7 +34,7 @@
 INSERT INTO profiles (
   id,
   email,
-  full_name,
+  name,
   role,
   created_at,
   updated_at
