@@ -6,7 +6,8 @@ import {
   Grid,
   Card,
   CardContent,
-  CardMedia
+  CardMedia,
+  Button
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import CategorySubcategories from '../components/CategorySubcategories';
@@ -14,6 +15,7 @@ import CategorySubcategories from '../components/CategorySubcategories';
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [orderedCategories, setOrderedCategories] = useState<any[]>([]);
+  const [showAllCategories, setShowAllCategories] = useState(false);
 
   const categories = [
     {
@@ -145,7 +147,7 @@ const HomePage: React.FC = () => {
           }, 
           gap: 3 
         }}>
-          {orderedCategories.map((category, index) => (
+          {(showAllCategories ? orderedCategories : orderedCategories.slice(0, 8)).map((category, index) => (
             <Box key={category.id}>
               <Card 
                 sx={{ 
@@ -247,11 +249,38 @@ const HomePage: React.FC = () => {
                 </CardContent>
               </Card>
             </Box>
-          ))}
-        </Box>
-      </Container>
-    </Box>
-  );
-};
+                      ))}
+          </Box>
+
+          {/* Show More/Less Button */}
+          {orderedCategories.length > 8 && (
+            <Box sx={{ textAlign: 'center', mt: 4 }}>
+              <Button
+                variant="outlined"
+                onClick={() => setShowAllCategories(!showAllCategories)}
+                sx={{
+                  borderColor: '#007bff',
+                  color: '#007bff',
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  '&:hover': {
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    borderColor: '#007bff'
+                  }
+                }}
+              >
+                {showAllCategories ? 'Show Less' : `Show More (${orderedCategories.length - 8} more)`}
+              </Button>
+            </Box>
+          )}
+        </Container>
+      </Box>
+    );
+  };
 
 export default HomePage;
