@@ -38,7 +38,7 @@ const SupabaseTest: React.FC = () => {
         if (isSupabaseConfigured) {
           // Test 3: Connection
           try {
-            const { data, error } = await supabase.from('profiles').select('count').limit(1);
+            const { data, error } = await supabase.from('profiles').select('*');
             results.connection = !error;
           } catch (err) {
             console.error('Connection test failed:', err);
