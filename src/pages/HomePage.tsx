@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
+  const [orderedCategories, setOrderedCategories] = useState<any[]>([]);
 
   const categories = [
     {
@@ -76,6 +77,20 @@ const HomePage: React.FC = () => {
     }
   ];
 
+  useEffect(() => {
+    // Load category order from localStorage
+    const savedOrder = localStorage.getItem('categoryOrder');
+    if (savedOrder) {
+      const orderArray = JSON.parse(savedOrder);
+      const ordered = orderArray
+        .map((categoryId: string) => categories.find(c => c.id === categoryId))
+        .filter(Boolean);
+      setOrderedCategories(ordered);
+    } else {
+      setOrderedCategories(categories);
+    }
+  }, []);
+
   return (
     <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
       <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -90,7 +105,7 @@ const HomePage: React.FC = () => {
           }, 
           gap: 3 
         }}>
-          {categories.map((category, index) => (
+          {orderedCategories.map((category, index) => (
             <Box key={category.id}>
               <Card 
                 sx={{ 
@@ -125,7 +140,7 @@ const HomePage: React.FC = () => {
                   {/* Show subcategories for Electronics */}
                   {category.id === 'electronics' && category.subcategories.length > 0 && (
                     <Box sx={{ mt: 1 }}>
-                      {category.subcategories.slice(0, 7).map((sub, idx) => (
+                      {category.subcategories.slice(0, 7).map((sub: string, idx: number) => (
                         <Typography 
                           key={idx}
                           variant="body2" 

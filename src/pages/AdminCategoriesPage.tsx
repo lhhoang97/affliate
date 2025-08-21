@@ -34,7 +34,10 @@ import {
   Mouse,
   Monitor,
   Router,
-  Delete
+  Delete,
+  DragIndicator,
+  Save,
+  Cancel
 } from '@mui/icons-material';
 import { Category } from '../types';
 import { fetchCategories, createCategory, updateCategory, deleteCategory } from '../services/productService';
@@ -58,6 +61,8 @@ const AdminCategoriesPage: React.FC = () => {
     name: ''
   });
   const [visibleCount, setVisibleCount] = useState(8);
+  const [categoryOrder, setCategoryOrder] = useState<string[]>([]);
+  const [showOrderDialog, setShowOrderDialog] = useState(false);
 
   // Predefined categories with subcategories
   const predefinedCategories = [
@@ -146,6 +151,16 @@ const AdminCategoriesPage: React.FC = () => {
 
   useEffect(() => {
     load();
+    // Load category order from localStorage
+    const savedOrder = localStorage.getItem('categoryOrder');
+    if (savedOrder) {
+      setCategoryOrder(JSON.parse(savedOrder));
+    } else {
+      // Default order based on predefined categories
+      const defaultOrder = predefinedCategories.map(c => c.id);
+      setCategoryOrder(defaultOrder);
+      localStorage.setItem('categoryOrder', JSON.stringify(defaultOrder));
+    }
   }, []);
 
   const openCreate = () => {
@@ -237,6 +252,69 @@ const AdminCategoriesPage: React.FC = () => {
     }
   };
 
+  // Category ordering functions
+  const openOrderDialog = () => {
+    setShowOrderDialog(true);
+  };
+
+  const handleDragStart = (e: React.DragEvent, categoryId: string) => {
+    e.dataTransfer.setData('categoryId', categoryId);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, targetCategoryId: string) => {
+    e.preventDefault();
+    const draggedCategoryId = e.dataTransfer.getData('categoryId');
+    
+    if (draggedCategoryId === targetCategoryId) return;
+
+    const newOrder = [...categoryOrder];
+    const draggedIndex = newOrder.indexOf(draggedCategoryId);
+    const targetIndex = newOrder.indexOf(targetCategoryId);
+
+    // Remove dragged item from its current position
+    newOrder.splice(draggedIndex, 1);
+    // Insert dragged item at target position
+    newOrder.splice(targetIndex, 0, draggedCategoryId);
+
+    setCategoryOrder(newOrder);
+  };
+
+  const saveCategoryOrder = () => {
+    localStorage.setItem('categoryOrder', JSON.stringify(categoryOrder));
+    setShowOrderDialog(false);
+  };
+
+  const cancelOrderChanges = () => {
+    // Reset to saved order
+    const savedOrder = localStorage.getItem('categoryOrder');
+    if (savedOrder) {
+      setCategoryOrder(JSON.parse(savedOrder));
+    }
+    setShowOrderDialog(false);
+  };
+
+  const moveCategoryUp = (categoryId: string) => {
+    const newOrder = [...categoryOrder];
+    const currentIndex = newOrder.indexOf(categoryId);
+    if (currentIndex > 0) {
+      [newOrder[currentIndex], newOrder[currentIndex - 1]] = [newOrder[currentIndex - 1], newOrder[currentIndex]];
+      setCategoryOrder(newOrder);
+    }
+  };
+
+  const moveCategoryDown = (categoryId: string) => {
+    const newOrder = [...categoryOrder];
+    const currentIndex = newOrder.indexOf(categoryId);
+    if (currentIndex < newOrder.length - 1) {
+      [newOrder[currentIndex], newOrder[currentIndex + 1]] = [newOrder[currentIndex + 1], newOrder[currentIndex]];
+      setCategoryOrder(newOrder);
+    }
+  };
+
   const iconOptions = [
     { value: 'AcUnit', label: 'Air Conditioner', icon: <AcUnit /> },
     { value: 'Print', label: 'Printer', icon: <Print /> },
@@ -284,7 +362,17 @@ const AdminCategoriesPage: React.FC = () => {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h5" fontWeight="bold">Category Management</Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={openCreate}>Add Category</Button>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button 
+            variant="outlined" 
+            startIcon={<DragIndicator />} 
+            onClick={openOrderDialog}
+            sx={{ borderColor: '#007bff', color: '#007bff' }}
+          >
+            Manage Order
+          </Button>
+          <Button variant="contained" startIcon={<Add />} onClick={openCreate}>Add Category</Button>
+        </Box>
       </Box>
       <TextField label="Search categories" value={search} onChange={(e) => setSearch(e.target.value)} sx={{ mb: 2 }} />
 
@@ -294,7 +382,10 @@ const AdminCategoriesPage: React.FC = () => {
         gap: 3,
         mb: 2
       }}>
-        {predefinedCategories.map((category) => (
+        {categoryOrder
+          .map(categoryId => predefinedCategories.find(c => c.id === categoryId))
+          .filter((category): category is typeof predefinedCategories[0] => Boolean(category))
+          .map((category) => (
           <Card key={category.id} sx={{ 
             borderRadius: 2, 
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
@@ -513,6 +604,130 @@ const AdminCategoriesPage: React.FC = () => {
           <Button onClick={() => setSubcategoryDialogOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSubcategorySave}>
             {editingSubcategory ? 'Update' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Category Order Management Dialog */}
+      <Dialog 
+        open={showOrderDialog} 
+        onClose={cancelOrderChanges}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          <Typography variant="h6" fontWeight="bold">
+            Manage Category Order
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Drag and drop categories to reorder them, or use the arrow buttons
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 2 }}>
+            {categoryOrder
+              .map(categoryId => predefinedCategories.find(c => c.id === categoryId))
+              .filter((category): category is typeof predefinedCategories[0] => Boolean(category))
+              .map((category, index) => (
+                <Box
+                  key={category.id}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, category.id)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, category.id)}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    p: 2,
+                    mb: 2,
+                    border: '1px solid #e0e0e0',
+                    borderRadius: 2,
+                    backgroundColor: '#f8f9fa',
+                    cursor: 'grab',
+                    '&:hover': {
+                      backgroundColor: '#e9ecef',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    },
+                    '&:active': {
+                      cursor: 'grabbing'
+                    }
+                  }}
+                >
+                  {/* Drag Handle */}
+                  <DragIndicator sx={{ color: '#666', cursor: 'grab' }} />
+                  
+                  {/* Category Info */}
+                  <Box sx={{ 
+                    width: 40, 
+                    height: 40, 
+                    borderRadius: '50%', 
+                    backgroundColor: category.color,
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontSize: 16,
+                    fontWeight: 'bold'
+                  }}>
+                    {category.name.charAt(0)}
+                  </Box>
+                  
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="subtitle1" fontWeight="medium">
+                      {category.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {category.subcategories.length} subcategories
+                    </Typography>
+                  </Box>
+                  
+                  {/* Position Info */}
+                  <Typography variant="body2" color="text.secondary" sx={{ minWidth: 60 }}>
+                    Position {index + 1}
+                  </Typography>
+                  
+                  {/* Move Buttons */}
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => moveCategoryUp(category.id)}
+                      disabled={index === 0}
+                      sx={{ minWidth: 'auto', px: 1 }}
+                    >
+                      ↑
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => moveCategoryDown(category.id)}
+                      disabled={index === categoryOrder.length - 1}
+                      sx={{ minWidth: 'auto', px: 1 }}
+                    >
+                      ↓
+                    </Button>
+                  </Box>
+                </Box>
+              ))}
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={cancelOrderChanges}
+            variant="outlined"
+            startIcon={<Cancel />}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={saveCategoryOrder}
+            variant="contained"
+            startIcon={<Save />}
+            sx={{ backgroundColor: '#007bff', '&:hover': { backgroundColor: '#0056b3' } }}
+          >
+            Save Order
           </Button>
         </DialogActions>
       </Dialog>
