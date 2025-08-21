@@ -177,14 +177,14 @@ const HomePage: React.FC = () => {
 
   return (
     <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
 
 
 
 
         {/* Categories Grid */}
         <Box sx={{ 
-          display: 'grid', 
+        display: 'grid', 
           gridTemplateColumns: { 
             xs: '1fr', 
             sm: 'repeat(2, 1fr)', 
@@ -198,11 +198,11 @@ const HomePage: React.FC = () => {
               <Card 
                 sx={{ 
                   height: '100%',
-                  cursor: 'pointer',
+              cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   borderRadius: 2,
                   overflow: 'hidden',
-                  '&:hover': {
+              '&:hover': {
                     transform: 'translateY(-4px)',
                     boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
                   }
@@ -221,16 +221,16 @@ const HomePage: React.FC = () => {
                     fontWeight: 600,
                     mb: 1,
                     color: '#333'
-                  }}>
-                    {category.name}
-                  </Typography>
+                }}>
+                  {category.name}
+                </Typography>
                   
                   {/* Show subcategories for all categories */}
                   {category.subcategories.length > 0 && (
                     <Box sx={{ mt: 2 }}>
                       <Typography 
                         variant="body2" 
-                        sx={{ 
+              sx={{
                           color: '#666',
                           fontSize: '12px',
                           fontWeight: 500,
@@ -240,26 +240,25 @@ const HomePage: React.FC = () => {
                       >
                         Subcategories
                       </Typography>
-                      <Box sx={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(60px, 1fr))',
-                        gap: 1.5,
+                                    <Box sx={{ 
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 0.8,
                         maxWidth: '100%'
                       }}>
-                        {category.subcategories.slice(0, 8).map((sub: string, idx: number) => (
+                        {category.subcategories.slice(0, 6).map((sub: string, idx: number) => (
                           <Box
                             key={idx}
                             sx={{
                               display: 'flex',
-                              flexDirection: 'column',
                               alignItems: 'center',
                               cursor: 'pointer',
                               transition: 'all 0.3s ease',
-                              p: 0.5,
+                              p: 0.8,
                               borderRadius: 1,
                               '&:hover': {
-                                transform: 'translateY(-2px)',
-                                backgroundColor: 'rgba(0,0,0,0.02)'
+                                backgroundColor: `${getCategoryColor(category.name)}10`,
+                                transform: 'translateX(4px)'
                               }
                             }}
                             onClick={(e) => {
@@ -268,21 +267,21 @@ const HomePage: React.FC = () => {
                             }}
                           >
                             {/* Circle with letter */}
-                            <Box sx={{
-                              width: 36,
-                              height: 36,
+                            <Box sx={{ 
+                              width: 28,
+                              height: 28,
                               borderRadius: '50%',
                               background: `linear-gradient(135deg, ${getCategoryColor(category.name)}20, ${getCategoryColor(category.name)}40)`,
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              mb: 0.8,
-                              border: `2px solid ${getCategoryColor(category.name)}30`,
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                              mr: 1.2,
+                              border: `1.5px solid ${getCategoryColor(category.name)}30`,
+                              boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
                               transition: 'all 0.3s ease',
                               '&:hover': {
-                                boxShadow: `0 4px 12px ${getCategoryColor(category.name)}40`,
-                                transform: 'scale(1.1)'
+                                boxShadow: `0 2px 8px ${getCategoryColor(category.name)}40`,
+                                transform: 'scale(1.05)'
                               }
                             }}>
                               <Typography 
@@ -290,7 +289,7 @@ const HomePage: React.FC = () => {
                                 sx={{ 
                                   fontWeight: 'bold',
                                   color: getCategoryColor(category.name),
-                                  fontSize: '16px',
+                                  fontSize: '14px',
                                   textShadow: '0 1px 2px rgba(0,0,0,0.1)'
                                 }}
                               >
@@ -299,74 +298,72 @@ const HomePage: React.FC = () => {
                             </Box>
                             {/* Subcategory name */}
                             <Typography 
-                              variant="caption" 
-                              sx={{ 
-                                color: '#555',
-                                fontSize: '11px',
-                                textAlign: 'center',
-                                lineHeight: 1.2,
+                              variant="body2" 
+                              sx={{
+                                color: '#333',
+                                fontSize: '13px',
                                 fontWeight: 500,
-                                maxWidth: '100%',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap'
+                                flex: 1,
+                                textAlign: 'left'
                               }}
                             >
                               {sub}
                             </Typography>
                           </Box>
                         ))}
-                        {category.subcategories.length > 8 && (
+                        {category.subcategories.length > 6 && (
                           <Box
-                            sx={{
+                            sx={{ 
                               display: 'flex',
-                              flexDirection: 'column',
                               alignItems: 'center',
-                              justifyContent: 'center',
-                              p: 0.5
+                              p: 0.8,
+                              borderRadius: 1,
+                              backgroundColor: '#f8f9fa',
+                              border: '1px solid #e9ecef'
                             }}
                           >
                             <Box sx={{
-                              width: 36,
-                              height: 36,
+                              width: 28,
+                              height: 28,
                               borderRadius: '50%',
-                              backgroundColor: '#f0f0f0',
+                              backgroundColor: '#e9ecef',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              mb: 0.8,
-                              border: '2px solid #e0e0e0'
+                              mr: 1.2,
+                              border: '1.5px solid #dee2e6'
                             }}>
                               <Typography 
                                 variant="body2" 
                                 sx={{ 
                                   fontWeight: 'bold',
-                                  color: '#999',
-                                  fontSize: '14px'
+                                  color: '#6c757d',
+                                  fontSize: '12px'
                                 }}
                               >
-                                +{category.subcategories.length - 8}
+                                +{category.subcategories.length - 6}
                               </Typography>
                             </Box>
                             <Typography 
-                              variant="caption" 
+                              variant="body2" 
                               sx={{ 
-                                color: '#999',
-                                fontSize: '11px',
-                                textAlign: 'center'
+                                color: '#6c757d',
+                                fontSize: '13px',
+                                fontWeight: 500,
+                                flex: 1
                               }}
                             >
-                              More
+                              More subcategories
                             </Typography>
                           </Box>
                         )}
                       </Box>
                     </Box>
                   )}
-                </CardContent>
-              </Card>
+            </CardContent>
+          </Card>
             </Box>
-                      ))}
+        ))}
           </Box>
 
           {/* Show More/Less Button */}
@@ -396,8 +393,8 @@ const HomePage: React.FC = () => {
             </Box>
           )}
         </Container>
-      </Box>
-    );
-  };
+    </Box>
+  );
+};
 
 export default HomePage;
