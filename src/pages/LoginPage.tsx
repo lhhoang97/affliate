@@ -29,9 +29,14 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [componentKey, setComponentKey] = useState(0);
 
-  // Force re-render on mount
+  // Force re-render on mount and clear form
   useEffect(() => {
     setComponentKey(prev => prev + 1);
+    // Clear form data to ensure no default values
+    setFormData({
+      email: '',
+      password: '',
+    });
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,7 +91,12 @@ const LoginPage: React.FC = () => {
               required
               disabled={isLoading}
               placeholder="Enter your email"
-              autoComplete="email"
+              autoComplete="off"
+              inputProps={{
+                autoComplete: 'off',
+                'data-lpignore': 'true',
+                'data-form-type': 'other'
+              }}
             />
             <TextField
               fullWidth
@@ -99,7 +109,12 @@ const LoginPage: React.FC = () => {
               required
               disabled={isLoading}
               placeholder="Enter your password"
-              autoComplete="current-password"
+              autoComplete="off"
+              inputProps={{
+                autoComplete: 'off',
+                'data-lpignore': 'true',
+                'data-form-type': 'other'
+              }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
