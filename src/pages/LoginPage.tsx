@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -20,12 +20,19 @@ import { useAuth } from '../contexts/AuthContext';
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, isLoading, error } = useAuth();
-  // Form data - no default values for security
+  
+  // Force empty state - no admin credentials
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [componentKey, setComponentKey] = useState(0);
+
+  // Force re-render on mount
+  useEffect(() => {
+    setComponentKey(prev => prev + 1);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +56,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ py: 8 }}>
+    <Container maxWidth="sm" sx={{ py: 8 }} key={componentKey}>
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Typography variant="h3" component="h1" gutterBottom>
           Login
@@ -78,6 +85,8 @@ const LoginPage: React.FC = () => {
               margin="normal"
               required
               disabled={isLoading}
+              placeholder="Enter your email"
+              autoComplete="email"
             />
             <TextField
               fullWidth
@@ -89,6 +98,8 @@ const LoginPage: React.FC = () => {
               margin="normal"
               required
               disabled={isLoading}
+              placeholder="Enter your password"
+              autoComplete="current-password"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -124,8 +135,6 @@ const LoginPage: React.FC = () => {
               </Link>
             </Typography>
           </Box>
-
-
         </CardContent>
       </Card>
     </Container>
