@@ -20,9 +20,10 @@ import { useAuth } from '../contexts/AuthContext';
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, isLoading, error } = useAuth();
+  // Form data - no default values for security
   const [formData, setFormData] = useState({
-    email: 'hoang@shopwithus.com',
-    password: 'hoang123@',
+    email: '',
+    password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
 

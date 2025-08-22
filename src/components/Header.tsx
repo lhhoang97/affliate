@@ -3,18 +3,21 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   IconButton,
   Box,
   Drawer,
   Badge,
   Menu,
   MenuItem,
-  Avatar
+  Avatar,
+  Divider
 } from '@mui/material';
 import {
   ShoppingCart,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  AccountCircle,
+  Login,
+  PersonAdd
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -33,6 +36,7 @@ const Header: React.FC = () => {
   console.log('Header - User role:', user?.role);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [accountMenuAnchor, setAccountMenuAnchor] = useState<null | HTMLElement>(null);
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
@@ -51,6 +55,14 @@ const Header: React.FC = () => {
 
   const handleProfileMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleAccountMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAccountMenuAnchor(event.currentTarget);
+  };
+
+  const handleAccountMenuClose = () => {
+    setAccountMenuAnchor(null);
   };
 
   const handleLogout = () => {
@@ -150,6 +162,152 @@ const Header: React.FC = () => {
         </Box>
       </Box>
 
+      {/* Account Section */}
+      {isAuthenticated ? (
+        <Box sx={{ 
+          p: 2, 
+          borderTop: '1px solid #e9ecef',
+          backgroundColor: '#f8f9fa'
+        }}>
+          <Typography
+            component={RouterLink}
+            to="/profile"
+            onClick={() => setMobileOpen(false)}
+            sx={{
+              color: '#333',
+              textDecoration: 'none',
+              py: 1.5,
+              px: 3,
+              fontSize: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              '&:hover': {
+                backgroundColor: '#f8f9fa'
+              }
+            }}
+          >
+            <AccountCircle sx={{ fontSize: 20 }} />
+            Hồ sơ
+          </Typography>
+          <Typography
+            component={RouterLink}
+            to="/orders"
+            onClick={() => setMobileOpen(false)}
+            sx={{
+              color: '#333',
+              textDecoration: 'none',
+              py: 1.5,
+              px: 3,
+              fontSize: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              '&:hover': {
+                backgroundColor: '#f8f9fa'
+              }
+            }}
+          >
+            📦 Đơn hàng
+          </Typography>
+          {user?.role === 'admin' && (
+            <Typography
+              component={RouterLink}
+              to="/admin"
+              onClick={() => setMobileOpen(false)}
+              sx={{
+                color: '#dc3545',
+                textDecoration: 'none',
+                py: 1.5,
+                px: 3,
+                fontSize: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                fontWeight: 600,
+                '&:hover': {
+                  backgroundColor: '#f8f9fa'
+                }
+              }}
+            >
+              🔧 Admin Panel
+            </Typography>
+          )}
+          <Typography
+            onClick={() => { 
+              logout(); 
+              setMobileOpen(false); 
+              navigate('/');
+            }}
+            sx={{
+              color: '#dc3545',
+              textDecoration: 'none',
+              py: 1.5,
+              px: 3,
+              fontSize: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: '#f8f9fa'
+              }
+            }}
+          >
+            🚪 Đăng xuất
+          </Typography>
+        </Box>
+      ) : (
+        <Box sx={{ 
+          p: 2, 
+          borderTop: '1px solid #e9ecef',
+          backgroundColor: '#f8f9fa'
+        }}>
+          <Typography
+            component={RouterLink}
+            to="/login"
+            onClick={() => setMobileOpen(false)}
+            sx={{
+              color: '#007bff',
+              textDecoration: 'none',
+              py: 1.5,
+              px: 3,
+              fontSize: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              '&:hover': {
+                backgroundColor: '#e3f2fd'
+              }
+            }}
+          >
+            <Login sx={{ fontSize: 20 }} />
+            Đăng nhập
+          </Typography>
+          <Typography
+            component={RouterLink}
+            to="/register"
+            onClick={() => setMobileOpen(false)}
+            sx={{
+              color: '#007bff',
+              textDecoration: 'none',
+              py: 1.5,
+              px: 3,
+              fontSize: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              '&:hover': {
+                backgroundColor: '#e3f2fd'
+              }
+            }}
+          >
+            <PersonAdd sx={{ fontSize: 20 }} />
+            Đăng ký
+          </Typography>
+        </Box>
+      )}
+
       {/* Footer */}
       <Box sx={{ 
         p: 2, 
@@ -243,36 +401,18 @@ const Header: React.FC = () => {
                 </Avatar>
               </IconButton>
             ) : (
-              <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, ml: 2 }}>
-                <Button
-                  component={RouterLink}
-                  to="/login"
-                  variant="outlined"
-                  sx={{
-                    borderColor: '#007bff',
-                    color: '#007bff',
-                    '&:hover': {
-                      borderColor: '#0056b3',
-                      backgroundColor: '#f8f9fa'
-                    }
-                  }}
-                >
-                  Login
-                </Button>
-                <Button
-                  component={RouterLink}
-                  to="/register"
-                  variant="contained"
-                  sx={{
-                    backgroundColor: '#007bff',
-                    '&:hover': {
-                      backgroundColor: '#0056b3'
-                    }
-                  }}
-                >
-                  Register
-                </Button>
-              </Box>
+              <IconButton
+                onClick={handleAccountMenuOpen}
+                sx={{
+                  color: '#333',
+                  ml: 1,
+                  '&:hover': {
+                    backgroundColor: '#f8f9fa'
+                  }
+                }}
+              >
+                <AccountCircle />
+              </IconButton>
             )}
           </Box>
         </Toolbar>
@@ -325,6 +465,52 @@ const Header: React.FC = () => {
         )}
         <MenuItem onClick={handleLogout}>
           Logout
+        </MenuItem>
+      </Menu>
+
+      {/* Account Menu for non-authenticated users */}
+      <Menu
+        anchorEl={accountMenuAnchor}
+        open={Boolean(accountMenuAnchor)}
+        onClose={handleAccountMenuClose}
+        sx={{
+          '& .MuiPaper-root': {
+            borderRadius: 2,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+            minWidth: 200
+          }
+        }}
+      >
+        <MenuItem 
+          onClick={() => { 
+            navigate('/login'); 
+            handleAccountMenuClose(); 
+          }}
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            py: 1.5
+          }}
+        >
+          <Login sx={{ fontSize: 20 }} />
+          Đăng nhập
+        </MenuItem>
+        <Divider />
+        <MenuItem 
+          onClick={() => { 
+            navigate('/register'); 
+            handleAccountMenuClose(); 
+          }}
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            py: 1.5
+          }}
+        >
+          <PersonAdd sx={{ fontSize: 20 }} />
+          Đăng ký
         </MenuItem>
       </Menu>
     </>
