@@ -277,19 +277,29 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
 
                 {/* Retailer */}
                 {product.retailer && (
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: '#6b7280',
-                      fontSize: '0.8rem',
-                      fontWeight: 500,
-                      mb: 1,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px'
-                    }}
-                  >
-                    {product.retailer}
-                  </Typography>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 0.5, 
+                    mb: 1,
+                    p: 0.5,
+                    backgroundColor: '#f0f9ff',
+                    borderRadius: 1,
+                    border: '1px solid #bae6fd'
+                  }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: '#3b82f6',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      🏪 {product.retailer}
+                    </Typography>
+                  </Box>
                 )}
 
                 {/* Rating */}

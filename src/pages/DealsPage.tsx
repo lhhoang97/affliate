@@ -67,7 +67,8 @@ const DealsPage: React.FC = () => {
       reviewCount: 1250,
       timeLeft: '2:45:30',
       soldPercentage: 75,
-      badge: 'Flash Deal'
+      badge: 'Flash Deal',
+      retailer: 'Apple Store'
     },
     {
       id: '2',
@@ -80,7 +81,8 @@ const DealsPage: React.FC = () => {
       reviewCount: 890,
       timeLeft: '5:20:15',
       soldPercentage: 60,
-      badge: 'Limited Time'
+      badge: 'Limited Time',
+      retailer: 'Best Buy'
     },
     {
       id: '3',
@@ -93,7 +95,8 @@ const DealsPage: React.FC = () => {
       reviewCount: 567,
       timeLeft: '1:15:45',
       soldPercentage: 90,
-      badge: 'Almost Gone'
+      badge: 'Almost Gone',
+      retailer: 'Amazon'
     }
   ];
 
@@ -259,6 +262,33 @@ const DealsPage: React.FC = () => {
                   <Typography variant="h6" component="h3" gutterBottom>
                     {deal.name}
                   </Typography>
+                  
+                  {/* Retailer Information */}
+                  {deal.retailer && (
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 0.5, 
+                      mb: 1,
+                      p: 0.5,
+                      backgroundColor: '#f0f9ff',
+                      borderRadius: 1,
+                      border: '1px solid #bae6fd'
+                    }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: '#3b82f6',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px'
+                        }}
+                      >
+                        🏪 {deal.retailer}
+                      </Typography>
+                    </Box>
+                  )}
                   
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                     <Rating value={deal.rating} precision={0.1} size="small" readOnly />

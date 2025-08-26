@@ -486,6 +486,31 @@ const ProductDetailPage: React.FC = () => {
                 </Box>
               </Box>
 
+              {/* Retailer Information */}
+              {product.retailer && (
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 2, 
+                  mb: 3,
+                  p: 2,
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: 2,
+                  border: '1px solid #e5e7eb'
+                }}>
+                  <LocalShipping sx={{ color: '#3b82f6', fontSize: '1.5rem' }} />
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#1f2937' }}>
+                      Nơi bán: {product.retailer}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Được bán và vận chuyển bởi {product.retailer}
+                    </Typography>
+                  </Box>
+                  <Verified sx={{ color: '#10b981', ml: 'auto' }} />
+                </Box>
+              )}
+
               {/* Action Buttons */}
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 3 }}>
                 <Button
@@ -501,7 +526,7 @@ const ProductDetailPage: React.FC = () => {
                     '&:hover': { backgroundColor: '#2563eb' }
                   }}
                 >
-                  Get Deal at {product.retailer}
+                  Mua tại {product.retailer || 'Nhà bán'}
                 </Button>
                 <IconButton onClick={handleShare} sx={{ color: '#6b7280' }}>
                   <Share />
@@ -547,39 +572,75 @@ const ProductDetailPage: React.FC = () => {
         <TabPanel value={selectedTab} index={0}>
           <Box sx={{ p: 3 }}>
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-              Deal Details
+              Chi tiết sản phẩm
             </Typography>
             
+            {/* Retailer Information Section */}
+            {product.retailer && (
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#3b82f6' }}>
+                  🏪 Nơi bán hàng
+                </Typography>
+                <Box sx={{ 
+                  p: 2, 
+                  backgroundColor: '#f0f9ff', 
+                  borderRadius: 2, 
+                  border: '1px solid #bae6fd',
+                  mb: 2
+                }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1f2937' }}>
+                    {product.retailer}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Nhà bán lẻ uy tín, đảm bảo chất lượng sản phẩm và dịch vụ vận chuyển
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+            
             <Typography variant="body1" sx={{ mb: 3 }}>
-              {product.dealDescription || `<strong>${product.retailer} [${product.retailer?.toLowerCase().replace(/\s+/g, '')}.com]</strong> has ${product.name} + Free Shipping`}
+              {product.dealDescription || `${product.retailer || 'Nhà bán'} có ${product.name} với giá ${product.price}$ + Miễn phí vận chuyển`}
             </Typography>
 
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-              Deal Categories:
+              Danh mục sản phẩm:
             </Typography>
             <Box sx={{ mb: 3 }}>
               {(product.dealCategories || [product.category, ...product.tags.slice(0, 2)]).map((category, index) => (
                 <Chip 
                   key={index} 
-                  label={`${category} [${product.retailer?.toLowerCase().replace(/\s+/g, '')}.com]`} 
+                  label={category} 
                   sx={{ mr: 1, mb: 1 }} 
                 />
               ))}
             </Box>
 
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-              Product Details:
+              Thông tin sản phẩm:
             </Typography>
             <Box sx={{ mb: 2 }}>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • {product.name} [{product.retailer?.toLowerCase().replace(/\s+/g, '')}.com] <strong>${product.price}</strong>
+                • <strong>Tên sản phẩm:</strong> {product.name}
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • Brand: {product.brand}
+                • <strong>Giá hiện tại:</strong> ${product.price}
+              </Typography>
+              {product.originalPrice && (
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  • <strong>Giá gốc:</strong> <span style={{ textDecoration: 'line-through' }}>${product.originalPrice}</span>
+                </Typography>
+              )}
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                • <strong>Thương hiệu:</strong> {product.brand}
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • Rating: {product.rating}/5 ({product.reviewCount} reviews)
+                • <strong>Đánh giá:</strong> {product.rating}/5 ({product.reviewCount} đánh giá)
               </Typography>
+              {product.retailer && (
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  • <strong>Nơi bán:</strong> {product.retailer}
+                </Typography>
+              )}
             </Box>
 
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>

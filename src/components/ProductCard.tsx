@@ -279,44 +279,159 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </Box>
 
-        {/* Simple Retailer - Like in the image */}
-        <Typography 
-          variant="body2" 
-          color="text.secondary"
-          sx={{ 
-            fontSize: { xs: '0.8rem', sm: '0.9rem' },
-            fontWeight: 500,
-            mb: 1.5,
-            color: '#6b7280'
-          }}
-        >
-          {product.retailer || 'Amazon'}
-        </Typography>
+        {/* Retailer Info - Prominent display */}
+        <Box sx={{ 
+          mb: 1.5,
+          p: 1,
+          backgroundColor: '#f8fafc',
+          borderRadius: 1,
+          border: '1px solid #e5e7eb'
+        }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 0.5,
+            mb: 0.5
+          }}>
+            <Box sx={{
+              width: 16,
+              height: 16,
+              borderRadius: '50%',
+              backgroundColor: '#3b82f6',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: 'white',
+                  fontSize: '0.6rem',
+                  fontWeight: 700,
+                  lineHeight: 1
+                }}
+              >
+                {product.retailer?.charAt(0)?.toUpperCase() || 'S'}
+              </Typography>
+            </Box>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                fontWeight: 600,
+                color: '#374151'
+              }}
+            >
+              {product.retailer || 'ShopWithUs'}
+            </Typography>
+          </Box>
+          
+          {/* Website */}
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              fontSize: { xs: '0.7rem', sm: '0.75rem' },
+              color: '#6b7280',
+              display: 'block'
+            }}
+          >
+            🌐 {product.retailer?.toLowerCase().replace(/\s+/g, '')}.com
+          </Typography>
+          
+          {/* Shipping Info */}
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              fontSize: { xs: '0.7rem', sm: '0.75rem' },
+              color: '#059669',
+              display: 'block',
+              fontWeight: 500
+            }}
+          >
+            🚚 Free Shipping
+          </Typography>
+          
+          {/* Rating Info */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 0.5,
+            mt: 0.5
+          }}>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                color: '#f59e0b',
+                fontWeight: 600
+              }}
+            >
+              ⭐ 4.5
+            </Typography>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                color: '#6b7280'
+              }}
+            >
+              (1,234 reviews)
+            </Typography>
+          </Box>
+          
+          {/* Delivery & Return Info */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            mt: 0.5
+          }}>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                fontSize: { xs: '0.65rem', sm: '0.7rem' },
+                color: '#059669',
+                fontWeight: 500
+              }}
+            >
+              📦 2-3 days
+            </Typography>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                fontSize: { xs: '0.65rem', sm: '0.7rem' },
+                color: '#3b82f6',
+                fontWeight: 500
+              }}
+            >
+              🔄 30-day return
+            </Typography>
+          </Box>
+        </Box>
         
 
 
-        {/* Simple Buy Button - Like in the image */}
+        {/* Buy Button with Retailer */}
         <Button
-          variant="outlined"
+          variant="contained"
           size="small"
           fullWidth
           onClick={handleView}
           sx={{
             mb: 1.5,
-            borderColor: '#3b82f6',
-            color: '#3b82f6',
+            backgroundColor: '#3b82f6',
+            color: 'white',
             fontWeight: 600,
             textTransform: 'none',
             fontSize: { xs: '0.8rem', sm: '0.9rem' },
-            py: { xs: 0.5, sm: 0.75 },
+            py: { xs: 0.75, sm: 1 },
             '&:hover': {
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              borderColor: '#3b82f6'
+              backgroundColor: '#2563eb'
             }
           }}
         >
-          Get Deal
+          Get Deal at {product.retailer || 'ShopWithUs'}
         </Button>
 
         {/* Interaction Buttons */}

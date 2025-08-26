@@ -200,6 +200,25 @@ const SearchPage: React.FC = () => {
                           }}>
                             {product.name}
                           </Typography>
+                          
+                          {/* Retailer Information */}
+                          {product.retailer && (
+                            <Typography 
+                              variant="body2" 
+                              sx={{ 
+                                color: '#3b82f6',
+                                fontSize: '0.75rem',
+                                fontWeight: '600',
+                                mb: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.5
+                              }}
+                            >
+                              🏪 {product.retailer}
+                            </Typography>
+                          )}
+                          
                           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                             <Rating value={product.rating} size="small" readOnly />
                             <Typography variant="caption" sx={{ ml: 0.5, color: '#666' }}>

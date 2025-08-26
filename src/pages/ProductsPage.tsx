@@ -264,6 +264,24 @@ const ProductsPage: React.FC = () => {
                 {product.name}
               </Typography>
               
+              {/* Retailer Information */}
+              {product.retailer && (
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: '#3b82f6',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    mb: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5
+                  }}
+                >
+                  🏪 {product.retailer}
+                </Typography>
+              )}
+              
               {/* Color Variants - Horizontal Layout */}
               <Box sx={{ display: 'flex', gap: 0.5, mb: 1, flexWrap: 'wrap' }}>
                 {product.category === 'Electronics' && product.name.toLowerCase().includes('iphone') ? (
