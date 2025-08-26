@@ -13,6 +13,7 @@ export const mockProducts: Product[] = [
     reviewCount: 2156,
     category: 'Electronics',
     brand: 'Apple',
+    retailer: 'Amazon',
     inStock: true,
     features: ['A13 Bionic chip', 'Dual camera system', 'Face ID', 'Water resistant'],
     specifications: {
@@ -42,6 +43,7 @@ export const mockProducts: Product[] = [
     reviewCount: 1892,
     category: 'Electronics',
     brand: 'Apple',
+    retailer: 'Best Buy',
     inStock: true,
     features: ['A15 Bionic chip', 'Pro camera system', 'Face ID', 'Cinematic mode'],
     specifications: {
@@ -130,6 +132,7 @@ export const mockProducts: Product[] = [
     reviewCount: 892,
     category: 'Fashion',
     brand: 'Nike',
+    retailer: 'Lowe\'s',
     inStock: true,
     features: ['Air Max technology', 'Breathable mesh', 'Comfortable fit', 'Durable sole'],
     specifications: {

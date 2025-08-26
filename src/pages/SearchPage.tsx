@@ -14,9 +14,10 @@ import {
   Menu as MenuIcon
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { mockProducts } from '../utils/mockData';
+
 import SearchBar from '../components/SearchBar';
 import Logo from '../components/Logo';
+import { Product } from '../types';
 
 const SearchPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -32,7 +33,7 @@ const SearchPage: React.FC = () => {
     }
   };
 
-  const mockSearchResults = mockProducts.slice(0, 6);
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
 
   return (
     <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
@@ -106,7 +107,7 @@ const SearchPage: React.FC = () => {
                   }, 
                   gap: { xs: 1.5, md: 2 }
                 }}>
-                  {mockSearchResults.map((product) => (
+                  {searchResults.map((product) => (
                     <Card
                       key={product.id} 
                       sx={{ 

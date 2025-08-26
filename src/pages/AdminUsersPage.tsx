@@ -25,7 +25,7 @@ import {
   FormControl
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
-import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
+import { supabase } from '../utils/supabaseClient';
 
 interface AdminUserRow {
   id: string;
@@ -47,24 +47,17 @@ const AdminUsersPage: React.FC = () => {
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      if (isSupabaseConfigured) {
-        const { data, error } = await supabase.from('profiles').select('id, name, email, role, is_verified, created_at');
-        if (error) throw error;
-        const rows: AdminUserRow[] = (data || []).map((u: any) => ({
-          id: u.id,
-          name: u.name || 'User',
-          email: u.email,
-          role: (u.role as 'admin' | 'user') || 'user',
-          isVerified: !!u.is_verified,
-          created_at: u.created_at
-        }));
-        setUsers(rows);
-      } else {
-        setUsers([
-          { id: '1', name: 'Admin', email: 'admin@example.com', role: 'admin', isVerified: true },
-          { id: '2', name: 'User One', email: 'user1@example.com', role: 'user', isVerified: false },
-        ]);
-      }
+      const { data, error } = await supabase.from('profiles').select('id, name, email, role, is_verified, created_at');
+      if (error) throw error;
+      const rows: AdminUserRow[] = (data || []).map((u: any) => ({
+        id: u.id,
+        name: u.name || 'User',
+        email: u.email,
+        role: (u.role as 'admin' | 'user') || 'user',
+        isVerified: !!u.is_verified,
+        created_at: u.created_at
+      }));
+      setUsers(rows);
     } catch (err) {
       console.error(err);
     } finally {
@@ -85,12 +78,8 @@ const AdminUsersPage: React.FC = () => {
   const handleSave = async () => {
     if (!editing) return;
     try {
-      if (isSupabaseConfigured) {
-        const { error } = await supabase.from('profiles').update({ role }).eq('id', editing.id);
-        if (error) throw error;
-      } else {
-        setUsers(prev => prev.map(u => (u.id === editing.id ? { ...u, role } : u)));
-      }
+      const { error } = await supabase.from('profiles').update({ role }).eq('id', editing.id);
+      if (error) throw error;
       setEditOpen(false);
       fetchUsers();
     } catch (err) {
@@ -100,11 +89,9 @@ const AdminUsersPage: React.FC = () => {
 
   const handleDelete = async (row: AdminUserRow) => {
     try {
-      if (isSupabaseConfigured) {
-        // Soft-delete or block user in real app; here we just remove profile
-        const { error } = await supabase.from('profiles').delete().eq('id', row.id);
-        if (error) throw error;
-      }
+      // Soft-delete or block user in real app; here we just remove profile
+      const { error } = await supabase.from('profiles').delete().eq('id', row.id);
+      if (error) throw error;
       setUsers(prev => prev.filter(u => u.id !== row.id));
     } catch (err) {
       console.error(err);

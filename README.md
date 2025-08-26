@@ -1,46 +1,178 @@
-# Getting Started with Create React App
+# 🛍️ Affiliate Store - React + Supabase
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Một website affiliate marketing hiện đại với giao diện SlickDeals-inspired, được xây dựng bằng React và Supabase.
 
-## Available Scripts
+## ✨ Tính Năng Chính
 
-In the project directory, you can run:
+- 🎨 **Giao diện SlickDeals-inspired** với Material-UI
+- 🏪 **Hiển thị nơi bán sản phẩm** (Retailer info)
+- 🔄 **Cập nhật giá tự động** từ affiliate links
+- 📱 **Responsive design** cho mobile và desktop
+- 🔐 **Authentication** với Supabase Auth
+- 🗄️ **Database** với Supabase PostgreSQL
+- ⚡ **Real-time updates** (nếu cần)
 
-### `npm start`
+## 🚀 Quick Start
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 1. Clone Repository
+```bash
+git clone <repository-url>
+cd affiliate
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-### `npm test`
+### 3. Setup Supabase (Recommended)
+```bash
+# Làm theo hướng dẫn trong QUICK_SUPABASE_SETUP.md
+npm run supabase:setup
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 4. Start Development Server
+```bash
+npm start
+```
 
-### `npm run build`
+Truy cập: http://localhost:3000
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📋 Available Scripts
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Development
+- `npm start` - Chạy development server
+- `npm test` - Chạy tests
+- `npm run build` - Build cho production
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Supabase
+- `npm run supabase:test` - Test kết nối Supabase
+- `npm run supabase:migrate` - Migrate dữ liệu từ mock sang Supabase
+- `npm run supabase:setup` - Hướng dẫn setup Supabase
 
-### `npm run eject`
+### Deployment
+- `npm run deploy` - Deploy lên GitHub Pages
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## 🗄️ Database Schema
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Tables
+- **products** - Thông tin sản phẩm
+- **categories** - Danh mục sản phẩm
+- **profiles** - Thông tin người dùng
+- **reviews** - Đánh giá sản phẩm
+- **orders** - Đơn hàng
+- **order_items** - Chi tiết đơn hàng
+- **wishlist** - Danh sách yêu thích
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Features
+- ✅ Row Level Security (RLS)
+- ✅ Auto-update timestamps
+- ✅ Performance indexes
+- ✅ Data validation
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## 🎨 UI Components
 
-## Learn More
+### Pages
+- **HomePage** - Trang chủ với hero section và categories
+- **ProductsPage** - Danh sách sản phẩm với filtering
+- **ProductDetailPage** - Chi tiết sản phẩm
+- **AdminPanel** - Quản lý sản phẩm, categories, price updates
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Components
+- **Header** - Navigation với search
+- **ProductCard** - Card sản phẩm với retailer info
+- **CategoryNavigation** - Menu danh mục
+- **PriceUpdateService** - Cập nhật giá tự động
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🔧 Configuration
+
+### Environment Variables
+Tạo file `.env`:
+```env
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_anon_key
+```
+
+### Supabase Setup
+1. Tạo project tại [supabase.com](https://supabase.com)
+2. Chạy SQL script từ `SUPABASE_SETUP.sql`
+3. Cấu hình environment variables
+4. Test kết nối: `npm run supabase:test`
+5. Migrate dữ liệu: `npm run supabase:migrate`
+
+## 📊 Data Management
+
+### Mock Data (Fallback)
+- Sử dụng khi chưa cấu hình Supabase
+- Lưu trong `src/utils/mockData.ts`
+- Tự động fallback nếu Supabase lỗi
+
+### Supabase (Production)
+- Database thực với PostgreSQL
+- Real-time capabilities
+- Backup tự động
+- Scalable và production-ready
+
+## 🎯 Features
+
+### Product Management
+- ✅ CRUD operations
+- ✅ Image upload
+- ✅ Category management
+- ✅ Price tracking
+- ✅ Retailer information
+
+### Price Updates
+- ✅ Automatic price scraping
+- ✅ Scheduled updates
+- ✅ Manual updates
+- ✅ Support for multiple sites (Shopee, Tiki, Lazada, Amazon)
+
+### User Experience
+- ✅ SlickDeals-inspired design
+- ✅ Responsive layout
+- ✅ Search and filtering
+- ✅ Shopping cart
+- ✅ Wishlist
+
+## 🔒 Security
+
+- Row Level Security (RLS) trên tất cả bảng
+- Public read access cho products/categories
+- Authenticated users có thể quản lý dữ liệu
+- API keys được bảo vệ
+
+## 🚀 Deployment
+
+### Netlify
+1. Connect repository
+2. Build command: `npm run build`
+3. Publish directory: `build`
+
+### Vercel
+1. Import repository
+2. Framework preset: Create React App
+3. Deploy
+
+## 📝 Documentation
+
+- [SUPABASE_SETUP_GUIDE.md](./SUPABASE_SETUP_GUIDE.md) - Hướng dẫn chi tiết setup Supabase
+- [QUICK_SUPABASE_SETUP.md](./QUICK_SUPABASE_SETUP.md) - Hướng dẫn nhanh
+- [RETAILER_FEATURE_GUIDE.md](./RETAILER_FEATURE_GUIDE.md) - Tính năng hiển thị nơi bán
+- [PRICE_UPDATE_GUIDE.md](./PRICE_UPDATE_GUIDE.md) - Tính năng cập nhật giá
+
+## 🤝 Contributing
+
+1. Fork repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Create Pull Request
+
+## 📄 License
+
+MIT License - see LICENSE file for details
+
+---
+
+**🎉 Chúc mừng! Website affiliate store đã sẵn sàng!**

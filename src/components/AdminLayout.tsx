@@ -25,7 +25,10 @@ import {
   Settings,
   Logout,
   Notifications,
-  AccountCircle
+  AccountCircle,
+  Update,
+  ViewList,
+  Slideshow
 } from '@mui/icons-material';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -58,10 +61,14 @@ const AdminLayout: React.FC = () => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <Dashboard />, path: '/admin' },
-            { text: 'Product Management', icon: <Inventory />, path: '/admin/products' },
-          { text: 'Category Management', icon: <Category />, path: '/admin/categories' },
-      { text: 'User Management', icon: <People />, path: '/admin/users' },
-      { text: 'Settings', icon: <Settings />, path: '/admin/settings' },
+    { text: 'Product Management', icon: <Inventory />, path: '/admin/products' },
+    { text: 'Category Management', icon: <Category />, path: '/admin/categories' },
+    { text: 'Price Updates', icon: <Update />, path: '/admin/price-updates' },
+    { text: 'Section Management', icon: <ViewList />, path: '/admin/section-management' },
+    { text: 'Section Products', icon: <Slideshow />, path: '/admin/section-products' },
+    { text: 'Slider Products', icon: <Slideshow />, path: '/admin/slider-products' },
+    { text: 'User Management', icon: <People />, path: '/admin/users' },
+    { text: 'Settings', icon: <Settings />, path: '/admin/settings' },
   ];
 
   const drawer = (

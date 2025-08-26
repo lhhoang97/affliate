@@ -1,410 +1,513 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  Typography,
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  Button
+import { 
+  Box, 
+  Container, 
+  Typography
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import SimpleSlider from '../components/SimpleSlider';
+import { useProducts } from '../contexts/ProductContext';
+import { Product } from '../types';
 
 const HomePage: React.FC = () => {
+  const { products, loading } = useProducts();
   const navigate = useNavigate();
-  const [orderedCategories, setOrderedCategories] = useState<any[]>([]);
-  const [showAllCategories, setShowAllCategories] = useState(false);
 
-  // Default categories fallback
-  const defaultCategories = [
+  // Sample products data for testing
+  const sampleProducts: Product[] = [
     {
-      id: 'electronics',
-      name: 'Electronics',
-      image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=200&fit=crop',
-      subcategories: ['HEADPHONES', 'LAPTOP', 'TABLET', 'PHONE', 'TV', 'REFRIGERATOR', 'AIR CONDITIONER']
+      id: '1',
+      name: '10KG ANYCUBIC 1.75mm PLA 3D Printer Filament Bundles',
+      description: 'High-quality 3D printer filament for professional printing',
+      price: 65,
+      originalPrice: 246,
+      image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=200&fit=crop',
+      rating: 4.5,
+      reviewCount: 128,
+      category: 'Electronics',
+      brand: 'ANYCUBIC',
+      retailer: 'AliExpress',
+      inStock: true,
+      features: ['High Quality', 'Multiple Colors', '1.75mm Diameter'],
+      specifications: { 'Material': 'PLA', 'Diameter': '1.75mm', 'Weight': '10KG' },
+      images: ['https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=200&fit=crop'],
+      tags: ['3D Printing', 'Filament', 'PLA'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
     },
     {
-      id: 'fashion',
-      name: 'Fashion',
-      image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=200&fit=crop',
-      subcategories: ['MEN', 'WOMEN', 'KIDS', 'SHOES', 'BAGS', 'JEWELRY', 'ACCESSORIES']
+      id: '2',
+      name: 'Wireless Bluetooth Earbuds with Noise Cancellation',
+      description: 'Premium wireless earbuds with active noise cancellation',
+      price: 29.99,
+      originalPrice: 89.99,
+      image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=200&fit=crop',
+      rating: 4.3,
+      reviewCount: 89,
+      category: 'Electronics',
+      brand: 'TechAudio',
+      retailer: 'Amazon',
+      inStock: true,
+      features: ['Noise Cancellation', 'Wireless', 'Long Battery Life'],
+      specifications: { 'Battery Life': '8 hours', 'Connectivity': 'Bluetooth 5.0' },
+      images: ['https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=200&fit=crop'],
+      tags: ['Audio', 'Wireless', 'Earbuds'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
     },
     {
-      id: 'home-garden',
-      name: 'Home & Garden',
-      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop',
-      subcategories: ['FURNITURE', 'KITCHEN', 'BEDDING', 'GARDEN', 'LIGHTING', 'STORAGE']
+      id: '3',
+      name: 'Smart Fitness Watch with Heart Rate Monitor',
+      description: 'Advanced fitness tracking with heart rate monitoring',
+      price: 79.99,
+      originalPrice: 199.99,
+      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=200&fit=crop',
+      rating: 4.7,
+      reviewCount: 156,
+      category: 'Electronics',
+      brand: 'FitTech',
+      retailer: 'Best Buy',
+      inStock: true,
+      features: ['Heart Rate Monitor', 'GPS', 'Water Resistant'],
+      specifications: { 'Battery Life': '7 days', 'Water Resistance': '5ATM' },
+      images: ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=200&fit=crop'],
+      tags: ['Fitness', 'Smartwatch', 'Health'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
     },
     {
-      id: 'sports',
-      name: 'Sports',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop',
-      subcategories: ['FITNESS', 'TEAM SPORTS', 'OUTDOOR', 'SWIMMING', 'CYCLING', 'RUNNING']
+      id: '4',
+      name: 'Portable Bluetooth Speaker Waterproof',
+      description: 'Waterproof portable speaker with amazing sound quality',
+      price: 34.99,
+      originalPrice: 79.99,
+      image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=200&fit=crop',
+      rating: 4.2,
+      reviewCount: 67,
+      category: 'Electronics',
+      brand: 'SoundWave',
+      retailer: 'Walmart',
+      inStock: true,
+      features: ['Waterproof', 'Portable', 'Long Battery'],
+      specifications: { 'Battery Life': '12 hours', 'Water Resistance': 'IPX7' },
+      images: ['https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=200&fit=crop'],
+      tags: ['Audio', 'Portable', 'Waterproof'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
     },
     {
-      id: 'beauty',
-      name: 'Beauty',
-      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=200&fit=crop',
-      subcategories: ['SKINCARE', 'MAKEUP', 'HAIR CARE', 'PERSONAL CARE', 'VITAMINS', 'FRAGRANCES']
+      id: '5',
+      name: 'Gaming Mechanical Keyboard RGB Backlit',
+      description: 'Professional gaming keyboard with RGB lighting',
+      price: 89.99,
+      originalPrice: 149.99,
+      image: 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=200&fit=crop',
+      rating: 4.6,
+      reviewCount: 234,
+      category: 'Electronics',
+      brand: 'GameTech',
+      retailer: 'Newegg',
+      inStock: true,
+      features: ['RGB Lighting', 'Mechanical Switches', 'Programmable Keys'],
+      specifications: { 'Switch Type': 'Cherry MX Red', 'Backlight': 'RGB' },
+      images: ['https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=200&fit=crop'],
+      tags: ['Gaming', 'Keyboard', 'RGB'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
     },
     {
-      id: 'toys-games',
-      name: 'Toys & Games',
-      image: 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=300&h=200&fit=crop',
-      subcategories: ['ACTION FIGURES', 'BOARD GAMES', 'EDUCATIONAL', 'LEGO', 'DOLLS', 'VIDEO GAMES']
+      id: '6',
+      name: '4K Ultra HD Smart TV 55 inch',
+      description: 'Stunning 4K resolution with smart features',
+      price: 399.99,
+      originalPrice: 699.99,
+      image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=200&fit=crop',
+      rating: 4.8,
+      reviewCount: 445,
+      category: 'Electronics',
+      brand: 'ViewTech',
+      retailer: 'Target',
+      inStock: true,
+      features: ['4K Resolution', 'Smart TV', 'HDR'],
+      specifications: { 'Screen Size': '55 inch', 'Resolution': '4K UHD' },
+      images: ['https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=200&fit=crop'],
+      tags: ['TV', '4K', 'Smart TV'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
     },
     {
-      id: 'automotive',
-      name: 'Automotive',
-      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=300&h=200&fit=crop',
-      subcategories: ['CAR PARTS', 'CAR CARE', 'MOTORCYCLE', 'TRUCK', 'TOOLS', 'ELECTRONICS']
+      id: '7',
+      name: 'Wireless Charging Pad Fast Charger',
+      description: 'Fast wireless charging pad for all devices',
+      price: 19.99,
+      originalPrice: 49.99,
+      image: 'https://images.unsplash.com/photo-1609592806596-b43bada2f2d2?w=400&h=200&fit=crop',
+      rating: 4.1,
+      reviewCount: 78,
+      category: 'Electronics',
+      brand: 'ChargeTech',
+      retailer: 'Amazon',
+      inStock: true,
+      features: ['Fast Charging', 'Universal', 'LED Indicator'],
+      specifications: { 'Power Output': '15W', 'Compatibility': 'Qi Standard' },
+      images: ['https://images.unsplash.com/photo-1609592806596-b43bada2f2d2?w=400&h=200&fit=crop'],
+      tags: ['Charging', 'Wireless', 'Fast Charging'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
     },
     {
-      id: 'office-supplies',
-      name: 'Office Supplies',
-      image: 'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=300&h=200&fit=crop',
-      subcategories: ['PAPER', 'PENS', 'DESK', 'FILING', 'FURNITURE']
+      id: '8',
+      name: 'Professional Camera DSLR Kit',
+      description: 'Professional DSLR camera with lens kit',
+      price: 599.99,
+      originalPrice: 999.99,
+      image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&h=200&fit=crop',
+      rating: 4.9,
+      reviewCount: 567,
+      category: 'Electronics',
+      brand: 'PhotoPro',
+      retailer: 'B&H Photo',
+      inStock: true,
+      features: ['24MP Sensor', '4K Video', 'Dual Card Slots'],
+      specifications: { 'Sensor': '24MP APS-C', 'Video': '4K 30fps' },
+      images: ['https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&h=200&fit=crop'],
+      tags: ['Camera', 'DSLR', 'Professional'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
     },
     {
-      id: 'pet-supplies',
-      name: 'Pet Supplies',
-      image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=300&h=200&fit=crop',
-      subcategories: ['DOG', 'CAT', 'FOOD', 'TOYS', 'HEALTH']
+      id: '9',
+      name: 'Robot Vacuum Cleaner with Mapping',
+      description: 'Smart robot vacuum with advanced mapping technology',
+      price: 199.99,
+      originalPrice: 399.99,
+      image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=200&fit=crop',
+      rating: 4.4,
+      reviewCount: 189,
+      category: 'Home',
+      brand: 'CleanBot',
+      retailer: 'Costco',
+      inStock: true,
+      features: ['Smart Mapping', 'App Control', 'Auto Return'],
+      specifications: { 'Battery Life': '120 minutes', 'Suction': '2000Pa' },
+      images: ['https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=200&fit=crop'],
+      tags: ['Robot', 'Vacuum', 'Smart Home'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
     },
     {
-      id: 'health-wellness',
-      name: 'Health & Wellness',
-      image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop',
-      subcategories: ['VITAMINS', 'FITNESS', 'MEDICAL', 'CARE', 'WELLNESS']
+      id: '10',
+      name: 'Gaming Mouse RGB 16000 DPI',
+      description: 'High-precision gaming mouse with RGB lighting',
+      price: 39.99,
+      originalPrice: 79.99,
+      image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=200&fit=crop',
+      rating: 4.5,
+      reviewCount: 123,
+      category: 'Electronics',
+      brand: 'GameTech',
+      retailer: 'Micro Center',
+      inStock: true,
+      features: ['16000 DPI', 'RGB Lighting', 'Programmable Buttons'],
+      specifications: { 'DPI': '16000', 'Buttons': '7 Programmable' },
+      images: ['https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=200&fit=crop'],
+      tags: ['Gaming', 'Mouse', 'RGB'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
     },
     {
-      id: 'health-beauty',
-      name: 'Health & Beauty',
-      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=200&fit=crop',
-      subcategories: ['SKINCARE', 'MAKEUP', 'HAIR CARE', 'PERSONAL CARE', 'VITAMINS', 'FRAGRANCES', 'SUPPLEMENTS', 'FITNESS']
+      id: '11',
+      name: 'Air Fryer Digital 5.8L Capacity',
+      description: 'Large capacity air fryer with digital controls',
+      price: 69.99,
+      originalPrice: 129.99,
+      image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=200&fit=crop',
+      rating: 4.3,
+      reviewCount: 234,
+      category: 'Home',
+      brand: 'KitchenPro',
+      retailer: 'Walmart',
+      inStock: true,
+      features: ['5.8L Capacity', 'Digital Display', '8 Presets'],
+      specifications: { 'Capacity': '5.8L', 'Power': '1700W' },
+      images: ['https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=200&fit=crop'],
+      tags: ['Kitchen', 'Air Fryer', 'Digital'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
+    },
+    {
+      id: '12',
+      name: 'Wireless Gaming Headset with Mic',
+      description: 'Premium wireless gaming headset with microphone',
+      price: 49.99,
+      originalPrice: 99.99,
+      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=200&fit=crop',
+      rating: 4.2,
+      reviewCount: 89,
+      category: 'Electronics',
+      brand: 'AudioTech',
+      retailer: 'Best Buy',
+      inStock: true,
+      features: ['Wireless', 'Noise Cancelling Mic', 'Surround Sound'],
+      specifications: { 'Battery Life': '20 hours', 'Connectivity': '2.4GHz' },
+      images: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=200&fit=crop'],
+      tags: ['Gaming', 'Headset', 'Wireless'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
+    },
+    {
+      id: '13',
+      name: 'Smart Home Security Camera System',
+      description: 'Complete home security system with smart cameras',
+      price: 149.99,
+      originalPrice: 299.99,
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop',
+      rating: 4.6,
+      reviewCount: 178,
+      category: 'Home',
+      brand: 'SecureHome',
+      retailer: 'Home Depot',
+      inStock: true,
+      features: ['1080p HD', 'Night Vision', 'Motion Detection'],
+      specifications: { 'Resolution': '1080p', 'Storage': 'Cloud + Local' },
+      images: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop'],
+      tags: ['Security', 'Camera', 'Smart Home'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
+    },
+    {
+      id: '14',
+      name: 'Electric Standing Desk Adjustable',
+      description: 'Electric adjustable standing desk for home office',
+      price: 299.99,
+      originalPrice: 499.99,
+      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=200&fit=crop',
+      rating: 4.7,
+      reviewCount: 156,
+      category: 'Home',
+      brand: 'OfficePro',
+      retailer: 'IKEA',
+      inStock: true,
+      features: ['Electric Adjustment', 'Memory Presets', 'Cable Management'],
+      specifications: { 'Height Range': '28-48 inches', 'Weight Capacity': '300 lbs' },
+      images: ['https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=200&fit=crop'],
+      tags: ['Office', 'Standing Desk', 'Adjustable'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
+    },
+    {
+      id: '15',
+      name: 'Portable Power Bank 20000mAh',
+      description: 'High capacity portable power bank for all devices',
+      price: 24.99,
+      originalPrice: 49.99,
+      image: 'https://images.unsplash.com/photo-1609592806596-b43bada2f2d2?w=400&h=200&fit=crop',
+      rating: 4.1,
+      reviewCount: 67,
+      category: 'Electronics',
+      brand: 'PowerTech',
+      retailer: 'Amazon',
+      inStock: true,
+      features: ['20000mAh', 'Fast Charging', 'Multiple Ports'],
+      specifications: { 'Capacity': '20000mAh', 'Output': '18W Fast Charging' },
+      images: ['https://images.unsplash.com/photo-1609592806596-b43bada2f2d2?w=400&h=200&fit=crop'],
+      tags: ['Power Bank', 'Portable', 'Fast Charging'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
+    },
+    {
+      id: '16',
+      name: 'Smart LED Light Bulbs Pack of 4',
+      description: 'Smart LED bulbs with app control and voice commands',
+      price: 19.99,
+      originalPrice: 39.99,
+      image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&h=200&fit=crop',
+      rating: 4.0,
+      reviewCount: 45,
+      category: 'Home',
+      brand: 'LightSmart',
+      retailer: 'Target',
+      inStock: true,
+      features: ['App Control', 'Voice Commands', 'Color Changing'],
+      specifications: { 'Wattage': '9W', 'Lumens': '800lm', 'Color Temperature': '2700K-6500K' },
+      images: ['https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&h=200&fit=crop'],
+      tags: ['Smart Home', 'LED', 'Lighting'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
+    },
+    {
+      id: '17',
+      name: 'Wireless Car Charger Mount',
+      description: 'Wireless charging mount for car dashboard',
+      price: 29.99,
+      originalPrice: 59.99,
+      image: 'https://images.unsplash.com/photo-1609592806596-b43bada2f2d2?w=400&h=200&fit=crop',
+      rating: 4.3,
+      reviewCount: 89,
+      category: 'Automotive',
+      brand: 'CarTech',
+      retailer: 'AutoZone',
+      inStock: true,
+      features: ['Wireless Charging', 'Auto Clamp', '360° Rotation'],
+      specifications: { 'Charging Speed': '10W', 'Compatibility': 'All Phones' },
+      images: ['https://images.unsplash.com/photo-1609592806596-b43bada2f2d2?w=400&h=200&fit=crop'],
+      tags: ['Car', 'Charging', 'Mount'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
+    },
+    {
+      id: '18',
+      name: 'Smart Coffee Maker WiFi Enabled',
+      description: 'Smart coffee maker with WiFi connectivity and app control',
+      price: 89.99,
+      originalPrice: 159.99,
+      image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=200&fit=crop',
+      rating: 4.4,
+      reviewCount: 123,
+      category: 'Home',
+      brand: 'CoffeeTech',
+      retailer: 'Bed Bath & Beyond',
+      inStock: true,
+      features: ['WiFi Connected', 'App Control', 'Programmable'],
+      specifications: { 'Capacity': '12 cups', 'Connectivity': 'WiFi + Bluetooth' },
+      images: ['https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=200&fit=crop'],
+      tags: ['Coffee', 'Smart Home', 'WiFi'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
+    },
+    {
+      id: '19',
+      name: 'Bluetooth Beanie with Speakers',
+      description: 'Warm beanie with built-in Bluetooth speakers',
+      price: 19.99,
+      originalPrice: 39.99,
+      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=200&fit=crop',
+      rating: 3.9,
+      reviewCount: 34,
+      category: 'Fashion',
+      brand: 'WearTech',
+      retailer: 'Amazon',
+      inStock: true,
+      features: ['Built-in Speakers', 'Warm Material', 'Bluetooth 5.0'],
+      specifications: { 'Battery Life': '6 hours', 'Connectivity': 'Bluetooth 5.0' },
+      images: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=200&fit=crop'],
+      tags: ['Fashion', 'Audio', 'Winter'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
+    },
+    {
+      id: '20',
+      name: 'Smart Door Lock Keyless Entry',
+      description: 'Smart door lock with keyless entry and app control',
+      price: 129.99,
+      originalPrice: 199.99,
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop',
+      rating: 4.5,
+      reviewCount: 89,
+      category: 'Home',
+      brand: 'LockSmart',
+      retailer: 'Lowe\'s',
+      inStock: true,
+      features: ['Keyless Entry', 'App Control', 'Auto Lock'],
+      specifications: { 'Battery Life': '1 year', 'Connectivity': 'WiFi + Bluetooth' },
+      images: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop'],
+      tags: ['Smart Home', 'Security', 'Door Lock'],
+      createdAt: '2024-01-15',
+      updatedAt: '2024-01-15'
     }
   ];
 
-  // Get categories from localStorage or use default
-  const getCategories = () => {
-    const savedCategories = localStorage.getItem('homepageCategories');
-    if (savedCategories) {
-      try {
-        return JSON.parse(savedCategories);
-      } catch (error) {
-        console.error('Error parsing saved categories:', error);
-        return defaultCategories;
-      }
-    }
-    return defaultCategories;
+  // Remove useEffect since we're using ProductContext now
+
+  // Create sections from actual products
+  const justForYouDeals = products.filter(p => p.category === 'Electronics').slice(0, 8);
+  const hotDeals = products.filter(p => p.price < 100).slice(0, 8);
+  const trendingDeals = products.filter(p => p.rating > 4.5).slice(0, 8);
+
+  const handleProductClick = (product: Product) => {
+    navigate(`/product/${product.id}`);
   };
 
-  const categories = getCategories();
-
-  // Function to get category color based on category name
-  const getCategoryColor = (categoryName: string): string => {
-    const colorMap: { [key: string]: string } = {
-      'Electronics': '#2563eb', // Blue
-      'Fashion': '#ec4899', // Pink
-      'Home & Garden': '#059669', // Emerald
-      'Sports': '#ea580c', // Orange
-      'Books & Media': '#7c3aed', // Purple
-      'Toys & Games': '#dc2626', // Red
-      'Health & Beauty': '#f43f5e', // Rose
-      'Automotive': '#92400e', // Amber
-      'Office Supplies': '#475569', // Slate
-      'Pet Supplies': '#16a34a', // Green
-      'Health & Wellness': '#0891b2', // Cyan
-      'Beauty': '#f43f5e' // Rose
-    };
-    return colorMap[categoryName] || '#6b7280';
-  };
-
-  // Function to get category background color
-  const getCategoryBgColor = (categoryName: string): string => {
-    const colorMap: { [key: string]: string } = {
-      'Electronics': '#dbeafe', // Light blue
-      'Fashion': '#fce7f3', // Light pink
-      'Home & Garden': '#d1fae5', // Light emerald
-      'Sports': '#fed7aa', // Light orange
-      'Books & Media': '#e9d5ff', // Light purple
-      'Toys & Games': '#fecaca', // Light red
-      'Health & Beauty': '#ffe4e6', // Light rose
-      'Automotive': '#fef3c7', // Light amber
-      'Office Supplies': '#f1f5f9', // Light slate
-      'Pet Supplies': '#dcfce7', // Light green
-      'Health & Wellness': '#cffafe', // Light cyan
-      'Beauty': '#ffe4e6' // Light rose
-    };
-    return colorMap[categoryName] || '#f3f4f6';
-  };
-
-  const loadCategories = () => {
-    const currentCategories = getCategories();
-    const savedOrder = localStorage.getItem('categoryOrder');
-    console.log('HomePage Debug - savedOrder:', savedOrder);
-    console.log('HomePage Debug - categories length:', currentCategories.length);
-    
-    if (savedOrder) {
-      const orderArray = JSON.parse(savedOrder);
-      console.log('HomePage Debug - orderArray:', orderArray);
-      const ordered = orderArray
-        .map((categoryId: string) => currentCategories.find((c: any) => c.id === categoryId))
-        .filter(Boolean);
-      console.log('HomePage Debug - ordered categories:', ordered.length, ordered.map((c: any) => c.name));
-      setOrderedCategories(ordered);
-    } else {
-      console.log('HomePage Debug - no saved order, using default categories');
-      setOrderedCategories(currentCategories);
-    }
-  };
-
-  useEffect(() => {
-    loadCategories();
-    
-    // Listen for storage changes
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'categoryOrder' || e.key === 'homepageCategories') {
-        console.log('HomePage Debug - Storage changed, reloading categories');
-        loadCategories();
-      }
-    };
-    
-    // Also listen for custom events from admin panel
-    const handleCategoryOrderChange = () => {
-      console.log('HomePage Debug - Category order changed event received');
-      loadCategories();
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('categoryOrderChanged', handleCategoryOrderChange);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('categoryOrderChanged', handleCategoryOrderChange);
-    };
-  }, []);
-
-  // Debug logging
-  console.log('HomePage Debug - Final state:', {
-    orderedCategoriesLength: orderedCategories.length,
-    showAllCategories,
-    displayCount: showAllCategories ? orderedCategories.length : Math.min(8, orderedCategories.length),
-    categories: orderedCategories.map((c: any) => c.name)
-  });
+  if (loading) {
+    return (
+      <Box sx={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        backgroundColor: '#f8fafc'
+      }}>
+        <Typography variant="h6" sx={{ color: '#6b7280' }}>
+          Loading amazing products...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Box sx={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
+        
+        {/* Just For You Section */}
+        {justForYouDeals.length > 0 && (
+          <SimpleSlider
+            products={justForYouDeals}
+            title="Just For You"
+            onProductClick={handleProductClick}
+          />
+        )}
 
+        {/* Hot Deals Section */}
+        {hotDeals.length > 0 && (
+          <SimpleSlider
+            products={hotDeals}
+            title="Hot Deals"
+            onProductClick={handleProductClick}
+          />
+        )}
 
+        {/* Trending Deals Section */}
+        {trendingDeals.length > 0 && (
+          <SimpleSlider
+            products={trendingDeals}
+            title="Trending Deals"
+            onProductClick={handleProductClick}
+          />
+        )}
 
-
-        {/* Categories Grid */}
-        <Box sx={{ 
-        display: 'grid', 
-          gridTemplateColumns: { 
-            xs: '1fr', 
-            sm: 'repeat(2, 1fr)', 
-            md: 'repeat(3, 1fr)', 
-            lg: 'repeat(4, 1fr)' 
-          }, 
-          gap: 3 
-        }}>
-          {(showAllCategories ? orderedCategories : orderedCategories.slice(0, 8)).map((category, index) => (
-            <Box key={category.id}>
-              <Card 
-                sx={{ 
-                  height: '100%',
-              cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  borderRadius: 2,
-                  overflow: 'hidden',
-              '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
-                  }
-                }}
-                onClick={() => navigate(`/products?category=${category.name}`)}
-              >
-                <CardMedia
-                  component="img"
-                  height="120"
-                  image={category.image}
-                  alt={category.name}
-                  sx={{ objectFit: 'cover' }}
-                />
-                <CardContent sx={{ p: 2 }}>
-                  <Typography variant="h6" component="h3" sx={{ 
-                    fontWeight: 600,
-                    mb: 1,
-                    color: '#333'
-                }}>
-                  {category.name}
-                </Typography>
-                  
-                  {/* Show subcategories for all categories */}
-                  {category.subcategories.length > 0 && (
-                    <Box sx={{ mt: 2 }}>
-                      
-                                    <Box sx={{ 
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 0.8,
-                        maxWidth: '100%'
-                      }}>
-                        {category.subcategories.slice(0, 6).map((sub: string, idx: number) => (
-                          <Box
-                            key={idx}
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              cursor: 'pointer',
-                              transition: 'all 0.3s ease',
-                              p: 1,
-                              borderRadius: 2,
-                              backgroundColor: getCategoryBgColor(category.name),
-                              border: `1px solid ${getCategoryColor(category.name)}20`,
-                              '&:hover': {
-                                backgroundColor: `${getCategoryColor(category.name)}15`,
-                                transform: 'translateX(6px)',
-                                boxShadow: `0 2px 8px ${getCategoryColor(category.name)}30`
-                              }
-                            }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/products?category=${sub}`);
-                            }}
-                          >
-                            {/* Circle with letter */}
-                            <Box sx={{ 
-                              width: 32,
-                              height: 32,
-                              borderRadius: '50%',
-                              background: `linear-gradient(135deg, ${getCategoryColor(category.name)}, ${getCategoryColor(category.name)}dd)`,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              mr: 1.5,
-                              border: `2px solid ${getCategoryColor(category.name)}`,
-                              boxShadow: `0 2px 6px ${getCategoryColor(category.name)}40`,
-                              transition: 'all 0.3s ease',
-                              '&:hover': {
-                                boxShadow: `0 4px 12px ${getCategoryColor(category.name)}60`,
-                                transform: 'scale(1.1)'
-                              }
-                            }}>
-                              <Typography 
-                                variant="body2" 
-                                sx={{ 
-                                  fontWeight: 'bold',
-                                  color: '#ffffff',
-                                  fontSize: '16px',
-                                  textShadow: '0 1px 3px rgba(0,0,0,0.3)'
-                                }}
-                              >
-                                {sub.charAt(0)}
-                              </Typography>
-                            </Box>
-                            {/* Subcategory name */}
-                            <Typography 
-                              variant="body2" 
-                              sx={{
-                                color: getCategoryColor(category.name),
-                                fontSize: '14px',
-                                fontWeight: 600,
-                                flex: 1,
-                                textAlign: 'left'
-                              }}
-                            >
-                              {sub}
-                            </Typography>
-                          </Box>
-                        ))}
-                        {category.subcategories.length > 6 && (
-                          <Box
-                            sx={{ 
-                              display: 'flex',
-                              alignItems: 'center',
-                              p: 1,
-                              borderRadius: 2,
-                              backgroundColor: '#f8f9fa',
-                              border: '1px solid #e9ecef',
-                              opacity: 0.8
-                            }}
-                          >
-                            <Box sx={{
-                              width: 28,
-                              height: 28,
-                              borderRadius: '50%',
-                              backgroundColor: '#e9ecef',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              mr: 1.2,
-                              border: '1.5px solid #dee2e6'
-                            }}>
-                              <Typography 
-                                variant="body2" 
-                                sx={{ 
-                                  fontWeight: 'bold',
-                                  color: '#6c757d',
-                                  fontSize: '12px'
-                                }}
-                              >
-                                +{category.subcategories.length - 6}
-                              </Typography>
-                            </Box>
-                            <Typography 
-                              variant="body2" 
-                              sx={{ 
-                                color: '#6c757d',
-                                fontSize: '13px',
-                                fontWeight: 500,
-                                flex: 1
-                              }}
-                            >
-                              More subcategories
-                            </Typography>
-                          </Box>
-                        )}
-                      </Box>
-                    </Box>
-                  )}
-            </CardContent>
-          </Card>
-            </Box>
-        ))}
+        {/* Fallback when no products */}
+        {products.length === 0 && (
+          <Box sx={{ 
+            textAlign: 'center', 
+            py: 8,
+            backgroundColor: 'white',
+            borderRadius: 3,
+            border: '1px solid #e5e7eb'
+          }}>
+            <Typography 
+              variant="h3" 
+              component="h2" 
+              sx={{ 
+                fontWeight: 700, 
+                color: '#1a1a1a',
+                mb: 2
+              }}
+            >
+              No Products Available
+            </Typography>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                color: '#6b7280',
+                mb: 4
+              }}
+            >
+              Check back later for amazing deals!
+            </Typography>
           </Box>
+        )}
 
-          {/* Show More/Less Button */}
-          {orderedCategories.length > 8 && (
-            <Box sx={{ textAlign: 'center', mt: 4 }}>
-              <Button
-                variant="outlined"
-                onClick={() => setShowAllCategories(!showAllCategories)}
-                sx={{
-                  borderColor: '#007bff',
-                  color: '#007bff',
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  '&:hover': {
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    borderColor: '#007bff'
-                  }
-                }}
-              >
-                {showAllCategories ? 'Show Less' : `Show More (${orderedCategories.length - 8} more)`}
-              </Button>
-            </Box>
-          )}
-        </Container>
+      </Container>
     </Box>
   );
 };

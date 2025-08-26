@@ -7,7 +7,7 @@ import {
   updateProfileWithSupabase,
   getCurrentUser 
 } from '../services/authService';
-import { isSupabaseConfigured } from '../utils/supabaseClient';
+
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
@@ -39,10 +39,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        if (!isSupabaseConfigured) {
-          throw new Error('Supabase is not configured. Please check your environment variables.');
-        }
-        
         // Try to get current user from Supabase
         const currentUser = await getCurrentUser();
         if (currentUser) {
@@ -64,10 +60,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
     
     try {
-      if (!isSupabaseConfigured) {
-        throw new Error('Supabase is not configured. Please check your environment variables.');
-      }
-      
       // Use Supabase authentication
       const authUser = await signInWithSupabase(credentials);
       setUser(authUser);
@@ -85,10 +77,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
     
     try {
-      if (!isSupabaseConfigured) {
-        throw new Error('Supabase is not configured. Please check your environment variables.');
-      }
-      
       // Use Supabase registration
       const authUser = await signUpWithSupabase(credentials);
       setUser(authUser);
@@ -103,9 +91,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      if (isSupabaseConfigured) {
-        await signOutWithSupabase();
-      }
+      await signOutWithSupabase();
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
@@ -121,10 +107,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
 
     try {
-      if (!isSupabaseConfigured) {
-        throw new Error('Supabase is not configured. Please check your environment variables.');
-      }
-      
       if (!user) {
         throw new Error('No user logged in');
       }

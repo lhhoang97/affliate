@@ -27,45 +27,98 @@ import AdminProductsPage from './pages/AdminProductsPage';
 import AdminCategoriesPage from './pages/AdminCategoriesPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
+import AdminPriceUpdatePage from './pages/AdminPriceUpdatePage';
+import AdminSectionManagementPage from './pages/AdminSectionManagementPage';
+import AdminSliderProductsPage from './pages/AdminSliderProductsPage';
+import AdminSectionProductsPage from './pages/AdminSectionProductsPage';
+import ProductCardDemo from './pages/ProductCardDemo';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
+import { ProductProvider } from './contexts/ProductContext';
 import SupabaseTest from './components/SupabaseTest';
 
-// Create a theme instance
+// Create a SlickDeals-inspired theme
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#007bff',
+      main: '#1a73e8', // Google Blue - modern and trustworthy
+      light: '#4285f4',
+      dark: '#0d47a1',
+      contrastText: '#ffffff',
     },
     secondary: {
-      main: '#6c757d',
+      main: '#34a853', // Google Green - for success/deals
+      light: '#66bb6a',
+      dark: '#2e7d32',
+    },
+    error: {
+      main: '#ea4335', // Google Red
+    },
+    warning: {
+      main: '#fbbc04', // Google Yellow
     },
     background: {
       default: '#f8f9fa',
+      paper: '#ffffff',
     },
+    text: {
+      primary: '#202124',
+      secondary: '#5f6368',
+    },
+    divider: '#dadce0',
   },
   typography: {
-    fontFamily: '"Inter", "Helvetica Neue", Arial, sans-serif',
+    fontFamily: '"Google Sans", "Roboto", "Helvetica Neue", Arial, sans-serif',
     h1: {
-      fontWeight: 700,
+      fontWeight: 400,
+      fontSize: '2.5rem',
+      lineHeight: 1.2,
+      letterSpacing: '-0.02em',
     },
     h2: {
-      fontWeight: 600,
+      fontWeight: 400,
+      fontSize: '2rem',
+      lineHeight: 1.3,
+      letterSpacing: '-0.01em',
     },
     h3: {
-      fontWeight: 600,
+      fontWeight: 500,
+      fontSize: '1.5rem',
+      lineHeight: 1.4,
     },
     h4: {
-      fontWeight: 600,
+      fontWeight: 500,
+      fontSize: '1.25rem',
+      lineHeight: 1.4,
     },
     h5: {
-      fontWeight: 600,
+      fontWeight: 500,
+      fontSize: '1.125rem',
+      lineHeight: 1.4,
     },
     h6: {
-      fontWeight: 600,
+      fontWeight: 500,
+      fontSize: '1rem',
+      lineHeight: 1.4,
     },
+    body1: {
+      fontSize: '0.875rem',
+      lineHeight: 1.5,
+    },
+    body2: {
+      fontSize: '0.8125rem',
+      lineHeight: 1.5,
+    },
+    button: {
+      fontWeight: 500,
+      textTransform: 'none',
+      fontSize: '0.875rem',
+    },
+  },
+  shape: {
+    borderRadius: 8,
   },
   components: {
     MuiButton: {
@@ -74,6 +127,23 @@ const theme = createTheme({
           textTransform: 'none',
           borderRadius: 8,
           fontWeight: 500,
+          padding: '8px 16px',
+          fontSize: '0.875rem',
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          },
+        },
+        contained: {
+          '&:hover': {
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          },
+        },
+        outlined: {
+          borderWidth: '1px',
+          '&:hover': {
+            borderWidth: '1px',
+          },
         },
       },
     },
@@ -81,14 +151,63 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 12,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)',
+          border: '1px solid #e8eaed',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            boxShadow: '0 4px 12px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08)',
+            transform: 'translateY(-2px)',
+          },
         },
       },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          backgroundColor: '#ffffff',
+          color: '#202124',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          borderBottom: '1px solid #e8eaed',
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+          fontWeight: 500,
+          fontSize: '0.75rem',
+        },
+        colorPrimary: {
+          backgroundColor: '#e8f0fe',
+          color: '#1a73e8',
+        },
+        colorSecondary: {
+          backgroundColor: '#e6f4ea',
+          color: '#34a853',
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 8,
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#dadce0',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#1a73e8',
+            },
+          },
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)',
         },
       },
     },
@@ -96,12 +215,27 @@ const theme = createTheme({
 });
 
 function App() {
+  console.log('App component rendering...');
+  
+  // Simple fallback component
+  if (!process.env.REACT_APP_SUPABASE_URL || !process.env.REACT_APP_SUPABASE_ANON_KEY) {
+    return (
+      <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+        <h1>Configuration Error</h1>
+        <p>Supabase is not configured. Please check your .env file.</p>
+        <p>REACT_APP_SUPABASE_URL: {process.env.REACT_APP_SUPABASE_URL ? 'Set' : 'Not set'}</p>
+        <p>REACT_APP_SUPABASE_ANON_KEY: {process.env.REACT_APP_SUPABASE_ANON_KEY ? 'Set' : 'Not set'}</p>
+      </div>
+    );
+  }
+  
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider>
-        <CartProvider>
-          <Router>
+              <AuthProvider>
+          <CartProvider>
+            <ProductProvider>
+              <Router>
             <Routes>
               {/* Search page without header/footer */}
               <Route path="/search" element={<SearchPage />} />
@@ -127,6 +261,7 @@ function App() {
                       <Route path="/login" element={<LoginPage />} />
                       <Route path="/register" element={<RegisterPage />} />
                       <Route path="/test-supabase" element={<SupabaseTest />} />
+                      <Route path="/product-card-demo" element={<ProductCardDemo />} />
                       
                       {/* Protected Routes */}
                       <Route path="/cart" element={
@@ -154,6 +289,10 @@ function App() {
                         <Route index element={<AdminDashboard />} />
                         <Route path="products" element={<AdminProductsPage />} />
                         <Route path="categories" element={<AdminCategoriesPage />} />
+                        <Route path="price-updates" element={<AdminPriceUpdatePage />} />
+                        <Route path="section-management" element={<AdminSectionManagementPage />} />
+                                                    <Route path="slider-products" element={<AdminSliderProductsPage />} />
+                            <Route path="section-products" element={<AdminSectionProductsPage />} />
                         <Route path="users" element={<AdminUsersPage />} />
                         <Route path="settings" element={<AdminSettingsPage />} />
                       </Route>
@@ -163,9 +302,10 @@ function App() {
                 </div>
               } />
             </Routes>
-          </Router>
-        </CartProvider>
-      </AuthProvider>
+                        </Router>
+            </ProductProvider>
+          </CartProvider>
+        </AuthProvider>
     </ThemeProvider>
   );
 }

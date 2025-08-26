@@ -1,90 +1,143 @@
-// Test Supabase Connection and Authentication
 const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
 
-// Supabase configuration
-const supabaseUrl = 'https://rlgjpejeulxvfatwvniq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsZ2pwZWpldWx4dmZhdHd2bmlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3MDk0ODAsImV4cCI6MjA3MTI4NTQ4MH0.2d3RgtqDg-3PSuK85smraSgo7Zt2WYymQzRa8bgNltg';
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+console.log('🔧 Supabase Connection Test');
+console.log('==========================\n');
 
-async function testSupabaseConnection() {
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Supabase chưa được cấu hình!');
+  console.log('📝 Vui lòng tạo file .env với:');
+  console.log('REACT_APP_SUPABASE_URL=your_supabase_url');
+  console.log('REACT_APP_SUPABASE_ANON_KEY=your_anon_key');
+  process.exit(1);
+}
+
+console.log('✅ Environment variables đã được cấu hình');
+console.log(`🌐 URL: ${supabaseUrl}`);
+console.log(`🔑 Key: ${supabaseAnonKey.substring(0, 20)}...\n`);
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+async function testConnection() {
   try {
-    console.log('🔍 Testing Supabase connection...');
+    console.log('🔍 Đang test kết nối...');
     
-    // Test 1: Check if we can connect to Supabase
-    console.log('📡 Testing basic connection...');
-    const { data: healthData, error: healthError } = await supabase.from('profiles').select('count').limit(1);
+    // Test basic connection
+    const { data, error } = await supabase.from('products').select('count').limit(1);
     
-    if (healthError) {
-      console.error('❌ Connection failed:', healthError);
-      return;
+    if (error) {
+      console.error('❌ Lỗi kết nối:', error.message);
+      
+      if (error.message.includes('relation "products" does not exist')) {
+        console.log('\n📋 Bảng products chưa tồn tại!');
+        console.log('🔧 Vui lòng chạy SQL script để tạo bảng:');
+        console.log('1. Vào Supabase Dashboard → SQL Editor');
+        console.log('2. Copy và chạy nội dung từ file SUPABASE_SETUP.sql');
+        console.log('3. Chạy lại script này');
+      }
+      
+      return false;
     }
     
-    console.log('✅ Basic connection successful!');
+    console.log('✅ Kết nối thành công!');
+    console.log('📊 Database đã sẵn sàng sử dụng');
     
-    // Test 2: Check if hoang@shopwithus.com exists in profiles
-    console.log('👤 Checking hoang@shopwithus.com profile...');
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('email', 'hoang@shopwithus.com')
-      .single();
+    // Test tables
+    await testTables();
     
-    if (profileError) {
-      console.error('❌ Profile check failed:', profileError);
-      return;
-    }
-    
-    console.log('✅ Profile found:', {
-      id: profileData.id,
-      name: profileData.name,
-      email: profileData.email,
-      role: profileData.role
-    });
-    
-    // Test 3: Test authentication
-    console.log('🔐 Testing authentication...');
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: 'hoang@shopwithus.com',
-      password: 'hoang123@'
-    });
-    
-    if (authError) {
-      console.error('❌ Authentication failed:', authError.message);
-      return;
-    }
-    
-    console.log('✅ Authentication successful!');
-    console.log('🆔 User ID:', authData.user.id);
-    console.log('📧 Email:', authData.user.email);
-    
-    // Test 4: Check session
-    console.log('🎫 Checking session...');
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError) {
-      console.error('❌ Session check failed:', sessionError);
-      return;
-    }
-    
-    if (sessionData.session) {
-      console.log('✅ Session active!');
-      console.log('⏰ Expires at:', new Date(sessionData.session.expires_at * 1000));
-    } else {
-      console.log('⚠️ No active session');
-    }
-    
-    console.log('');
-    console.log('🎉 All tests passed! Supabase is working correctly.');
-    console.log('');
-    console.log('🌐 You can now login to your web application with:');
-    console.log('   Email: hoang@shopwithus.com');
-    console.log('   Password: hoang123@');
+    return true;
     
   } catch (error) {
-    console.error('💥 Unexpected error:', error);
+    console.error('❌ Lỗi không mong đợi:', error);
+    return false;
   }
 }
 
-// Run the test
-testSupabaseConnection();
+async function testTables() {
+  console.log('\n📋 Kiểm tra các bảng...');
+  
+  const tables = ['products', 'categories', 'profiles', 'reviews', 'orders', 'wishlist'];
+  
+  for (const table of tables) {
+    try {
+      const { data, error } = await supabase.from(table).select('count').limit(1);
+      
+      if (error) {
+        console.log(`❌ ${table}: ${error.message}`);
+      } else {
+        console.log(`✅ ${table}: OK`);
+      }
+    } catch (error) {
+      console.log(`❌ ${table}: ${error.message}`);
+    }
+  }
+}
+
+async function testDataInsertion() {
+  console.log('\n🧪 Test thêm dữ liệu...');
+  
+  try {
+    // Test insert a sample product
+    const testProduct = {
+      name: 'Test Product',
+      description: 'This is a test product',
+      price: 99.99,
+      category: 'Electronics',
+      brand: 'Test Brand',
+      retailer: 'Test Store',
+      in_stock: true
+    };
+    
+    const { data, error } = await supabase
+      .from('products')
+      .insert(testProduct)
+      .select();
+    
+    if (error) {
+      console.error('❌ Lỗi khi thêm sản phẩm:', error.message);
+      return false;
+    }
+    
+    console.log('✅ Thêm sản phẩm thành công!');
+    
+    // Clean up - delete test product
+    const { error: deleteError } = await supabase
+      .from('products')
+      .delete()
+      .eq('name', 'Test Product');
+    
+    if (deleteError) {
+      console.warn('⚠️ Không thể xóa sản phẩm test:', deleteError.message);
+    } else {
+      console.log('🧹 Đã xóa sản phẩm test');
+    }
+    
+    return true;
+    
+  } catch (error) {
+    console.error('❌ Lỗi khi test thêm dữ liệu:', error);
+    return false;
+  }
+}
+
+async function main() {
+  const connectionOk = await testConnection();
+  
+  if (connectionOk) {
+    await testDataInsertion();
+    
+    console.log('\n🎉 Tất cả test đã hoàn thành!');
+    console.log('🚀 Website đã sẵn sàng sử dụng Supabase');
+    console.log('\n📝 Bước tiếp theo:');
+    console.log('1. Chạy: node migrate-to-supabase.js');
+    console.log('2. Restart development server: npm start');
+    console.log('3. Test website tại: http://localhost:3000');
+  } else {
+    console.log('\n❌ Cần khắc phục lỗi trước khi tiếp tục');
+  }
+}
+
+main().catch(console.error);

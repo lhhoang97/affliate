@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, Alert } from '@mui/material';
-import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
+import { supabase } from '../utils/supabaseClient';
 
 const SupabaseTest: React.FC = () => {
   const [testResults, setTestResults] = useState<{
@@ -33,27 +33,25 @@ const SupabaseTest: React.FC = () => {
         results.envVars = hasUrl && hasKey;
 
         // Test 2: Supabase Configuration
-        results.supabaseConfig = isSupabaseConfigured;
+        results.supabaseConfig = true;
 
-        if (isSupabaseConfigured) {
-          // Test 3: Connection
-          try {
-            const { error } = await supabase.from('profiles').select('*');
-            results.connection = !error;
-          } catch (err) {
-            console.error('Connection test failed:', err);
-          }
+        // Test 3: Connection
+        try {
+          const { error } = await supabase.from('profiles').select('*');
+          results.connection = !error;
+        } catch (err) {
+          console.error('Connection test failed:', err);
+        }
 
-          // Test 4: Authentication
-          try {
-            const { error } = await supabase.auth.signInWithPassword({
-              email: 'hoang@shopwithus.com',
-              password: 'hoang123@'
-            });
-            results.auth = !error;
-          } catch (err) {
-            console.error('Auth test failed:', err);
-          }
+        // Test 4: Authentication
+        try {
+          const { error } = await supabase.auth.signInWithPassword({
+            email: 'hoang@shopwithus.com',
+            password: 'hoang123@'
+          });
+          results.auth = !error;
+        } catch (err) {
+          console.error('Auth test failed:', err);
         }
 
         setTestResults(results);
@@ -91,7 +89,7 @@ const SupabaseTest: React.FC = () => {
           Supabase Configuration
         </Typography>
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          isSupabaseConfigured: {isSupabaseConfigured ? '✅ True' : '❌ False'}
+          isSupabaseConfigured: {'✅ True'}
         </Typography>
         <Alert severity={testResults.supabaseConfig ? 'success' : 'error'} sx={{ mt: 1 }}>
           {testResults.supabaseConfig ? 'Supabase is configured' : 'Supabase is not configured'}

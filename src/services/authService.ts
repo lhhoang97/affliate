@@ -1,12 +1,9 @@
 import { AuthUser, LoginCredentials, RegisterCredentials } from '../types';
-import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
+import { supabase } from '../utils/supabaseClient';
 
 
 
 export async function signInWithSupabase(credentials: LoginCredentials): Promise<AuthUser> {
-  if (!isSupabaseConfigured) {
-    throw new Error('Supabase is not configured. Please check your environment variables.');
-  }
 
   try {
     // Use real Supabase authentication
@@ -47,9 +44,6 @@ export async function signInWithSupabase(credentials: LoginCredentials): Promise
 }
 
 export async function signUpWithSupabase(credentials: RegisterCredentials): Promise<AuthUser> {
-  if (!isSupabaseConfigured) {
-    throw new Error('Supabase is not configured. Please check your environment variables.');
-  }
 
   try {
     // Use real Supabase registration
@@ -101,9 +95,6 @@ export async function signUpWithSupabase(credentials: RegisterCredentials): Prom
 }
 
 export async function signOutWithSupabase(): Promise<void> {
-  if (!isSupabaseConfigured) {
-    throw new Error('Supabase is not configured. Please check your environment variables.');
-  }
 
   try {
     const { error } = await supabase.auth.signOut();
@@ -115,9 +106,6 @@ export async function signOutWithSupabase(): Promise<void> {
 }
 
 export async function updateProfileWithSupabase(userId: string, profileData: Partial<AuthUser>): Promise<AuthUser> {
-  if (!isSupabaseConfigured) {
-    throw new Error('Supabase is not configured. Please check your environment variables.');
-  }
 
   try {
     const { data, error } = await supabase
@@ -156,9 +144,6 @@ export async function updateProfileWithSupabase(userId: string, profileData: Par
 }
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
-  if (!isSupabaseConfigured) {
-    throw new Error('Supabase is not configured. Please check your environment variables.');
-  }
 
   try {
     const { data: { user }, error } = await supabase.auth.getUser();

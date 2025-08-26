@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -27,22 +27,33 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Divider
+  Divider,
+  Breadcrumbs
 } from '@mui/material';
 import {
   Add,
   Remove,
   ShoppingCart,
   Favorite,
+  FavoriteBorder,
   Share,
   LocalShipping,
   Verified,
   CheckCircle,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ThumbUp,
+  ThumbUpOutlined,
+  ChatBubbleOutline,
+  Visibility,
+  BookmarkBorder,
+  NavigateNext,
+  Star
 } from '@mui/icons-material';
-import { mockProducts, mockReviews } from '../utils/mockData';
+
 import { useCart } from '../contexts/CartContext';
+import { useProducts } from '../contexts/ProductContext';
+import { Product, Review } from '../types';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -66,87 +77,124 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-// Mock price comparison data
-const mockPriceComparison = [
-  {
-    id: 1,
-    seller: 'ShopWithUs Official',
-    price: 2990000,
-    originalPrice: 3500000,
-    shipping: 'Free',
-    delivery: '1-2 days',
-    rating: 4.8,
-    reviewCount: 1247,
-    verified: true,
-    badge: 'Best Price',
-    badgeColor: 'success' as const,
-    features: ['Free Shipping', 'Official Warranty', '30-day Return'],
-    affiliateLink: 'https://shopwithus.com/product/air-purifier?ref=official'
-  },
-  {
-    id: 2,
-    seller: 'TechMart Vietnam',
-    price: 3150000,
-    originalPrice: 3600000,
-    shipping: 50000,
-    delivery: '2-3 days',
-    rating: 4.6,
-    reviewCount: 892,
-    verified: true,
-    badge: 'Fast Delivery',
-    badgeColor: 'info' as const,
-    features: ['Fast Delivery', 'Extended Warranty'],
-    affiliateLink: 'https://techmart.vn/product/air-purifier?ref=shopwithus'
-  },
-  {
-    id: 3,
-    seller: 'SmartHome Store',
-    price: 3250000,
-    originalPrice: 3700000,
-    shipping: 'Free',
-    delivery: '3-5 days',
-    rating: 4.4,
-    reviewCount: 567,
-    verified: false,
-    badge: 'New Seller',
-    badgeColor: 'warning' as const,
-    features: ['Free Shipping', 'Installation Service'],
-    affiliateLink: 'https://smarthome.vn/product/air-purifier?ref=shopwithus'
-  },
-  {
-    id: 4,
-    seller: 'Electronics Hub',
-    price: 3400000,
-    originalPrice: 3800000,
-    shipping: 75000,
-    delivery: '1-3 days',
-    rating: 4.7,
-    reviewCount: 734,
-    verified: true,
-    badge: 'Premium Service',
-    badgeColor: 'primary' as const,
-    features: ['Premium Support', 'Free Installation'],
-    affiliateLink: 'https://electronicshub.vn/product/air-purifier?ref=shopwithus'
-  }
-];
-
 const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [quantity, setQuantity] = useState(1);
-  const [tabValue, setTabValue] = useState(0);
-  const [selectedSeller, setSelectedSeller] = useState(mockPriceComparison[0]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [guestCheckoutOpen, setGuestCheckoutOpen] = useState(false);
-  const [guestInfo, setGuestInfo] = useState({
-    name: '',
-    email: '',
-    phone: ''
-  });
   const { addToCart } = useCart();
+  const { products, loading, refreshProducts } = useProducts();
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [likes, setLikes] = useState(27);
+  const [comments, setComments] = useState(15);
+  const [views, setViews] = useState(9995);
+  const [hoveredImage, setHoveredImage] = useState<number | null>(null);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+  const [imageKey, setImageKey] = useState(Date.now());
+  const autoPlayIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Find product by ID
-  const product = mockProducts.find(p => p.id === id);
-  const productReviews = mockReviews.filter(r => r.productId === id);
+  // Get product from context
+  const product = products.find(p => p.id === id) || null;
+
+  // Debug logging
+  useEffect(() => {
+    console.log('ProductDetailPage - ID:', id);
+    console.log('ProductDetailPage - Products:', products);
+    console.log('ProductDetailPage - Found Product:', product);
+    console.log('ProductDetailPage - Product Images:', product?.images);
+    console.log('ProductDetailPage - Number of Images:', product?.images?.length || 0);
+    console.log('ProductDetailPage - Selected Image Index:', selectedImage);
+  }, [id, products, product, selectedImage]);
+
+  // Reset selected image when product changes
+  useEffect(() => {
+    setSelectedImage(0);
+    setImageKey(Date.now());
+    // Force re-render by updating a timestamp
+    console.log('ProductDetailPage - Product changed, resetting image selection and updating image key');
+  }, [id, product?.updatedAt, product?.images]);
+
+  // Validate selected image index
+  useEffect(() => {
+    if (product && product.images && selectedImage >= product.images.length) {
+      console.log('ProductDetailPage - Selected image index out of bounds, resetting to 0');
+      setSelectedImage(0);
+    }
+  }, [product, selectedImage]);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (isAutoPlaying && product && product.images.length > 1) {
+      autoPlayIntervalRef.current = setInterval(() => {
+        setSelectedImage((prev) => (prev + 1) % product.images.length);
+      }, 3000); // Change image every 3 seconds
+    } else {
+      if (autoPlayIntervalRef.current) {
+        clearInterval(autoPlayIntervalRef.current);
+        autoPlayIntervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (autoPlayIntervalRef.current) {
+        clearInterval(autoPlayIntervalRef.current);
+      }
+    };
+  }, [isAutoPlaying, product]);
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    setLikes(isLiked ? likes - 1 : likes + 1);
+  };
+
+  const handleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: product?.name,
+        text: product?.description,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+    }
+  };
+
+  const handleGetDeal = () => {
+    // Open affiliate link or external URL
+    if (product?.externalUrl) {
+      window.open(product.externalUrl, '_blank', 'noopener,noreferrer');
+    } else if (product?.affiliateLink) {
+      window.open(product.affiliateLink, '_blank', 'noopener,noreferrer');
+    } else {
+      // Fallback to a generic affiliate link
+      const affiliateLink = `https://${product?.retailer?.toLowerCase().replace(/\s+/g, '')}.com/product/${product?.id}?ref=shopwithus`;
+      window.open(affiliateLink, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handleGalleryMouseEnter = () => {
+    if (product && product.images.length > 1) {
+      setIsAutoPlaying(true);
+    }
+  };
+
+  const handleGalleryMouseLeave = () => {
+    setIsAutoPlaying(false);
+  };
+
+  const discountPercentage = product && product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
+
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Alert severity="info">Loading product...</Alert>
+      </Container>
+    );
+  }
 
   if (!product) {
     return (
@@ -156,143 +204,131 @@ const ProductDetailPage: React.FC = () => {
     );
   }
 
-  const handleQuantityChange = (newQuantity: number) => {
-    if (newQuantity >= 1) {
-      setQuantity(newQuantity);
-    }
-  };
-
-  const handleAddToCart = () => {
-    addToCart(product as any, quantity);
-    // Open affiliate link for the selected seller
-    if (selectedSeller.affiliateLink) {
-      window.open(selectedSeller.affiliateLink, '_blank', 'noopener,noreferrer');
-    } else if ((product as any).externalUrl) {
-      window.open((product as any).externalUrl, '_blank', 'noopener,noreferrer');
-    } else {
-      // Fallback to default affiliate link
-      const affiliateLink = `https://techmart.vn/product/${product.id}?ref=shopwithus`;
-      window.open(affiliateLink, '_blank', 'noopener,noreferrer');
-    }
-  };
-
-  const handleGuestBuyNow = () => {
-    setGuestCheckoutOpen(true);
-  };
-
-  const handleGuestCheckout = () => {
-    // Validate guest info
-    if (!guestInfo.name || !guestInfo.email || !guestInfo.phone) {
-      alert('Please fill in all required information');
-      return;
-    }
-
-    // Save guest info to localStorage for potential future use
-    localStorage.setItem('guestInfo', JSON.stringify(guestInfo));
-    
-    // Close dialog
-    setGuestCheckoutOpen(false);
-    
-    // Open affiliate link
-    if (selectedSeller.affiliateLink) {
-      window.open(selectedSeller.affiliateLink, '_blank', 'noopener,noreferrer');
-    } else if ((product as any).externalUrl) {
-      window.open((product as any).externalUrl, '_blank', 'noopener,noreferrer');
-    } else {
-      // Fallback to default affiliate link
-      const affiliateLink = `https://techmart.vn/product/${product.id}?ref=shopwithus`;
-      window.open(affiliateLink, '_blank', 'noopener,noreferrer');
-    }
-  };
-
-  const handleGuestInfoChange = (field: string, value: string) => {
-    setGuestInfo(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  // Image slider functions
-  const allImages = [product.image, ...(product.images || [])].filter(Boolean);
-  
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
-  };
-
-  const goToImage = (index: number) => {
-    setCurrentImageIndex(index);
-  };
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
-
-  const averageRating = productReviews.length > 0
-    ? productReviews.reduce((sum, review) => sum + review.rating, 0) / productReviews.length
-    : product.rating;
-
-  const formatPrice = (price: number) => {
-    return price.toLocaleString('vi-VN') + 'đ';
-  };
-
-  const formatShipping = (shipping: string | number) => {
-    if (shipping === 'Free') return 'Miễn phí';
-    return formatPrice(shipping as number);
-  };
-
   return (
-    <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        {/* Breadcrumb */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="body2" color="text.secondary">
-            Home / Electronics / Air Purifiers / {product.name}
-          </Typography>
+    <Container 
+      key={`product-${id}-${product?.updatedAt || Date.now()}`}
+      maxWidth="lg" 
+      sx={{ 
+        py: 2,
+        '@keyframes pulse': {
+          '0%': {
+            opacity: 1,
+          },
+          '50%': {
+            opacity: 0.5,
+          },
+          '100%': {
+            opacity: 1,
+          },
+        },
+      }}
+    >
+      {/* Breadcrumbs */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Breadcrumbs 
+          separator={<NavigateNext fontSize="small" />} 
+          sx={{ color: '#6b7280' }}
+        >
+          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Typography variant="body2">ShopWithUs</Typography>
+          </Link>
+          <Link to="/deals" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Typography variant="body2">Forums</Typography>
+          </Link>
+          <Typography variant="body2" color="primary">Hot Deals</Typography>
+        </Breadcrumbs>
+        
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button 
+            variant="outlined" 
+            size="small" 
+            onClick={refreshProducts}
+          >
+            Refresh Data
+          </Button>
+          <Button 
+            variant="outlined" 
+            size="small" 
+            onClick={() => {
+              setImageKey(Date.now());
+              setSelectedImage(0);
+              console.log('ProductDetailPage - Force clearing cache and resetting images');
+            }}
+            color="secondary"
+          >
+            Clear Cache
+          </Button>
         </Box>
+      </Box>
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 4 }}>
-          {/* Product Images Slider */}
-          <Box>
-            <Card sx={{ borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
+      {/* Main Deal Card */}
+      <Card sx={{ mb: 3, border: '1px solid #e5e7eb' }}>
+        <CardContent sx={{ p: 0 }}>
+          {/* Product Content - Images Left, Deal Info Right */}
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, 
+            gap: 4,
+            p: 3
+          }}>
+            {/* Left Side - Product Images Gallery */}
+            <Box
+              onMouseEnter={handleGalleryMouseEnter}
+              onMouseLeave={handleGalleryMouseLeave}
+            >
               {/* Main Image */}
-              <Box sx={{ position: 'relative', height: 400 }}>
+              <Box sx={{ 
+                position: 'relative', 
+                mb: 3,
+                backgroundColor: '#f8f9fa',
+                borderRadius: 2,
+                overflow: 'hidden',
+                minHeight: 500,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
                 <CardMedia
                   component="img"
-                  height="400"
-                  image={allImages[currentImageIndex]}
-                  alt={`${product.name} ${currentImageIndex + 1}`}
-                  sx={{ objectFit: 'cover' }}
+                  image={`${product.images[selectedImage]}?t=${imageKey}`}
+                  alt={product.name}
+                  sx={{ 
+                    objectFit: 'contain',
+                    maxHeight: 500,
+                    maxWidth: '100%',
+                    width: 'auto',
+                    height: 'auto',
+                    transition: 'all 0.3s ease-in-out'
+                  }}
                 />
                 
-                {/* Navigation Arrows */}
-                {allImages.length > 1 && (
+                {/* Image Navigation Arrows */}
+                {product.images.length > 1 && (
                   <>
                     <IconButton
-                      onClick={prevImage}
+                      onClick={() => setSelectedImage((prev) => (prev - 1 + product.images.length) % product.images.length)}
                       sx={{
                         position: 'absolute',
-                        left: 8,
+                        left: 16,
                         top: '50%',
                         transform: 'translateY(-50%)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                        '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.9)' }
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        '&:hover': { backgroundColor: 'rgba(255, 255, 255, 1)' },
+                        zIndex: 2
                       }}
                     >
                       <ChevronLeft />
                     </IconButton>
                     <IconButton
-                      onClick={nextImage}
+                      onClick={() => setSelectedImage((prev) => (prev + 1) % product.images.length)}
                       sx={{
                         position: 'absolute',
-                        right: 8,
+                        right: 16,
                         top: '50%',
                         transform: 'translateY(-50%)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                        '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.9)' }
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        '&:hover': { backgroundColor: 'rgba(255, 255, 255, 1)' },
+                        zIndex: 2
                       }}
                     >
                       <ChevronRight />
@@ -301,463 +337,297 @@ const ProductDetailPage: React.FC = () => {
                 )}
                 
                 {/* Image Counter */}
-                {allImages.length > 1 && (
+                {product.images.length > 1 && (
                   <Box
                     sx={{
                       position: 'absolute',
                       top: 16,
                       right: 16,
-                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                      backgroundColor: 'rgba(0, 0, 0, 0.7)',
                       color: 'white',
                       px: 2,
                       py: 0.5,
                       borderRadius: 2,
-                      fontSize: '0.875rem'
+                      fontSize: '0.875rem',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1
                     }}
                   >
-                    {currentImageIndex + 1} / {allImages.length}
+                    {selectedImage + 1} / {product.images.length}
+                    {isAutoPlaying && (
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          backgroundColor: '#10b981',
+                          animation: 'pulse 1s infinite'
+                        }}
+                      />
+                    )}
                   </Box>
                 )}
               </Box>
               
-              {/* Thumbnail Navigation */}
-              {allImages.length > 1 && (
-                <Box sx={{ p: 2, display: 'flex', gap: 1, overflowX: 'auto' }}>
-                  {allImages.map((image, index) => (
+              {/* Thumbnail Images - Horizontal Row */}
+              {product.images.length > 1 && (
+                <Box sx={{ 
+                  display: 'flex', 
+                  gap: 1, 
+                  justifyContent: 'center',
+                  overflowX: 'auto',
+                  pb: 1
+                }}>
+                  {product.images.map((image, index) => (
                     <Box
                       key={index}
-                      onClick={() => goToImage(index)}
+                      component="img"
+                      src={`${image}?t=${imageKey}`}
+                      alt={`${product.name} ${index + 1}`}
                       sx={{
-                        minWidth: 80,
-                        height: 80,
-                        cursor: 'pointer',
-                        border: `2px solid ${currentImageIndex === index ? '#1976d2' : 'transparent'}`,
+                        width: 100,
+                        height: 75,
+                        objectFit: 'cover',
                         borderRadius: 1,
-                        overflow: 'hidden',
-                        '&:hover': { borderColor: '#1976d2' },
-                        transition: 'border-color 0.2s'
+                        cursor: 'pointer',
+                        border: selectedImage === index ? '3px solid #3b82f6' : hoveredImage === index ? '3px solid #3b82f6' : '2px solid #e5e7eb',
+                        opacity: selectedImage === index ? 1 : hoveredImage === index ? 1 : 0.8,
+                        transition: 'all 0.2s ease-in-out',
+                        flexShrink: 0,
+                        '&:hover': { 
+                          opacity: 1,
+                          borderColor: '#3b82f6',
+                          transform: 'scale(1.05)',
+                          boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+                        }
                       }}
-                    >
-                      <img
-                        src={image}
-                        alt={`${product.name} thumbnail ${index + 1}`}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover'
-                        }}
-                      />
-                    </Box>
+                      onClick={() => setSelectedImage(index)}
+                      onMouseEnter={() => {
+                        setHoveredImage(index);
+                        setSelectedImage(index);
+                      }}
+                      onMouseLeave={() => setHoveredImage(null)}
+                    />
                   ))}
                 </Box>
               )}
-            </Card>
-          </Box>
-
-          {/* Product Info */}
-          <Box>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
-              {product.name}
-            </Typography>
-            
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Rating value={averageRating} precision={0.1} readOnly />
-              <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                ({productReviews.length} reviews)
-              </Typography>
             </Box>
 
-            {/* Selected Seller Price */}
-            <Card sx={{ mb: 3, p: 3, backgroundColor: '#fff', border: '2px solid #e3f2fd' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h5" color="primary" sx={{ fontWeight: 'bold', mr: 2 }}>
-                  {formatPrice(selectedSeller.price)}
-                </Typography>
-                {selectedSeller.originalPrice && (
-                  <Typography
-                    variant="h6"
-                    color="text.secondary"
-                    sx={{ textDecoration: 'line-through' }}
-                  >
-                    {formatPrice(selectedSeller.originalPrice)}
-                  </Typography>
-                )}
-                {selectedSeller.originalPrice && (
-                  <Chip
-                    label={`-${Math.round(((selectedSeller.originalPrice - selectedSeller.price) / selectedSeller.originalPrice) * 100)}%`}
-                    color="error"
-                    size="small"
-                    sx={{ ml: 1 }}
-                  />
-                )}
-              </Box>
-              
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Typography variant="body2" color="text.secondary" sx={{ mr: 2 }}>
-                  Seller: {selectedSeller.seller}
-                </Typography>
-                {selectedSeller.verified && (
-                  <Verified sx={{ color: 'success.main', fontSize: 16 }} />
-                )}
-              </Box>
+            {/* Right Side - Deal Information */}
+            <Box>
+              {/* Popular Badge */}
+              <Chip 
+                label="Popular" 
+                color="error" 
+                size="small"
+                sx={{ fontWeight: 600, mb: 2 }}
+              />
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <LocalShipping sx={{ fontSize: 16, color: 'success.main', mr: 0.5 }} />
-                  <Typography variant="body2" color="success.main">
-                    {formatShipping(selectedSeller.shipping)}
-                  </Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary">
-                  Delivery: {selectedSeller.delivery}
-                </Typography>
-              </Box>
+              {/* Poster and Date */}
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                ShopWithUs Staff posted {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+              </Typography>
 
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                <Button
-                  variant="outlined"
-                  size="large"
-                  startIcon={<ShoppingCart />}
-                  onClick={() => {
-                    addToCart(product as any, quantity);
-                  }}
-                  disabled={!product.inStock}
+              {/* Deal Title */}
+              <Typography variant="h5" component="h1" sx={{ fontWeight: 700, mb: 2, lineHeight: 1.3 }}>
+                {product.name} - ${product.price} + Free Shipping
+              </Typography>
+
+              {/* Pricing Section */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                <Typography variant="h3" sx={{ fontWeight: 700, color: '#1f2937' }}>
+                  ${product.price}
+                </Typography>
+                <Typography 
+                  variant="h5" 
                   sx={{ 
-                    flex: 1,
-                    borderColor: '#007bff',
-                    color: '#007bff',
-                    '&:hover': { 
-                      borderColor: '#0056b3',
-                      backgroundColor: '#f8f9fa'
-                    }
+                    textDecoration: 'line-through', 
+                    color: '#dc2626',
+                    fontWeight: 500
                   }}
                 >
-                  Add to Cart
-                </Button>
-                
+                  ${product.originalPrice}
+                </Typography>
+                <Chip 
+                  label={`${discountPercentage}% off`} 
+                  color="success" 
+                  size="small"
+                  sx={{ fontWeight: 600 }}
+                />
+              </Box>
+
+              {/* Interaction Stats */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <IconButton 
+                    size="small" 
+                    onClick={handleLike}
+                    sx={{ color: isLiked ? '#3b82f6' : '#6b7280' }}
+                  >
+                    {isLiked ? <ThumbUp fontSize="small" /> : <ThumbUpOutlined fontSize="small" />}
+                  </IconButton>
+                  <Typography variant="body2" color="text.secondary">
+                    {likes}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <ChatBubbleOutline sx={{ fontSize: '1.2rem', color: '#6b7280' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    {comments} Comments
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Visibility sx={{ fontSize: '1.2rem', color: '#6b7280' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    {views.toLocaleString()} Views
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Action Buttons */}
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 3 }}>
                 <Button
                   variant="contained"
                   size="large"
-                  startIcon={<ShoppingCart />}
-                  onClick={handleGuestBuyNow}
-                  disabled={!product.inStock}
-                  sx={{ 
-                    flex: 1,
-                    backgroundColor: '#007bff',
-                    '&:hover': { backgroundColor: '#0056b3' }
+                  onClick={handleGetDeal}
+                  sx={{
+                    backgroundColor: '#3b82f6',
+                    color: 'white',
+                    fontWeight: 600,
+                    px: 4,
+                    py: 1.5,
+                    '&:hover': { backgroundColor: '#2563eb' }
                   }}
                 >
-                  Buy now from {selectedSeller.seller}
+                  Get Deal at {product.retailer}
                 </Button>
+                <IconButton onClick={handleShare} sx={{ color: '#6b7280' }}>
+                  <Share />
+                </IconButton>
+                <IconButton 
+                  onClick={handleBookmark}
+                  sx={{ color: isBookmarked ? '#3b82f6' : '#6b7280' }}
+                >
+                  <BookmarkBorder />
+                </IconButton>
               </Box>
-            </Card>
 
-            {/* Features */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Key Features
+              {/* Product Description */}
+              <Typography variant="body1" sx={{ mb: 3, color: '#6b7280', lineHeight: 1.6 }}>
+                {product.description}
               </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {product.features.map((feature, index) => (
-                  <Chip 
-                    key={index} 
-                    label={feature} 
-                    variant="outlined" 
-                    size="small"
-                    icon={<CheckCircle />}
-                    sx={{ borderColor: '#007bff', color: '#007bff' }}
-                  />
-                ))}
-              </Box>
-            </Box>
-
-            {/* Action Buttons */}
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button 
-                variant="outlined" 
-                startIcon={<Favorite />}
-                sx={{ borderColor: '#007bff', color: '#007bff' }}
-              >
-                Favorite
-              </Button>
-              <Button 
-                variant="outlined" 
-                startIcon={<Share />}
-                sx={{ borderColor: '#007bff', color: '#007bff' }}
-              >
-                Share
-              </Button>
             </Box>
           </Box>
+        </CardContent>
+      </Card>
+
+      {/* Tabs */}
+      <Card>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs 
+            value={selectedTab} 
+            onChange={(e, newValue) => setSelectedTab(newValue)}
+            sx={{
+              '& .MuiTab-root': {
+                fontWeight: 600,
+                textTransform: 'none',
+                fontSize: '1rem'
+              }
+            }}
+          >
+            <Tab label="Deal Details" />
+            <Tab label="Community Notes" />
+            <Tab label="About the Poster" />
+          </Tabs>
         </Box>
 
-        {/* Price Comparison Section */}
-        <Box sx={{ mt: 6 }}>
-          <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: '#2c3e50', mb: 3 }}>
-            Price Comparison from Sellers
-          </Typography>
-          
-          <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: 'hidden' }}>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Seller</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Price</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Shipping</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Delivery</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Rating</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {mockPriceComparison.map((seller) => (
-                  <TableRow 
-                    key={seller.id}
-                    sx={{ 
-                      cursor: 'pointer',
-                      '&:hover': { backgroundColor: '#f8f9fa' },
-                      backgroundColor: selectedSeller.id === seller.id ? '#e3f2fd' : 'inherit'
-                    }}
-                    onClick={() => setSelectedSeller(seller)}
-                  >
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                          {seller.seller}
-                        </Typography>
-                        {seller.verified && (
-                          <Verified sx={{ color: 'success.main', fontSize: 16 }} />
-                        )}
-                        <Chip 
-                          label={seller.badge} 
-                          size="small" 
-                          color={seller.badgeColor}
-                          sx={{ fontSize: '0.7rem' }}
-                        />
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Box>
-                        <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#007bff' }}>
-                          {formatPrice(seller.price)}
-                        </Typography>
-                        {seller.originalPrice && (
-                          <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
-                            {formatPrice(seller.originalPrice)}
-                          </Typography>
-                        )}
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" color={seller.shipping === 'Free' ? 'success.main' : 'text.secondary'}>
-                        {formatShipping(seller.shipping)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {seller.delivery}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Rating value={seller.rating} size="small" readOnly />
-                        <Typography variant="body2" color="text.secondary">
-                          ({seller.reviewCount})
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedSeller(seller);
-                          // Open affiliate link
-                          if (seller.affiliateLink) {
-                            window.open(seller.affiliateLink, '_blank', 'noopener,noreferrer');
-                          }
-                        }}
-                        sx={{ 
-                          backgroundColor: '#007bff',
-                          '&:hover': { backgroundColor: '#0056b3' }
-                        }}
-                      >
-                        Visit Page
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-
-        {/* Product Details Tabs */}
-        <Box sx={{ mt: 6 }}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={tabValue} onChange={handleTabChange}>
-              <Tab label="Description" />
-              <Tab label="Specifications" />
-              <Tab label={`Reviews (${productReviews.length})`} />
-            </Tabs>
-          </Box>
-
-          <TabPanel value={tabValue} index={0}>
-            <Typography variant="body1" paragraph>
-              {product.description}
+        {/* Deal Details Tab */}
+        <TabPanel value={selectedTab} index={0}>
+          <Box sx={{ p: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+              Deal Details
             </Typography>
-            <Typography variant="body1">
-              This product offers outstanding quality and performance. Designed with the latest technology 
-              to provide the best user experience. Whether you are a professional or regular user, 
-              this product will meet all your needs and exceed your expectations.
+            
+            <Typography variant="body1" sx={{ mb: 3 }}>
+              <strong>{product.retailer} [{product.retailer?.toLowerCase().replace(/\s+/g, '')}.com]</strong> has {product.name} + Free Shipping
             </Typography>
-          </TabPanel>
 
-          <TabPanel value={tabValue} index={1}>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
-              {Object.entries(product.specifications).map(([key, value]) => (
-                <Box key={key}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1, borderBottom: 1, borderColor: 'divider' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      {key}
-                    </Typography>
-                    <Typography variant="body2" fontWeight="medium">
-                      {value}
-                    </Typography>
-                  </Box>
-                </Box>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+              Deal Categories:
+            </Typography>
+            <Box sx={{ mb: 3 }}>
+              <Chip label={`${product.category} [${product.retailer?.toLowerCase().replace(/\s+/g, '')}.com]`} sx={{ mr: 1, mb: 1 }} />
+              {product.tags.slice(0, 2).map((tag, index) => (
+                <Chip key={index} label={`${tag} [${product.retailer?.toLowerCase().replace(/\s+/g, '')}.com]`} sx={{ mr: 1, mb: 1 }} />
               ))}
             </Box>
-          </TabPanel>
 
-          <TabPanel value={tabValue} index={2}>
-            {productReviews.length === 0 ? (
-              <Typography variant="body1" color="text.secondary">
-                No reviews yet. Be the first to review this product!
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+              Product Details:
+            </Typography>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                • {product.name} [{product.retailer?.toLowerCase().replace(/\s+/g, '')}.com] <strong>${product.price}</strong>
               </Typography>
-            ) : (
-              <Box>
-                {productReviews.map((review) => (
-                  <Card key={review.id} sx={{ mb: 2, borderRadius: 2 }}>
-                    <CardContent>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <Avatar src={review.userAvatar} sx={{ mr: 2 }}>
-                          {review.userName.charAt(0)}
-                        </Avatar>
-                        <Box sx={{ flexGrow: 1 }}>
-                          <Typography variant="subtitle1" fontWeight="medium">
-                            {review.userName}
-                          </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Rating value={review.rating} size="small" readOnly />
-                            <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                              {new Date(review.createdAt).toLocaleDateString('vi-VN')}
-                            </Typography>
-                          </Box>
-                        </Box>
-                        {review.verified && (
-                          <Chip label="Verified Purchase" size="small" color="success" />
-                        )}
-                      </Box>
-                      <Typography variant="h6" gutterBottom>
-                        {review.title}
-                      </Typography>
-                      <Typography variant="body1">
-                        {review.content}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                ))}
-              </Box>
-            )}
-          </TabPanel>
-        </Box>
-      </Container>
-
-      {/* Guest Checkout Dialog */}
-      <Dialog 
-        open={guestCheckoutOpen} 
-        onClose={() => setGuestCheckoutOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>
-          <Typography variant="h6" fontWeight="bold">
-            Quick Checkout
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Enter your information to proceed to the seller's website
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          <Box sx={{ pt: 2 }}>
-            <Typography variant="subtitle1" gutterBottom fontWeight="medium">
-              Product: {product.name}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Seller: {selectedSeller.seller} | Price: {formatPrice(selectedSeller.price)}
-            </Typography>
-            
-            <Divider sx={{ my: 3 }} />
-            
-            <Typography variant="h6" gutterBottom fontWeight="medium">
-              Contact Information
-            </Typography>
-            
-            <TextField
-              fullWidth
-              label="Full Name *"
-              value={guestInfo.name}
-              onChange={(e) => handleGuestInfoChange('name', e.target.value)}
-              margin="normal"
-              required
-            />
-            
-            <TextField
-              fullWidth
-              label="Email Address *"
-              type="email"
-              value={guestInfo.email}
-              onChange={(e) => handleGuestInfoChange('email', e.target.value)}
-              margin="normal"
-              required
-            />
-            
-            <TextField
-              fullWidth
-              label="Phone Number *"
-              value={guestInfo.phone}
-              onChange={(e) => handleGuestInfoChange('phone', e.target.value)}
-              margin="normal"
-              required
-            />
-            
-            <Box sx={{ mt: 3, p: 2, backgroundColor: '#f8f9fa', borderRadius: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                <strong>Note:</strong> You will be redirected to {selectedSeller.seller}'s website to complete your purchase. 
-                Your information will be used to pre-fill the checkout form on their website.
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                • Brand: {product.brand}
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                • Rating: {product.rating}/5 ({product.reviewCount} reviews)
               </Typography>
             </Box>
+
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+              Key Features:
+            </Typography>
+            <Box>
+              {product.features.slice(0, 5).map((feature, index) => (
+                <Typography key={index} variant="body1" sx={{ mb: 1 }}>
+                  • {feature}
+                </Typography>
+              ))}
+            </Box>
           </Box>
-        </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button 
-            onClick={() => setGuestCheckoutOpen(false)}
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleGuestCheckout}
-            variant="contained"
-            sx={{ backgroundColor: '#007bff', '&:hover': { backgroundColor: '#0056b3' } }}
-          >
-            Continue to {selectedSeller.seller}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+        </TabPanel>
+
+        {/* Community Notes Tab */}
+        <TabPanel value={selectedTab} index={1}>
+          <Box sx={{ p: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+              Community Notes
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              No community notes yet. Be the first to add a note!
+            </Typography>
+          </Box>
+        </TabPanel>
+
+        {/* About the Poster Tab */}
+        <TabPanel value={selectedTab} index={2}>
+          <Box sx={{ p: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+              About the Poster
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <Avatar sx={{ bgcolor: '#3b82f6' }}>SW</Avatar>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  ShopWithUs Staff
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Deal Curator
+                </Typography>
+              </Box>
+            </Box>
+            <Typography variant="body1" color="text.secondary">
+              Our team of deal curators finds and verifies the best deals from trusted retailers to help you save money on quality products.
+            </Typography>
+          </Box>
+        </TabPanel>
+      </Card>
+    </Container>
   );
 };
 

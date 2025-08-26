@@ -38,7 +38,8 @@ import {
   CloudUpload
 } from '@mui/icons-material';
 import { Product, Category } from '../types';
-import { fetchProducts, fetchCategories, createProduct, updateProduct, deleteProduct as deleteProductApi } from '../services/productService';
+import { fetchCategories } from '../services/productService';
+import { useProducts } from '../contexts/ProductContext';
 
 interface ProductFormData {
   id: string;
@@ -52,6 +53,7 @@ interface ProductFormData {
   category: string;
   subcategory?: string;
   brand: string;
+  retailer?: string;
   inStock: boolean;
   features: string[];
   specifications: Record<string, string>;
@@ -64,7 +66,7 @@ interface ProductFormData {
 }
 
 const AdminProductsPage: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const { products, loading, updateProductById, createNewProduct, deleteProductById } = useProducts();
   const [categories, setCategories] = useState<Category[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingProduct, setEditingProduct] = useState<ProductFormData | null>(null);
@@ -157,12 +159,11 @@ const AdminProductsPage: React.FC = () => {
     let mounted = true;
     (async () => {
       try {
-        const [items, cats] = await Promise.all([fetchProducts(), fetchCategories()]);
+        const cats = await fetchCategories();
         if (!mounted) return;
-        setProducts(items);
         setCategories(cats);
       } catch (e) {
-        // noop
+        console.error('Error loading categories:', e);
       }
     })();
     return () => { mounted = false; };
@@ -181,12 +182,14 @@ const AdminProductsPage: React.FC = () => {
     category: '',
     subcategory: '',
     brand: '',
+    retailer: '',
     inStock: true,
     features: [],
     specifications: {},
     images: [],
     tags: [],
-    externalUrl: ''
+    externalUrl: '',
+    affiliateLink: ''
   });
 
   // Filter products
@@ -228,6 +231,7 @@ const AdminProductsPage: React.FC = () => {
         category: product.category,
         subcategory: (product as any).subcategory || '',
         brand: product.brand,
+        retailer: product.retailer || '',
         inStock: product.inStock,
         features: [...product.features],
         specifications: { ...product.specifications },
@@ -252,6 +256,7 @@ const AdminProductsPage: React.FC = () => {
         category: '',
         subcategory: '',
         brand: '',
+        retailer: '',
         inStock: true,
         features: [],
         specifications: {},
@@ -276,8 +281,27 @@ const AdminProductsPage: React.FC = () => {
     }
 
     try {
+      // Validate required fields
+      if (!formData.name || !formData.price || !formData.category || !formData.brand) {
+        setSnackbar({ open: true, message: 'Please fill in all required fields (Name, Price, Category, Brand)', severity: 'error' });
+        return;
+      }
+
+      // Validate price
+      if (formData.price <= 0) {
+        setSnackbar({ open: true, message: 'Price must be greater than 0', severity: 'error' });
+        return;
+      }
+
+      // Validate rating
+      if (formData.rating < 0 || formData.rating > 5) {
+        setSnackbar({ open: true, message: 'Rating must be between 0 and 5', severity: 'error' });
+        return;
+      }
+
       if (editingProduct) {
-        const updated = await updateProduct(editingProduct.id, {
+        console.log('Saving product with data:', formData);
+        await updateProductById(editingProduct.id, {
           name: formData.name,
           description: formData.description,
           price: formData.price,
@@ -287,6 +311,7 @@ const AdminProductsPage: React.FC = () => {
           reviewCount: formData.reviewCount,
           category: formData.category,
           brand: formData.brand,
+          retailer: formData.retailer,
           inStock: formData.inStock,
           features: formData.features,
           specifications: formData.specifications,
@@ -295,41 +320,41 @@ const AdminProductsPage: React.FC = () => {
           externalUrl: formData.externalUrl,
           affiliateLink: formData.affiliateLink,
         });
-        setProducts(prev => prev.map(p => p.id === editingProduct.id ? updated : p));
         setSnackbar({ open: true, message: 'Product updated successfully!', severity: 'success' });
-      } else {
-        const created = await createProduct({
-          name: formData.name,
-          description: formData.description,
-          price: formData.price,
-          originalPrice: formData.originalPrice,
-          image: formData.image,
-          rating: formData.rating,
-          reviewCount: formData.reviewCount,
-          category: formData.category,
-          brand: formData.brand,
-          inStock: formData.inStock,
-          features: formData.features,
-          specifications: formData.specifications,
-          images: formData.images,
-          tags: formData.tags,
-          externalUrl: formData.externalUrl,
-          affiliateLink: formData.affiliateLink,
-        });
-        setProducts(prev => [...prev, created]);
+              } else {
+          await createNewProduct({
+            name: formData.name,
+            description: formData.description,
+            price: formData.price,
+            originalPrice: formData.originalPrice,
+            image: formData.image,
+            rating: formData.rating,
+            reviewCount: formData.reviewCount,
+            category: formData.category,
+            brand: formData.brand,
+            retailer: formData.retailer,
+            inStock: formData.inStock,
+            features: formData.features,
+            specifications: formData.specifications,
+            images: formData.images,
+            tags: formData.tags,
+            externalUrl: formData.externalUrl,
+            affiliateLink: formData.affiliateLink,
+          });
         setSnackbar({ open: true, message: 'New product added successfully!', severity: 'success' });
       }
       handleCloseDialog();
     } catch (e) {
-      setSnackbar({ open: true, message: 'Error saving product', severity: 'error' });
+              setSnackbar({ open: true, message: `Error saving product: ${e instanceof Error ? e.message : 'Unknown error'}`, severity: 'error' });
+        // Don't close dialog on error, let user try again
+        return;
     }
   };
 
   const handleDelete = async (productId: string) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await deleteProductApi(productId);
-        setProducts(prev => prev.filter(p => p.id !== productId));
+        await deleteProductById(productId);
         setSnackbar({ open: true, message: 'Product deleted successfully!', severity: 'success' });
       } catch (e) {
         setSnackbar({ open: true, message: 'Error deleting product', severity: 'error' });
@@ -976,6 +1001,16 @@ const AdminProductsPage: React.FC = () => {
             margin="normal"
             helperText="Your affiliate link for this product (required for commission)"
             placeholder="https://example.com/product?ref=your-affiliate-id"
+          />
+          
+          <TextField
+            fullWidth
+            label="Retailer Name"
+            value={formData.retailer || ''}
+            onChange={(e) => handleInputChange('retailer', e.target.value)}
+            margin="normal"
+            helperText="Name of the retailer (e.g., Amazon, Best Buy, Walmart)"
+            placeholder="Amazon"
           />
           
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mt: 1 }}>

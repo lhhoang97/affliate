@@ -9,6 +9,7 @@ export interface Product {
   reviewCount: number;
   category: string;
   brand: string;
+  retailer?: string;
   inStock: boolean;
   features: string[];
   specifications: Record<string, string>;
