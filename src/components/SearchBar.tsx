@@ -12,7 +12,9 @@ import {
   ListItemIcon,
   Typography,
   Chip,
-  Divider
+  Divider,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import {
   Search,
@@ -44,6 +46,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const anchorRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleInputChange = (newValue: string) => {
     onChange(newValue);
@@ -83,77 +87,136 @@ const SearchBar: React.FC<SearchBarProps> = ({
     setTimeout(() => setShowDropdown(false), 200);
   };
 
-  return (
-    <Box ref={anchorRef} sx={{ position: 'relative', width: '100%' }}>
-      <TextField
-        fullWidth
-        value={value}
-        onChange={(e) => handleInputChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        placeholder={placeholder}
-        size="medium"
-        sx={{
-          '& .MuiOutlinedInput-root': {
-            backgroundColor: '#f1f3f4',
-            borderRadius: '24px',
-            '&:hover': {
-              backgroundColor: '#e8eaed'
+  const handleClearClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    handleInputChange('');
+  };
+
+  // Prevent zoom on iOS when focusing input
+  const handleInputFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    handleFocus();
+    // Ensure proper viewport on mobile
+    if (isMobile) {
+      const viewport = document.querySelector('meta[name=viewport]');
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1');
+      }
+    }
+  };
+
+  const handleInputBlur = () => {
+    handleBlur();
+    // Restore viewport after blur
+    if (isMobile) {
+      const viewport = document.querySelector('meta[name=viewport]');
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1');
+      }
+    }
+  };
+
+      return (
+      <Box 
+        ref={anchorRef} 
+        sx={{ 
+          position: 'relative', 
+          width: '100%',
+          maxWidth: '100%',
+          overflow: 'hidden'
+        }}
+      >
+        <TextField
+          fullWidth
+          value={value}
+          onChange={(e) => handleInputChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
+          placeholder={placeholder}
+          size="medium"
+          sx={{
+            width: '100%',
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: '#f1f3f4',
+              borderRadius: '24px',
+              '&:hover': {
+                backgroundColor: '#e8eaed'
+              },
+              '&.Mui-focused': {
+                backgroundColor: 'white',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              }
             },
-            '&.Mui-focused': {
-              backgroundColor: 'white',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            '& .MuiOutlinedInput-input': {
+              fontSize: { xs: '16px', sm: '16px' }, // Prevent zoom on iOS
+              padding: { xs: '12px 16px', sm: '12px 16px' },
+              '&::placeholder': {
+                fontSize: { xs: '16px', sm: '16px' }
+              }
+            },
+            '& .MuiInputAdornment-root': {
+              margin: { xs: '0 8px', sm: '0 8px' }
+            },
+            // Mobile-specific fixes
+            '& .MuiOutlinedInput-notchedOutline': {
+              border: 'none'
+            },
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              border: 'none'
             }
-          },
-          '& .MuiOutlinedInput-input': {
-            fontSize: { xs: '14px', sm: '16px' },
-            padding: { xs: '8px 12px', sm: '12px 16px' }
-          },
-          '& .MuiInputAdornment-root': {
-            margin: { xs: '0 4px', sm: '0 8px' }
-          }
-        }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Search sx={{ color: '#666', fontSize: { xs: '18px', sm: '20px' } }} />
-            </InputAdornment>
-          ),
-          endAdornment: value && (
-            <InputAdornment position="end">
-              <IconButton
-                size="small"
-                onClick={() => handleInputChange('')}
-                edge="end"
-                sx={{
-                  p: 1,
-                  '&:hover': {
-                    backgroundColor: 'rgba(0,0,0,0.04)'
-                  }
-                }}
-              >
-                <Clear sx={{ fontSize: { xs: '16px', sm: '20px' } }} />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
+          }}
+                  InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search sx={{ 
+                  color: '#666', 
+                  fontSize: { xs: '20px', sm: '20px' },
+                  cursor: 'pointer'
+                }} />
+              </InputAdornment>
+            ),
+            endAdornment: value && (
+              <InputAdornment position="end">
+                <IconButton
+                  size="small"
+                  onClick={handleClearClick}
+                  edge="end"
+                  sx={{
+                    p: 1,
+                    '&:hover': {
+                      backgroundColor: 'rgba(0,0,0,0.04)'
+                    }
+                  }}
+                >
+                  <Clear sx={{ fontSize: { xs: '18px', sm: '20px' } }} />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
       />
 
       {/* Search Suggestions Dropdown */}
       <Popper
         open={showDropdown && showSuggestions}
         anchorEl={anchorRef.current}
-        placement="bottom-start"
-        sx={{ zIndex: 1300, width: anchorRef.current?.offsetWidth }}
+        placement={isMobile ? "bottom" : "bottom-start"}
+        sx={{ 
+          zIndex: 1300, 
+          width: isMobile ? '100vw' : anchorRef.current?.offsetWidth,
+          maxWidth: isMobile ? '100vw' : '400px',
+          left: isMobile ? '0 !important' : 'auto',
+          right: isMobile ? '0 !important' : 'auto'
+        }}
       >
         <Paper
           elevation={8}
           sx={{
             mt: 1,
-            borderRadius: 2,
-            maxHeight: 400,
-            overflow: 'auto'
+            borderRadius: isMobile ? 0 : 2,
+            maxHeight: isMobile ? '60vh' : 400,
+            overflow: 'auto',
+            mx: isMobile ? 1 : 0
           }}
         >
           {/* Recent Searches */}
@@ -170,10 +233,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     key={index}
                     onClick={() => handleSuggestionClick(search)}
                     sx={{ 
-                      py: 1,
+                      py: isMobile ? 2 : 1,
                       cursor: 'pointer',
                       '&:hover': {
                         backgroundColor: '#f5f5f5'
+                      },
+                      '&:active': {
+                        backgroundColor: '#e0e0e0'
                       }
                     }}
                   >
@@ -183,7 +249,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     <ListItemText
                       primary={search}
                       primaryTypographyProps={{
-                        fontSize: '0.9rem',
+                        fontSize: isMobile ? '1rem' : '0.9rem',
                         color: '#333'
                       }}
                     />
@@ -202,25 +268,33 @@ const SearchBar: React.FC<SearchBarProps> = ({
                   Trending Searches
                 </Typography>
               </Box>
-              <Box sx={{ p: 2, pt: 0 }}>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {trendingSearches.slice(0, 8).map((trend, index) => (
-                    <Chip
-                      key={index}
-                      label={trend}
-                      size="small"
-                      icon={<TrendingUp sx={{ fontSize: 16 }} />}
-                      onClick={() => handleSuggestionClick(trend)}
-                      sx={{
-                        cursor: 'pointer',
-                        '&:hover': {
-                          backgroundColor: '#e3f2fd'
-                        }
-                      }}
-                    />
-                  ))}
+                              <Box sx={{ p: 2, pt: 0 }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexWrap: 'wrap', 
+                    gap: 1,
+                    justifyContent: isMobile ? 'center' : 'flex-start'
+                  }}>
+                    {trendingSearches.slice(0, isMobile ? 6 : 8).map((trend, index) => (
+                      <Chip
+                        key={index}
+                        label={trend}
+                        size={isMobile ? "medium" : "small"}
+                        icon={<TrendingUp sx={{ fontSize: 16 }} />}
+                        onClick={() => handleSuggestionClick(trend)}
+                        sx={{
+                          cursor: 'pointer',
+                          '&:hover': {
+                            backgroundColor: '#e3f2fd'
+                          },
+                          '&:active': {
+                            backgroundColor: '#bbdefb'
+                          }
+                        }}
+                      />
+                    ))}
+                  </Box>
                 </Box>
-              </Box>
             </>
           )}
 
@@ -230,18 +304,26 @@ const SearchBar: React.FC<SearchBarProps> = ({
             <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 600, mb: 1 }}>
               Popular Categories
             </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              flexWrap: 'wrap', 
+              gap: 1,
+              justifyContent: isMobile ? 'center' : 'flex-start'
+            }}>
               {['Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Books', 'Toys'].map((category) => (
                 <Chip
                   key={category}
                   label={category}
-                  size="small"
+                  size={isMobile ? "medium" : "small"}
                   icon={<LocalOffer sx={{ fontSize: 16 }} />}
                   onClick={() => handleSuggestionClick(category)}
                   sx={{
                     cursor: 'pointer',
                     '&:hover': {
                       backgroundColor: '#e3f2fd'
+                    },
+                    '&:active': {
+                      backgroundColor: '#bbdefb'
                     }
                   }}
                 />

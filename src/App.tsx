@@ -10,6 +10,7 @@ import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import SearchPage from './pages/SearchPage';
 import CategoriesPage from './pages/CategoriesPage';
+import CategoryDetailPage from './pages/CategoryDetailPage';
 
 import CartPage from './pages/CartPage';
 import LoginPage from './pages/LoginPage';
@@ -31,6 +32,9 @@ import AdminPriceUpdatePage from './pages/AdminPriceUpdatePage';
 import AdminSectionManagementPage from './pages/AdminSectionManagementPage';
 import AdminSliderProductsPage from './pages/AdminSliderProductsPage';
 import AdminSectionProductsPage from './pages/AdminSectionProductsPage';
+import AdminMenuManagementPage from './pages/AdminMenuManagementPage';
+import AdminCouponManagementPage from './pages/AdminCouponManagementPage';
+import AdminDealManagementPage from './pages/AdminDealManagementPage';
 import ProductCardDemo from './pages/ProductCardDemo';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
@@ -251,7 +255,7 @@ function App() {
                       <Route path="/products" element={<ProductsPage />} />
                       <Route path="/product/:id" element={<ProductDetailPage />} />
                       <Route path="/categories" element={<CategoriesPage />} />
-                      <Route path="/categories/:category" element={<CategoriesPage />} />
+                      <Route path="/category/:slug" element={<CategoryDetailPage />} />
               
                       <Route path="/deals" element={<DealsPage />} />
                       <Route path="/reviews" element={<ReviewsPage />} />
@@ -293,6 +297,9 @@ function App() {
                         <Route path="section-management" element={<AdminSectionManagementPage />} />
                                                     <Route path="slider-products" element={<AdminSliderProductsPage />} />
                             <Route path="section-products" element={<AdminSectionProductsPage />} />
+                        <Route path="menu-management" element={<AdminMenuManagementPage />} />
+                        <Route path="coupon-management" element={<AdminCouponManagementPage />} />
+                        <Route path="deal-management" element={<AdminDealManagementPage />} />
                         <Route path="users" element={<AdminUsersPage />} />
                         <Route path="settings" element={<AdminSettingsPage />} />
                       </Route>

@@ -2,7 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Box, 
   Container, 
-  Typography
+  Typography,
+  Card,
+  CardContent
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SimpleSlider from '../components/SimpleSlider';
@@ -13,13 +15,9 @@ const HomePage: React.FC = () => {
   const { products, loading } = useProducts();
   const navigate = useNavigate();
 
-  // Debug log to check products from database
-  console.log('HomePage - Products from database:', products);
-  console.log('HomePage - Products count:', products.length);
-
   // Create sections from actual products with memoization to prevent unnecessary re-renders
   const justForYouDeals = useMemo(() => 
-    products.filter(p => p.category === 'Electronics').slice(0, 8), 
+    products.slice(0, 8), 
     [products]
   );
   const hotDeals = useMemo(() => 
@@ -30,6 +28,14 @@ const HomePage: React.FC = () => {
     products.filter(p => p.rating > 4.5).slice(0, 8), 
     [products]
   );
+
+  // Debug log to check products from database
+  console.log('HomePage - Products from database:', products);
+  console.log('HomePage - Products count:', products.length);
+  console.log('HomePage - Loading state:', loading);
+  console.log('HomePage - Just for you deals:', justForYouDeals.length);
+  console.log('HomePage - Hot deals:', hotDeals.length);
+  console.log('HomePage - Trending deals:', trendingDeals.length);
 
   const handleProductClick = (product: Product) => {
     navigate(`/product/${product.id}`);
@@ -54,6 +60,8 @@ const HomePage: React.FC = () => {
   return (
     <Box sx={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
       <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
+        
+
         
         {/* Just For You Section */}
         {justForYouDeals.length > 0 && (

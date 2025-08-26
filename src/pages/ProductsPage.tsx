@@ -22,7 +22,7 @@ import { Product } from '../types';
 import { fetchProducts } from '../services/productService';
 import { useCart } from '../contexts/CartContext';
 
-import CategoryNavigation from '../components/CategoryNavigation';
+
 
 const ProductsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -146,14 +146,7 @@ const ProductsPage: React.FC = () => {
 
   return (
     <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-      {/* Category Navigation */}
-      <CategoryNavigation 
-        selectedCategory={selectedCategory}
-        onCategorySelect={(categoryId) => {
-          setSelectedCategory(categoryId);
-          setCurrentPage(1);
-        }}
-      />
+
       
       <Container maxWidth="lg" sx={{ py: 2 }}>
 

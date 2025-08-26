@@ -55,6 +55,9 @@ function mapDbCategory(row: any): Category {
     image: row.image ?? '',
     productCount: row.product_count ?? 0,
     slug: row.slug ?? row.name.toLowerCase().replace(/\s+/g, '-'),
+    icon: row.icon ?? '',
+    letter: row.letter ?? '',
+    subcategories: row.subcategories ?? []
   };
 }
 
@@ -93,7 +96,10 @@ export async function createCategory(input: Omit<Category, 'id' | 'productCount'
       name: input.name,
       description: input.description ?? null,
       image: input.image ?? null,
-      slug: input.slug ?? input.name.toLowerCase().replace(/\s+/g, '-')
+      slug: input.slug ?? input.name.toLowerCase().replace(/\s+/g, '-'),
+      icon: input.icon ?? null,
+      letter: input.letter ?? null,
+      subcategories: input.subcategories ?? []
     };
     const { data, error } = await supabase.from('categories').insert(payload).select('*').single();
     if (error) throw error;
@@ -111,6 +117,9 @@ export async function updateCategory(id: string, input: Partial<Omit<Category, '
     if (input.description !== undefined) payload.description = input.description;
     if (input.image !== undefined) payload.image = input.image;
     if (input.slug !== undefined) payload.slug = input.slug;
+    if (input.icon !== undefined) payload.icon = input.icon;
+    if (input.letter !== undefined) payload.letter = input.letter;
+    if (input.subcategories !== undefined) payload.subcategories = input.subcategories;
     const { data, error } = await supabase.from('categories').update(payload).eq('id', id).select('*').single();
     if (error) throw error;
     return mapDbCategory(data);

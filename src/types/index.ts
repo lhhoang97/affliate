@@ -54,6 +54,13 @@ export interface User {
   createdAt: string;
 }
 
+export interface Subcategory {
+  id: string;
+  name: string;
+  slug: string;
+  icon?: string;
+}
+
 export interface Category {
   id: string;
   name: string;
@@ -63,6 +70,7 @@ export interface Category {
   slug: string;
   icon?: string;
   letter?: string;
+  subcategories?: Subcategory[];
 }
 
 export interface FilterOptions {

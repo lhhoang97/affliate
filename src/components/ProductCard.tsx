@@ -24,9 +24,9 @@ interface ProductCardProps {
     id: string;
     name: string;
     price: number;
-    originalPrice: number;
+    originalPrice?: number;
     image: string;
-    retailer: string;
+    retailer?: string;
     color?: string;
     likes?: number;
     comments?: number;
@@ -63,7 +63,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     retailerType: typeof product.retailer
   });
   
-  const discountPercentage = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+  const discountPercentage = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
 
   const handleLike = () => {
     setIsLiked(!isLiked);
