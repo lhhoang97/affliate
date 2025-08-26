@@ -17,6 +17,14 @@ export interface Product {
   tags: string[];
   externalUrl?: string;
   affiliateLink?: string;
+  // Deal Details content
+  dealTitle?: string;
+  dealDescription?: string;
+  dealCategories?: string[];
+  productDetails?: string;
+  keyFeatures?: string[];
+  communityNotes?: string;
+  aboutPoster?: string;
   createdAt: string;
   updatedAt: string;
 }

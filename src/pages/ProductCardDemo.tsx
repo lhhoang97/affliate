@@ -7,7 +7,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '1',
       name: '10KG ANYCUBIC 1.75mm PLA 3D Printer Filament Bundles (Various Colors)',
-      currentPrice: 65,
+      price: 65,
       originalPrice: 246,
       image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=200&fit=crop',
       retailer: 'AliExpress',
@@ -24,7 +24,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '2',
       name: 'Wireless Bluetooth Earbuds with Noise Cancellation',
-      currentPrice: 29.99,
+      price: 29.99,
       originalPrice: 89.99,
       image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=200&fit=crop',
       retailer: 'Amazon',
@@ -41,7 +41,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '3',
       name: 'Smart Fitness Watch with Heart Rate Monitor',
-      currentPrice: 79.99,
+      price: 79.99,
       originalPrice: 199.99,
       image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=200&fit=crop',
       retailer: 'Best Buy',
@@ -58,7 +58,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '4',
       name: 'Portable Bluetooth Speaker Waterproof',
-      currentPrice: 34.99,
+      price: 34.99,
       originalPrice: 79.99,
       image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=200&fit=crop',
       retailer: 'Walmart',
@@ -75,7 +75,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '5',
       name: 'Gaming Mechanical Keyboard RGB Backlit',
-      currentPrice: 89.99,
+      price: 89.99,
       originalPrice: 149.99,
       image: 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=200&fit=crop',
       retailer: 'Newegg',
@@ -92,7 +92,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '6',
       name: '4K Ultra HD Smart TV 55 inch',
-      currentPrice: 399.99,
+      price: 399.99,
       originalPrice: 699.99,
       image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=200&fit=crop',
       retailer: 'Target',
@@ -109,7 +109,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '7',
       name: 'Wireless Charging Pad Fast Charger',
-      currentPrice: 19.99,
+      price: 19.99,
       originalPrice: 49.99,
       image: 'https://images.unsplash.com/photo-1609592806596-b43bada2f2d2?w=400&h=200&fit=crop',
       retailer: 'Amazon',
@@ -126,7 +126,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '8',
       name: 'Professional Camera DSLR Kit',
-      currentPrice: 599.99,
+      price: 599.99,
       originalPrice: 999.99,
       image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&h=200&fit=crop',
       retailer: 'B&H Photo',
@@ -143,7 +143,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '9',
       name: 'Robot Vacuum Cleaner with Mapping',
-      currentPrice: 199.99,
+      price: 199.99,
       originalPrice: 399.99,
       image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=200&fit=crop',
       retailer: 'Costco',
@@ -160,7 +160,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '10',
       name: 'Gaming Mouse RGB 16000 DPI',
-      currentPrice: 39.99,
+      price: 39.99,
       originalPrice: 79.99,
       image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=200&fit=crop',
       retailer: 'Micro Center',
@@ -177,7 +177,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '11',
       name: 'Air Fryer Digital 5.8L Capacity',
-      currentPrice: 69.99,
+      price: 69.99,
       originalPrice: 129.99,
       image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=200&fit=crop',
       retailer: 'Walmart',
@@ -194,7 +194,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '12',
       name: 'Wireless Gaming Headset with Mic',
-      currentPrice: 49.99,
+      price: 49.99,
       originalPrice: 99.99,
       image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=200&fit=crop',
       retailer: 'Best Buy',
@@ -211,7 +211,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '13',
       name: 'Smart Home Security Camera System',
-      currentPrice: 149.99,
+      price: 149.99,
       originalPrice: 299.99,
       image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop',
       retailer: 'Home Depot',
@@ -228,7 +228,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '14',
       name: 'Electric Standing Desk Adjustable',
-      currentPrice: 299.99,
+      price: 299.99,
       originalPrice: 499.99,
       image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=200&fit=crop',
       retailer: 'IKEA',
@@ -245,7 +245,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '15',
       name: 'Portable Power Bank 20000mAh',
-      currentPrice: 24.99,
+      price: 24.99,
       originalPrice: 49.99,
       image: 'https://images.unsplash.com/photo-1609592806596-b43bada2f2d2?w=400&h=200&fit=crop',
       retailer: 'Amazon',
@@ -262,7 +262,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '16',
       name: 'Smart LED Light Bulbs Pack of 4',
-      currentPrice: 19.99,
+      price: 19.99,
       originalPrice: 39.99,
       image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&h=200&fit=crop',
       retailer: 'Target',
@@ -279,7 +279,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '17',
       name: 'Wireless Car Charger Mount',
-      currentPrice: 29.99,
+      price: 29.99,
       originalPrice: 59.99,
       image: 'https://images.unsplash.com/photo-1609592806596-b43bada2f2d2?w=400&h=200&fit=crop',
       retailer: 'AutoZone',
@@ -296,7 +296,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '18',
       name: 'Smart Coffee Maker WiFi Enabled',
-      currentPrice: 89.99,
+      price: 89.99,
       originalPrice: 159.99,
       image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=200&fit=crop',
       retailer: 'Bed Bath & Beyond',
@@ -313,7 +313,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '19',
       name: 'Bluetooth Beanie with Speakers',
-      currentPrice: 19.99,
+      price: 19.99,
       originalPrice: 39.99,
       image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=200&fit=crop',
       retailer: 'Amazon',
@@ -330,7 +330,7 @@ const ProductCardDemo: React.FC = () => {
     {
       id: '20',
       name: 'Smart Door Lock Keyless Entry',
-      currentPrice: 129.99,
+      price: 129.99,
       originalPrice: 199.99,
       image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop',
       retailer: 'Lowe\'s',

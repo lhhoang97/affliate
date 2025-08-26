@@ -61,6 +61,14 @@ interface ProductFormData {
   tags: string[];
   externalUrl?: string;
   affiliateLink?: string;
+  // Deal Details content
+  dealTitle?: string;
+  dealDescription?: string;
+  dealCategories?: string[];
+  productDetails?: string;
+  keyFeatures?: string[];
+  communityNotes?: string;
+  aboutPoster?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -319,6 +327,14 @@ const AdminProductsPage: React.FC = () => {
           tags: formData.tags,
           externalUrl: formData.externalUrl,
           affiliateLink: formData.affiliateLink,
+          // Deal Details content
+          dealTitle: formData.dealTitle,
+          dealDescription: formData.dealDescription,
+          dealCategories: formData.dealCategories,
+          productDetails: formData.productDetails,
+          keyFeatures: formData.keyFeatures,
+          communityNotes: formData.communityNotes,
+          aboutPoster: formData.aboutPoster,
         });
         setSnackbar({ open: true, message: 'Product updated successfully!', severity: 'success' });
               } else {
@@ -340,6 +356,14 @@ const AdminProductsPage: React.FC = () => {
             tags: formData.tags,
             externalUrl: formData.externalUrl,
             affiliateLink: formData.affiliateLink,
+            // Deal Details content
+            dealTitle: formData.dealTitle,
+            dealDescription: formData.dealDescription,
+            dealCategories: formData.dealCategories,
+            productDetails: formData.productDetails,
+            keyFeatures: formData.keyFeatures,
+            communityNotes: formData.communityNotes,
+            aboutPoster: formData.aboutPoster,
           });
         setSnackbar({ open: true, message: 'New product added successfully!', severity: 'success' });
       }
@@ -1042,6 +1066,89 @@ const AdminProductsPage: React.FC = () => {
             }
             label="In Stock"
             sx={{ mt: 2 }}
+          />
+
+          {/* Deal Details Section */}
+          <Typography variant="h6" sx={{ mt: 3, mb: 2, color: 'primary', borderBottom: '1px solid #e0e0e0', pb: 1 }}>
+            Deal Details Content
+          </Typography>
+
+          <TextField
+            fullWidth
+            label="Deal Title"
+            value={formData.dealTitle || ''}
+            onChange={(e) => handleInputChange('dealTitle', e.target.value)}
+            margin="normal"
+            helperText="Custom title for the deal (optional - will use default if empty)"
+            placeholder="MacBook Pro M3 - $1999.99 + Free Shipping"
+          />
+
+          <TextField
+            fullWidth
+            label="Deal Description"
+            value={formData.dealDescription || ''}
+            onChange={(e) => handleInputChange('dealDescription', e.target.value)}
+            margin="normal"
+            multiline
+            rows={3}
+            helperText="Custom description for the deal (optional - will use default if empty)"
+            placeholder="Amazon has MacBook Pro M3 + Free Shipping"
+          />
+
+          <TextField
+            fullWidth
+            label="Deal Categories (comma separated)"
+            value={formData.dealCategories?.join(', ') || ''}
+            onChange={(e) => handleInputChange('dealCategories', e.target.value.split(',').map(s => s.trim()).filter(s => s))}
+            margin="normal"
+            helperText="Custom categories for the deal (optional - will use product category and tags if empty)"
+            placeholder="Electronics, laptop, macbook"
+          />
+
+          <TextField
+            fullWidth
+            label="Product Details"
+            value={formData.productDetails || ''}
+            onChange={(e) => handleInputChange('productDetails', e.target.value)}
+            margin="normal"
+            multiline
+            rows={3}
+            helperText="Custom product details text (optional)"
+            placeholder="MacBook Pro M3 [amazon.com] $1999.99"
+          />
+
+          <TextField
+            fullWidth
+            label="Key Features (comma separated)"
+            value={formData.keyFeatures?.join(', ') || ''}
+            onChange={(e) => handleInputChange('keyFeatures', e.target.value.split(',').map(s => s.trim()).filter(s => s))}
+            margin="normal"
+            helperText="Custom key features (optional - will use product features if empty)"
+            placeholder="M3 Chip, Retina Display, Touch Bar, Thunderbolt 4"
+          />
+
+          <TextField
+            fullWidth
+            label="Community Notes"
+            value={formData.communityNotes || ''}
+            onChange={(e) => handleInputChange('communityNotes', e.target.value)}
+            margin="normal"
+            multiline
+            rows={4}
+            helperText="Community notes and comments about this deal"
+            placeholder="Great deal! This is the lowest price I've seen..."
+          />
+
+          <TextField
+            fullWidth
+            label="About the Poster"
+            value={formData.aboutPoster || ''}
+            onChange={(e) => handleInputChange('aboutPoster', e.target.value)}
+            margin="normal"
+            multiline
+            rows={3}
+            helperText="Information about who posted this deal"
+            placeholder="ShopWithUs Staff - Verified Deals Expert"
           />
         </DialogContent>
         <DialogActions>

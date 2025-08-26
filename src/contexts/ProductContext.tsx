@@ -31,9 +31,11 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadProducts = async () => {
+  const loadProducts = async (showLoading: boolean = true) => {
     try {
-      setLoading(true);
+      if (showLoading) {
+        setLoading(true);
+      }
       setError(null);
       console.log('ProductContext - Loading products from database...');
       const allProducts = await getAllProducts();
@@ -45,13 +47,15 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       // Don't use fallback data - let user know there's an issue
       setProducts([]);
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   };
 
   const refreshProducts = async () => {
     console.log('ProductContext - Refreshing products...');
-    await loadProducts();
+    await loadProducts(true); // Show loading for manual refresh
   };
 
   const updateProductById = async (id: string, updates: Partial<Product>) => {
@@ -62,7 +66,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       
       // Force refresh all products to ensure sync
       console.log('ProductContext - Force refreshing all products after update...');
-      await loadProducts();
+      await loadProducts(false); // Don't show loading for update refresh
     } catch (err) {
       console.error('ProductContext - Error updating product:', err);
       setError('Failed to update product in database, updating local state only');
@@ -106,15 +110,15 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
   };
 
   useEffect(() => {
-    loadProducts();
+    loadProducts(true); // Show loading for initial load
   }, []);
 
-  // Auto-refresh products every 5 seconds to keep in sync
+  // Auto-refresh products every 30 seconds to keep in sync (reduced frequency to prevent flickering)
   useEffect(() => {
     const interval = setInterval(() => {
       console.log('ProductContext - Auto-refreshing products...');
-      loadProducts();
-    }, 5000); // Refresh every 5 seconds
+      loadProducts(false); // Don't show loading for auto-refresh
+    }, 30000); // Refresh every 30 seconds instead of 5
 
     return () => clearInterval(interval);
   }, []);

@@ -2,6 +2,27 @@ import { supabase } from '../utils/supabaseClient';
 import { Product, Category } from '../types';
 
 function mapDbProduct(row: any): Product {
+  // Generate retailer based on brand if not provided
+  let retailer = row.retailer;
+  if (!retailer || retailer === null || retailer === undefined) {
+    // Map brand to common retailers
+    const brandToRetailer: { [key: string]: string } = {
+      'Apple': 'Apple Store',
+      'Samsung': 'Samsung',
+      'Sony': 'Sony',
+      'LG': 'LG',
+      'AudioTech': 'Amazon',
+      'TechAudio': 'Amazon',
+      'FitTech': 'Best Buy',
+      'SoundWave': 'Walmart',
+      'GameTech': 'Newegg',
+      'PhotoPro': 'B&H Photo',
+      'ChargeTech': 'Amazon',
+      'WineSmart': 'Wine.com'
+    };
+    retailer = brandToRetailer[row.brand] || 'Amazon';
+  }
+
   return {
     id: String(row.id),
     name: row.name,
@@ -13,7 +34,7 @@ function mapDbProduct(row: any): Product {
     reviewCount: row.review_count ?? 0,
     category: row.category,
     brand: row.brand,
-    retailer: row.retailer ?? undefined,
+    retailer: retailer,
     inStock: Boolean(row.in_stock),
     features: row.features ?? [],
     specifications: row.specifications ?? {},

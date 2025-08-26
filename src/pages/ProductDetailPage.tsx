@@ -431,9 +431,9 @@ const ProductDetailPage: React.FC = () => {
               </Typography>
 
               {/* Deal Title */}
-              <Typography variant="h5" component="h1" sx={{ fontWeight: 700, mb: 2, lineHeight: 1.3 }}>
-                {product.name} - ${product.price} + Free Shipping
-              </Typography>
+                          <Typography variant="h5" component="h1" sx={{ fontWeight: 700, mb: 2, lineHeight: 1.3 }}>
+              {product.dealTitle || `${product.name} - $${product.price} + Free Shipping`}
+            </Typography>
 
               {/* Pricing Section */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
@@ -516,7 +516,7 @@ const ProductDetailPage: React.FC = () => {
 
               {/* Product Description */}
               <Typography variant="body1" sx={{ mb: 3, color: '#6b7280', lineHeight: 1.6 }}>
-                {product.description}
+                {product.dealDescription || product.description}
               </Typography>
             </Box>
           </Box>
@@ -551,16 +551,19 @@ const ProductDetailPage: React.FC = () => {
             </Typography>
             
             <Typography variant="body1" sx={{ mb: 3 }}>
-              <strong>{product.retailer} [{product.retailer?.toLowerCase().replace(/\s+/g, '')}.com]</strong> has {product.name} + Free Shipping
+              {product.dealDescription || `<strong>${product.retailer} [${product.retailer?.toLowerCase().replace(/\s+/g, '')}.com]</strong> has ${product.name} + Free Shipping`}
             </Typography>
 
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
               Deal Categories:
             </Typography>
             <Box sx={{ mb: 3 }}>
-              <Chip label={`${product.category} [${product.retailer?.toLowerCase().replace(/\s+/g, '')}.com]`} sx={{ mr: 1, mb: 1 }} />
-              {product.tags.slice(0, 2).map((tag, index) => (
-                <Chip key={index} label={`${tag} [${product.retailer?.toLowerCase().replace(/\s+/g, '')}.com]`} sx={{ mr: 1, mb: 1 }} />
+              {(product.dealCategories || [product.category, ...product.tags.slice(0, 2)]).map((category, index) => (
+                <Chip 
+                  key={index} 
+                  label={`${category} [${product.retailer?.toLowerCase().replace(/\s+/g, '')}.com]`} 
+                  sx={{ mr: 1, mb: 1 }} 
+                />
               ))}
             </Box>
 
@@ -583,7 +586,7 @@ const ProductDetailPage: React.FC = () => {
               Key Features:
             </Typography>
             <Box>
-              {product.features.slice(0, 5).map((feature, index) => (
+              {(product.keyFeatures || product.features.slice(0, 5)).map((feature, index) => (
                 <Typography key={index} variant="body1" sx={{ mb: 1 }}>
                   • {feature}
                 </Typography>

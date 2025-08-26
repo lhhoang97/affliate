@@ -13,7 +13,18 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const autoPlayIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const itemsPerView = 4;
+  
+  // Responsive items per view
+  const getItemsPerView = () => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth < 600) return 2; // Mobile
+      if (window.innerWidth < 960) return 3; // Tablet
+      return 4; // Desktop
+    }
+    return 4; // Default
+  };
+  
+  const [itemsPerView, setItemsPerView] = useState(getItemsPerView());
 
   const nextSlide = () => {
     const maxIndex = Math.max(0, products.length - itemsPerView);
@@ -39,7 +50,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
           const maxIndex = Math.max(0, products.length - itemsPerView);
           return prev >= maxIndex ? 0 : prev + 1;
         });
-      }, 4000); // Change slide every 4 seconds
+      }, 6000); // Change slide every 6 seconds (increased to reduce flickering)
     } else {
       if (autoPlayIntervalRef.current) {
         clearInterval(autoPlayIntervalRef.current);
@@ -63,6 +74,16 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
   const handleMouseLeave = () => {
     setIsAutoPlaying(false);
   };
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerView(getItemsPerView());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <Box sx={{ mb: 4 }}>
@@ -158,7 +179,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
         {/* Products Grid with Animation */}
         <Box sx={{
           display: 'flex',
-          gap: 2,
+          gap: { xs: 1, sm: 2 },
           overflow: 'hidden',
           transition: 'transform 0.3s ease-in-out',
           transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`
@@ -168,7 +189,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
               key={product.id}
               onClick={() => onProductClick(product)}
               sx={{
-                flex: '0 0 calc(25% - 12px)',
+                flex: { xs: '0 0 calc(50% - 4px)', sm: '0 0 calc(33.333% - 8px)', md: '0 0 calc(25% - 12px)' },
                 cursor: 'pointer',
                 background: '#ffffff',
                 borderRadius: '8px',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Box, 
   Container, 
@@ -419,10 +419,19 @@ const HomePage: React.FC = () => {
 
   // Remove useEffect since we're using ProductContext now
 
-  // Create sections from actual products
-  const justForYouDeals = products.filter(p => p.category === 'Electronics').slice(0, 8);
-  const hotDeals = products.filter(p => p.price < 100).slice(0, 8);
-  const trendingDeals = products.filter(p => p.rating > 4.5).slice(0, 8);
+  // Create sections from actual products with memoization to prevent unnecessary re-renders
+  const justForYouDeals = useMemo(() => 
+    products.filter(p => p.category === 'Electronics').slice(0, 8), 
+    [products]
+  );
+  const hotDeals = useMemo(() => 
+    products.filter(p => p.price < 100).slice(0, 8), 
+    [products]
+  );
+  const trendingDeals = useMemo(() => 
+    products.filter(p => p.rating > 4.5).slice(0, 8), 
+    [products]
+  );
 
   const handleProductClick = (product: Product) => {
     navigate(`/product/${product.id}`);
