@@ -28,7 +28,13 @@ import {
   AccordionSummary,
   AccordionDetails,
   Alert,
-  Skeleton
+  Skeleton,
+  Drawer,
+  AppBar,
+  Toolbar,
+  Fab,
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import {
   Search,
@@ -44,7 +50,9 @@ import {
   Favorite,
   FavoriteBorder,
   TrendingUp,
-  NewReleases
+  NewReleases,
+  Close,
+  Tune
 } from '@mui/icons-material';
 
 import { useProducts } from '../contexts/ProductContext';
@@ -75,7 +83,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`category-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ py: { xs: 2, md: 3 } }}>{children}</Box>}
     </div>
   );
 }
@@ -84,6 +92,8 @@ const CategoryDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const { products, loading } = useProducts();
   const { addToCart } = useCart();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   const [selectedTab, setSelectedTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
@@ -95,6 +105,7 @@ const CategoryDetailPage: React.FC = () => {
   const [expandedFilters, setExpandedFilters] = useState<string[]>(['brands']);
   const [dbCategories, setDbCategories] = useState<any[]>([]);
   const [dbLoading, setDbLoading] = useState(true);
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
   // Fetch categories from database
   useEffect(() => {
@@ -126,13 +137,10 @@ const CategoryDetailPage: React.FC = () => {
   // Filter products by category
   const categoryProducts = useMemo(() => {
     if (!category) return [];
-    
-    return products.filter(product => {
-      const productCategory = product.category?.toLowerCase().replace(/\s+/g, '-');
-      return productCategory === category.id || 
-             product.category?.toLowerCase().includes(category.name.toLowerCase()) ||
-             product.tags?.some(tag => tag.toLowerCase().includes(category.name.toLowerCase()));
-    });
+    return products.filter(product => 
+      product.category.toLowerCase() === category.name.toLowerCase() ||
+      product.category.toLowerCase().includes(category.name.toLowerCase())
+    );
   }, [products, category]);
 
   // Apply filters
@@ -144,13 +152,12 @@ const CategoryDetailPage: React.FC = () => {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchLower) ||
-        product.description.toLowerCase().includes(searchLower) ||
         product.brand.toLowerCase().includes(searchLower) ||
-        product.tags.some(tag => tag.toLowerCase().includes(searchLower))
+        product.description.toLowerCase().includes(searchLower)
       );
     }
 
-    // Price range filter
+    // Price filter
     filtered = filtered.filter(product =>
       product.price >= priceRange[0] && product.price <= priceRange[1]
     );
@@ -165,7 +172,7 @@ const CategoryDetailPage: React.FC = () => {
     // Rating filter
     if (selectedRatings.length > 0) {
       filtered = filtered.filter(product =>
-        selectedRatings.includes(Math.floor(product.rating))
+        selectedRatings.some(rating => Math.floor(product.rating) >= rating)
       );
     }
 
@@ -249,318 +256,542 @@ const CategoryDetailPage: React.FC = () => {
     setSortBy('featured');
   };
 
+  // Filter content component
+  const FilterContent = () => (
+    <Box sx={{ p: { xs: 2, md: 0 } }}>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        mb: 2,
+        ...(isMobile && { 
+          position: 'sticky', 
+          top: 0, 
+          backgroundColor: 'background.paper',
+          zIndex: 1,
+          pb: 2,
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        })
+      }}>
+        <Typography variant="h6" sx={{ 
+          fontWeight: 600, 
+          fontSize: { xs: '1.1rem', md: '1.25rem' },
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1
+        }}>
+          <FilterList />
+          Filters
+        </Typography>
+        <Button 
+          size="small" 
+          onClick={clearAllFilters}
+          sx={{ 
+            fontSize: { xs: '0.875rem', md: '0.75rem' },
+            px: { xs: 2, md: 1 }
+          }}
+        >
+          Clear All
+        </Button>
+      </Box>
+
+      {/* Search */}
+      <Box sx={{ mb: 3 }}>
+        <TextField
+          fullWidth
+          placeholder="Search products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+          size="small"
+          sx={{
+            '& .MuiOutlinedInput-input': {
+              fontSize: '16px', // Prevent zoom on iOS
+              padding: { xs: '14px 16px', md: '8px 12px' }
+            },
+            '& .MuiInputAdornment-root': {
+              margin: { xs: '0 8px', md: '0 4px' }
+            }
+          }}
+        />
+      </Box>
+
+      {/* Price Range */}
+      <Accordion 
+        expanded={expandedFilters.includes('price')}
+        onChange={() => handleFilterToggle('price')}
+        sx={{ mb: 1 }}
+      >
+        <AccordionSummary 
+          expandIcon={<ExpandMore />}
+          sx={{ 
+            '& .MuiAccordionSummary-content': {
+              margin: { xs: '12px 0', md: '8px 0' }
+            }
+          }}
+        >
+          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+            Price Range
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box sx={{ px: 1 }}>
+            <Slider
+              value={priceRange}
+              onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
+              valueLabelDisplay="auto"
+              min={priceRangeData[0]}
+              max={priceRangeData[1]}
+              step={10}
+              sx={{
+                '& .MuiSlider-thumb': {
+                  width: { xs: 20, md: 16 },
+                  height: { xs: 20, md: 16 }
+                }
+              }}
+            />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+              <Typography variant="body2">${priceRange[0]}</Typography>
+              <Typography variant="body2">${priceRange[1]}</Typography>
+            </Box>
+          </Box>
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Brands */}
+      <Accordion 
+        expanded={expandedFilters.includes('brands')}
+        onChange={() => handleFilterToggle('brands')}
+        sx={{ mb: 1 }}
+      >
+        <AccordionSummary 
+          expandIcon={<ExpandMore />}
+          sx={{ 
+            '& .MuiAccordionSummary-content': {
+              margin: { xs: '12px 0', md: '8px 0' }
+            }
+          }}
+        >
+          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+            Brands ({availableBrands.length})
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
+            {availableBrands.map(brand => (
+              <FormControlLabel
+                key={brand}
+                control={
+                  <Checkbox
+                    checked={selectedBrands.includes(brand)}
+                    onChange={() => handleBrandChange(brand)}
+                    size="small"
+                  />
+                }
+                label={brand}
+                sx={{ 
+                  display: 'block', 
+                  mb: 0.5,
+                  '& .MuiFormControlLabel-label': {
+                    fontSize: { xs: '0.9rem', md: '0.875rem' }
+                  }
+                }}
+              />
+            ))}
+          </Box>
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Ratings */}
+      <Accordion 
+        expanded={expandedFilters.includes('ratings')}
+        onChange={() => handleFilterToggle('ratings')}
+        sx={{ mb: 1 }}
+      >
+        <AccordionSummary 
+          expandIcon={<ExpandMore />}
+          sx={{ 
+            '& .MuiAccordionSummary-content': {
+              margin: { xs: '12px 0', md: '8px 0' }
+            }
+          }}
+        >
+          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+            Ratings
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          {availableRatings.map(rating => (
+            <FormControlLabel
+              key={rating}
+              control={
+                <Checkbox
+                  checked={selectedRatings.includes(rating)}
+                  onChange={() => handleRatingChange(rating)}
+                  size="small"
+                />
+              }
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  {Array.from({ length: rating }, (_, i) => (
+                    <Star key={i} sx={{ fontSize: '1rem', color: '#fbbf24' }} />
+                  ))}
+                  <Typography variant="body2">+ ({rating})</Typography>
+                </Box>
+              }
+              sx={{ 
+                display: 'block', 
+                mb: 0.5,
+                '& .MuiFormControlLabel-label': {
+                  fontSize: { xs: '0.9rem', md: '0.875rem' }
+                }
+              }}
+            />
+          ))}
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Stock Filter */}
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={showOnlyInStock}
+            onChange={(e) => setShowOnlyInStock(e.target.checked)}
+            size="small"
+          />
+        }
+        label="In Stock Only"
+        sx={{ 
+          mt: 2,
+          '& .MuiFormControlLabel-label': {
+            fontSize: { xs: '0.9rem', md: '0.875rem' }
+          }
+        }}
+      />
+    </Box>
+  );
+
   if (!category) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
         <Alert severity="error">Category not found</Alert>
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Breadcrumbs */}
-      <Box sx={{ mb: 3 }}>
-        <Breadcrumbs 
-          separator={<NavigateNext fontSize="small" />} 
-          sx={{ color: '#6b7280' }}
-        >
-          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Home fontSize="small" />
-              <Typography variant="body2">Home</Typography>
-            </Box>
-          </Link>
-          <Link to="/categories" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Category fontSize="small" />
-              <Typography variant="body2">Categories</Typography>
-            </Box>
-          </Link>
-          <Typography variant="body2" color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            {category.icon && <span>{category.icon}</span>}
-            {category.name}
-          </Typography>
-        </Breadcrumbs>
-      </Box>
+    <>
+      {/* Mobile Filter Drawer */}
+      <Drawer
+        anchor="left"
+        open={filterDrawerOpen}
+        onClose={() => setFilterDrawerOpen(false)}
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: { xs: '100%', sm: 320 },
+            maxWidth: '100vw'
+          }
+        }}
+      >
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          p: 2,
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}>
+          <Typography variant="h6">Filters</Typography>
+          <IconButton onClick={() => setFilterDrawerOpen(false)}>
+            <Close />
+          </IconButton>
+        </Box>
+        <FilterContent />
+      </Drawer>
 
-      {/* Category Header */}
-      <Box sx={{ mb: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-          {category.icon && (
-            <Typography variant="h1" sx={{ fontSize: '3rem' }}>
-              {category.icon}
-            </Typography>
-          )}
-          <Box>
-            <Typography variant="h3" component="h1" sx={{ fontWeight: 700, color: '#1f2937' }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
+        {/* Breadcrumbs */}
+        <Box sx={{ mb: { xs: 2, md: 3 } }}>
+          <Breadcrumbs 
+            separator={<NavigateNext fontSize="small" />} 
+            sx={{ 
+              color: '#6b7280',
+              '& .MuiBreadcrumbs-ol': {
+                flexWrap: 'nowrap',
+                overflow: 'hidden'
+              },
+              '& .MuiBreadcrumbs-li': {
+                minWidth: 0
+              }
+            }}
+          >
+            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Home fontSize="small" />
+                <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
+                  Home
+                </Typography>
+              </Box>
+            </Link>
+            <Link to="/categories" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Category fontSize="small" />
+                <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
+                  Categories
+                </Typography>
+              </Box>
+            </Link>
+            <Typography 
+              variant="body2" 
+              color="primary" 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 0.5,
+                fontSize: { xs: '0.75rem', md: '0.875rem' },
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {category.icon && <span>{category.icon}</span>}
               {category.name}
             </Typography>
-            <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-              {category.description}
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Chip 
-                label={`${categoryProducts.length} products`} 
-                color="primary" 
-                size="small"
-              />
-              <Chip 
-                label={`${filteredProducts.length} filtered`} 
-                color="secondary" 
-                size="small"
-              />
+          </Breadcrumbs>
+        </Box>
+
+        {/* Category Header */}
+        <Box sx={{ mb: { xs: 3, md: 4 } }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: { xs: 'flex-start', md: 'center' }, 
+            gap: { xs: 1, md: 2 }, 
+            mb: 2,
+            flexDirection: { xs: 'column', sm: 'row' }
+          }}>
+            {category.icon && (
+              <Typography variant="h1" sx={{ 
+                fontSize: { xs: '2.5rem', md: '3rem' },
+                lineHeight: 1
+              }}>
+                {category.icon}
+              </Typography>
+            )}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography 
+                variant="h3" 
+                component="h1" 
+                sx={{ 
+                  fontWeight: 700, 
+                  color: '#1f2937',
+                  fontSize: { xs: '1.5rem', sm: '2rem', md: '3rem' },
+                  lineHeight: { xs: 1.2, md: 1.1 }
+                }}
+              >
+                {category.name}
+              </Typography>
+              <Typography 
+                variant="h6" 
+                color="text.secondary" 
+                sx={{ 
+                  mb: 1,
+                  fontSize: { xs: '0.875rem', md: '1.25rem' },
+                  lineHeight: { xs: 1.4, md: 1.2 }
+                }}
+              >
+                {category.description}
+              </Typography>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1,
+                flexWrap: 'wrap'
+              }}>
+                <Chip 
+                  label={`${categoryProducts.length} products`} 
+                  color="primary" 
+                  size="small"
+                  sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
+                />
+                <Chip 
+                  label={`${filteredProducts.length} filtered`} 
+                  color="secondary" 
+                  size="small"
+                  sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
+                />
+              </Box>
             </Box>
           </Box>
         </Box>
-      </Box>
 
-      {/* Main Content */}
-      <Grid container spacing={3}>
-        {/* Filters Sidebar */}
-        <Grid item xs={12} md={3}>
-          <Card sx={{ 
-            position: { xs: 'static', md: 'sticky' }, 
-            top: { xs: 'auto', md: 20 },
-            mb: { xs: 2, md: 0 }
-          }}>
-            <CardContent sx={{ p: { xs: 2, md: 2 } }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: '1rem', md: '1.25rem' } }}>
-                  <FilterList sx={{ mr: 1, verticalAlign: 'middle' }} />
-                  Filters
-                </Typography>
-                <Button size="small" onClick={clearAllFilters}>
-                  Clear All
-                </Button>
-              </Box>
-
-              {/* Search */}
-              <Box sx={{ mb: 3 }}>
-                <TextField
-                  fullWidth
-                  placeholder="Search products..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search />
-                      </InputAdornment>
-                    ),
-                  }}
-                  size="small"
-                  sx={{
-                    '& .MuiOutlinedInput-input': {
-                      fontSize: { xs: '16px', sm: '14px' }, // Prevent zoom on iOS
-                      padding: { xs: '12px 16px', sm: '8px 12px' }
-                    },
-                    '& .MuiInputAdornment-root': {
-                      margin: { xs: '0 8px', sm: '0 4px' }
-                    }
-                  }}
-                />
-              </Box>
-
-              {/* Price Range */}
-              <Accordion 
-                expanded={expandedFilters.includes('price')}
-                onChange={() => handleFilterToggle('price')}
-                sx={{ mb: 1 }}
-              >
-                <AccordionSummary expandIcon={<ExpandMore />}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                    Price Range
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Box sx={{ px: 1 }}>
-                    <Slider
-                      value={priceRange}
-                      onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
-                      valueLabelDisplay="auto"
-                      min={priceRangeData[0]}
-                      max={priceRangeData[1]}
-                      step={10}
-                    />
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                      <Typography variant="body2">${priceRange[0]}</Typography>
-                      <Typography variant="body2">${priceRange[1]}</Typography>
-                    </Box>
-                  </Box>
-                </AccordionDetails>
-              </Accordion>
-
-              {/* Brands */}
-              <Accordion 
-                expanded={expandedFilters.includes('brands')}
-                onChange={() => handleFilterToggle('brands')}
-                sx={{ mb: 1 }}
-              >
-                <AccordionSummary expandIcon={<ExpandMore />}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                    Brands ({availableBrands.length})
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
-                    {availableBrands.map(brand => (
-                      <FormControlLabel
-                        key={brand}
-                        control={
-                          <Checkbox
-                            checked={selectedBrands.includes(brand)}
-                            onChange={() => handleBrandChange(brand)}
-                            size="small"
-                          />
-                        }
-                        label={brand}
-                        sx={{ display: 'block', mb: 0.5 }}
-                      />
-                    ))}
-                  </Box>
-                </AccordionDetails>
-              </Accordion>
-
-              {/* Ratings */}
-              <Accordion 
-                expanded={expandedFilters.includes('ratings')}
-                onChange={() => handleFilterToggle('ratings')}
-                sx={{ mb: 1 }}
-              >
-                <AccordionSummary expandIcon={<ExpandMore />}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                    Ratings
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  {availableRatings.map(rating => (
-                    <FormControlLabel
-                      key={rating}
-                      control={
-                        <Checkbox
-                          checked={selectedRatings.includes(rating)}
-                          onChange={() => handleRatingChange(rating)}
-                          size="small"
-                        />
-                      }
-                      label={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          {Array.from({ length: rating }, (_, i) => (
-                            <Star key={i} sx={{ fontSize: '1rem', color: '#fbbf24' }} />
-                          ))}
-                          <Typography variant="body2">+ ({rating})</Typography>
-                        </Box>
-                      }
-                      sx={{ display: 'block', mb: 0.5 }}
-                    />
-                  ))}
-                </AccordionDetails>
-              </Accordion>
-
-              {/* Stock Filter */}
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={showOnlyInStock}
-                    onChange={(e) => setShowOnlyInStock(e.target.checked)}
-                    size="small"
-                  />
-                }
-                label="In Stock Only"
-                sx={{ mt: 2 }}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Products Grid */}
-        <Grid item xs={12} md={9}>
-          {/* Sort and Results Header */}
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: { xs: 'column', sm: 'row' },
-            alignItems: { xs: 'stretch', sm: 'center' }, 
-            justifyContent: 'space-between', 
-            mb: 3,
-            gap: { xs: 2, sm: 0 }
-          }}>
-            <Typography variant="body2" color="text.secondary">
-              Showing {sortedProducts.length} of {categoryProducts.length} products
-            </Typography>
-            
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 150 } }}>
-                <InputLabel>Sort by</InputLabel>
-                <Select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  label="Sort by"
-                >
-                  <MenuItem value="featured">Featured</MenuItem>
-                  <MenuItem value="price-low">Price: Low to High</MenuItem>
-                  <MenuItem value="price-high">Price: High to Low</MenuItem>
-                  <MenuItem value="rating">Highest Rated</MenuItem>
-                  <MenuItem value="newest">Newest First</MenuItem>
-                  <MenuItem value="name">Name A-Z</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-          </Box>
-
-          {/* Products Grid */}
-          {loading ? (
-            <Grid container spacing={3}>
-              {Array.from({ length: 8 }).map((_, index) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                  <Card>
-                    <Skeleton variant="rectangular" height={200} />
-                    <CardContent>
-                      <Skeleton variant="text" height={24} sx={{ mb: 1 }} />
-                      <Skeleton variant="text" height={20} sx={{ mb: 1 }} />
-                      <Skeleton variant="text" height={16} />
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          ) : sortedProducts.length === 0 ? (
-            <Box sx={{ 
-              textAlign: 'center', 
-              py: 8,
-              backgroundColor: '#f8fafc',
-              borderRadius: 2
-            }}>
-              <Typography variant="h6" sx={{ mb: 2, color: '#6b7280' }}>
-                No products found
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Try adjusting your filters or search terms
-              </Typography>
-              <Button variant="outlined" onClick={clearAllFilters}>
-                Clear All Filters
-              </Button>
-            </Box>
-          ) : (
-            <Grid container spacing={3}>
-              {sortedProducts.map((product) => (
-                <Grid xs={12} sm={6} md={4} lg={3} key={product.id}>
-                  <ProductCard product={product} />
-                </Grid>
-              ))}
+        {/* Main Content */}
+        <Grid container spacing={{ xs: 2, md: 3 }}>
+          {/* Filters Sidebar - Desktop */}
+          {!isMobile && (
+            <Grid item xs={12} md={3}>
+              <Card sx={{ 
+                position: 'sticky', 
+                top: 20,
+                mb: { xs: 2, md: 0 }
+              }}>
+                <CardContent sx={{ p: 2 }}>
+                  <FilterContent />
+                </CardContent>
+              </Card>
             </Grid>
           )}
-        </Grid>
-      </Grid>
 
-      {/* Subcategories Section */}
-      <CategorySubcategories 
-        categoryId={category.id}
-        variant="chips"
-        maxItems={8}
-        showIcons={true}
-      />
-    </Container>
+          {/* Products Grid */}
+          <Grid item xs={12} md={isMobile ? 12 : 9}>
+            {/* Sort and Results Header */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: { xs: 'stretch', sm: 'center' }, 
+              justifyContent: 'space-between', 
+              mb: 3,
+              gap: { xs: 2, sm: 0 }
+            }}>
+              <Typography 
+                variant="body2" 
+                color="text.secondary"
+                sx={{ fontSize: { xs: '0.875rem', md: '0.875rem' } }}
+              >
+                Showing {sortedProducts.length} of {categoryProducts.length} products
+              </Typography>
+              
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 2,
+                flexDirection: { xs: 'column', sm: 'row' },
+                width: { xs: '100%', sm: 'auto' }
+              }}>
+                <FormControl 
+                  size="small" 
+                  sx={{ 
+                    minWidth: { xs: '100%', sm: 150 },
+                    width: { xs: '100%', sm: 'auto' }
+                  }}
+                >
+                  <InputLabel>Sort by</InputLabel>
+                  <Select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    label="Sort by"
+                  >
+                    <MenuItem value="featured">Featured</MenuItem>
+                    <MenuItem value="price-low">Price: Low to High</MenuItem>
+                    <MenuItem value="price-high">Price: High to Low</MenuItem>
+                    <MenuItem value="rating">Highest Rated</MenuItem>
+                    <MenuItem value="newest">Newest First</MenuItem>
+                    <MenuItem value="name">Name A-Z</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            </Box>
+
+            {/* Products Grid */}
+            {loading ? (
+              <Grid container spacing={{ xs: 2, md: 3 }}>
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <Grid item xs={6} sm={4} md={4} lg={3} key={index}>
+                    <Card>
+                      <Skeleton variant="rectangular" height={200} />
+                      <CardContent>
+                        <Skeleton variant="text" height={24} sx={{ mb: 1 }} />
+                        <Skeleton variant="text" height={20} sx={{ mb: 1 }} />
+                        <Skeleton variant="text" height={16} />
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            ) : sortedProducts.length === 0 ? (
+              <Box sx={{ 
+                textAlign: 'center', 
+                py: { xs: 6, md: 8 },
+                backgroundColor: '#f8fafc',
+                borderRadius: 2
+              }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    mb: 2, 
+                    color: '#6b7280',
+                    fontSize: { xs: '1.1rem', md: '1.25rem' }
+                  }}
+                >
+                  No products found
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  color="text.secondary" 
+                  sx={{ 
+                    mb: 3,
+                    fontSize: { xs: '0.875rem', md: '0.875rem' }
+                  }}
+                >
+                  Try adjusting your filters or search terms
+                </Typography>
+                <Button 
+                  variant="outlined" 
+                  onClick={clearAllFilters}
+                  sx={{ 
+                    fontSize: { xs: '0.875rem', md: '0.875rem' },
+                    px: { xs: 3, md: 2 }
+                  }}
+                >
+                  Clear All Filters
+                </Button>
+              </Box>
+            ) : (
+              <Grid container spacing={{ xs: 2, md: 3 }}>
+                {sortedProducts.map((product) => (
+                  <Grid item xs={6} sm={4} md={4} lg={3} key={product.id}>
+                    <ProductCard product={product} />
+                  </Grid>
+                ))}
+              </Grid>
+            )}
+          </Grid>
+        </Grid>
+
+        {/* Subcategories Section */}
+        <Box sx={{ mt: { xs: 4, md: 6 } }}>
+          <CategorySubcategories 
+            categoryId={category.id}
+            variant="chips"
+            maxItems={8}
+            showIcons={true}
+          />
+        </Box>
+      </Container>
+
+      {/* Mobile Filter FAB */}
+      {isMobile && (
+        <Fab
+          color="primary"
+          aria-label="filters"
+          onClick={() => setFilterDrawerOpen(true)}
+          sx={{
+            position: 'fixed',
+            bottom: 16,
+            right: 16,
+            zIndex: 1000
+          }}
+        >
+          <Tune />
+        </Fab>
+      )}
+    </>
   );
 };
 
