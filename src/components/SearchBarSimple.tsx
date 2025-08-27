@@ -97,30 +97,35 @@ const SearchBarSimple: React.FC<SearchBarSimpleProps> = ({
   };
 
   return (
-    <Box ref={anchorRef} sx={{ position: 'relative', width: '100%' }}>
+    <Box ref={anchorRef} sx={{ position: 'relative', width: '100%', maxWidth: '100%' }}>
       {/* Custom Input */}
       <Box
         sx={{
           position: 'relative',
           display: 'flex',
           alignItems: 'center',
-          backgroundColor: isMobile ? '#ffffff' : '#f1f3f4',
-          borderRadius: isMobile ? '8px' : '24px',
-          border: isMobile ? '1px solid #e2e8f0' : 'none',
-          padding: isMobile ? '0 12px' : '0 16px',
+          backgroundColor: { xs: '#f8fafc', sm: '#f1f3f4' },
+          borderRadius: { xs: '8px', sm: '24px' },
+          border: { xs: '1px solid #e2e8f0', sm: 'none' },
+          padding: { xs: '0 12px', sm: '0 16px' },
+          height: { xs: '44px', sm: '48px' },
+          minHeight: { xs: '44px', sm: '48px' },
           boxShadow: isFocused 
-            ? isMobile 
-              ? '0 2px 8px rgba(59, 130, 246, 0.12)' 
-              : '0 2px 8px rgba(0,0,0,0.1)'
+            ? { xs: '0 2px 8px rgba(59, 130, 246, 0.12)', sm: '0 2px 8px rgba(0,0,0,0.1)' }
             : 'none',
-          borderColor: isFocused && isMobile ? '#3b82f6' : 'transparent'
+          borderColor: isFocused ? { xs: '#3b82f6', sm: 'transparent' } : 'transparent',
+          '&:hover': {
+            backgroundColor: { xs: '#f1f5f9', sm: '#e8eaed' },
+            borderColor: { xs: '#cbd5e1', sm: 'transparent' }
+          }
         }}
       >
         <Search 
           sx={{ 
-            color: isMobile ? '#94a3b8' : '#666',
-            fontSize: isMobile ? '18px' : '20px',
-            mr: 1
+            color: { xs: '#94a3b8', sm: '#666' },
+            fontSize: { xs: '18px', sm: '20px' },
+            mr: 1,
+            flexShrink: 0
           }} 
         />
         
@@ -144,8 +149,10 @@ const SearchBarSimple: React.FC<SearchBarSimpleProps> = ({
             fontSize: '16px',
             fontWeight: 400,
             color: '#000000',
-            padding: isMobile ? '14px 0' : '12px 0',
-            fontFamily: 'inherit'
+            padding: '0',
+            fontFamily: 'inherit',
+            width: '100%',
+            minWidth: 0
           }}
         />
         
@@ -153,11 +160,12 @@ const SearchBarSimple: React.FC<SearchBarSimpleProps> = ({
           <Clear
             onClick={handleClear}
             sx={{
-              color: isMobile ? '#94a3b8' : '#666',
-              fontSize: isMobile ? '16px' : '18px',
+              color: { xs: '#94a3b8', sm: '#666' },
+              fontSize: { xs: '16px', sm: '18px' },
               cursor: 'pointer',
               ml: 1,
               p: 0.5,
+              flexShrink: 0,
               '&:hover': {
                 backgroundColor: 'rgba(0,0,0,0.04)',
                 borderRadius: '50%'
