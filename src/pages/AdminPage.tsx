@@ -51,6 +51,8 @@ interface ProductFormData {
   reviewCount: number;
   category: string;
   brand: string;
+  retailer: string;
+  externalUrl: string;
   inStock: boolean;
   features: string[];
   specifications: Record<string, string>;
@@ -96,6 +98,8 @@ const AdminPage: React.FC = () => {
     reviewCount: 0,
     category: '',
     brand: '',
+    retailer: '',
+    externalUrl: '',
     inStock: true,
     features: [],
     specifications: {},
@@ -136,6 +140,8 @@ const AdminPage: React.FC = () => {
         reviewCount: product.reviewCount,
         category: product.category,
         brand: product.brand,
+        retailer: product.retailer || '',
+        externalUrl: product.externalUrl || '',
         inStock: product.inStock,
         features: [...product.features],
         specifications: { ...product.specifications },
@@ -157,6 +163,8 @@ const AdminPage: React.FC = () => {
         reviewCount: 0,
         category: '',
         brand: '',
+        retailer: '',
+        externalUrl: '',
         inStock: true,
         features: [],
         specifications: {},
@@ -190,6 +198,8 @@ const AdminPage: React.FC = () => {
           reviewCount: formData.reviewCount,
           category: formData.category,
           brand: formData.brand,
+          retailer: formData.retailer,
+          externalUrl: formData.externalUrl,
           inStock: formData.inStock,
           features: formData.features,
           specifications: formData.specifications,
@@ -209,6 +219,8 @@ const AdminPage: React.FC = () => {
           reviewCount: formData.reviewCount,
           category: formData.category,
           brand: formData.brand,
+          retailer: formData.retailer,
+          externalUrl: formData.externalUrl,
           inStock: formData.inStock,
           features: formData.features,
           specifications: formData.specifications,
@@ -468,12 +480,28 @@ const AdminPage: React.FC = () => {
             />
             <TextField
               fullWidth
+              label="External URL (Amazon Link)"
+              value={formData.externalUrl}
+              onChange={(e) => handleInputChange('externalUrl', e.target.value)}
+              margin="normal"
+              placeholder="https://amazon.com/dp/B07HKQ6YGX/ref=..."
+            />
+            <TextField
+              fullWidth
               label="Rating"
               type="number"
               inputProps={{ min: 0, max: 5, step: 0.1 }}
               value={formData.rating}
               onChange={(e) => handleInputChange('rating', Number(e.target.value))}
               margin="normal"
+            />
+            <TextField
+              fullWidth
+              label="Retailer (Store Name)"
+              value={formData.retailer}
+              onChange={(e) => handleInputChange('retailer', e.target.value)}
+              margin="normal"
+              placeholder="Amazon, eBay, etc."
             />
             <TextField
               fullWidth
