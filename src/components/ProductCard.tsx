@@ -113,7 +113,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             alt={product.name}
             sx={{ 
               objectFit: 'cover',
-              height: 140
+              height: { xs: 120, sm: 140 }
             }}
           />
           
@@ -124,14 +124,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
               size="small"
               sx={{
                 position: 'absolute',
-                top: 8,
-                left: 8,
+                top: { xs: 6, sm: 8 },
+                left: { xs: 6, sm: 8 },
                 backgroundColor: '#dc2626',
                 color: 'white',
-                fontSize: '0.75rem',
+                fontSize: { xs: '0.65rem', sm: '0.75rem' },
                 fontWeight: 700,
-                height: 24,
-                borderRadius: '12px',
+                height: { xs: 20, sm: 24 },
+                borderRadius: { xs: '10px', sm: '12px' },
                 boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
               }}
             />
@@ -144,14 +144,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
               size="small"
               sx={{
                 position: 'absolute',
-                top: 8,
-                right: 8,
+                top: { xs: 6, sm: 8 },
+                right: { xs: 6, sm: 8 },
                 backgroundColor: 'rgba(0, 0, 0, 0.7)',
                 color: 'white',
-                fontSize: '0.6rem',
+                fontSize: { xs: '0.55rem', sm: '0.6rem' },
                 fontWeight: 600,
-                height: 18,
-                maxWidth: 60,
+                height: { xs: 16, sm: 18 },
+                maxWidth: { xs: 50, sm: 60 },
                 '& .MuiChip-label': {
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -162,7 +162,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </Box>
 
-        <CardContent sx={{ p: 1.5, pt: 1 }}>
+        <CardContent sx={{ p: { xs: 1, sm: 1.5 }, pt: { xs: 0.5, sm: 1 } }}>
           {/* Product Name */}
           <Typography
             variant="body2"
