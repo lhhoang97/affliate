@@ -117,6 +117,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
             }}
           />
           
+          {/* Discount Badge - Top Left */}
+          {discountPercentage > 0 && (
+            <Chip
+              label={`-${discountPercentage}%`}
+              size="small"
+              sx={{
+                position: 'absolute',
+                top: 8,
+                left: 8,
+                backgroundColor: '#dc2626',
+                color: 'white',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                height: 24,
+                borderRadius: '12px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+              }}
+            />
+          )}
+          
           {/* Retailer Badge */}
           {product.retailer && (
             <Chip
@@ -394,20 +414,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           >
             ${product.originalPrice?.toFixed(2) || '0.00'}
           </Typography>
-          {discountPercentage > 0 && (
-            <Chip
-              label={`${discountPercentage}% OFF`}
-              size="small"
-              sx={{
-                backgroundColor: '#dc2626',
-                color: 'white',
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                height: 20,
-                ml: 'auto'
-              }}
-            />
-          )}
+
         </Box>
 
         {/* Retailer Info - Prominent display */}
