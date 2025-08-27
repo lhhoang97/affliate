@@ -19,11 +19,11 @@ const NextArrow = ({ onClick }: { onClick?: () => void }) => (
     onClick={onClick}
     sx={{
       position: 'absolute',
-      right: '-25px',
+      right: { xs: '-15px', sm: '-25px' }, // Closer to content on mobile
       top: '50%',
       transform: 'translateY(-50%)',
-      width: '45px',
-      height: '45px',
+      width: { xs: '35px', sm: '45px' },
+      height: { xs: '35px', sm: '45px' },
       background: '#ffffff',
       border: '2px solid #e5e7eb',
       color: '#6b7280',
@@ -38,7 +38,7 @@ const NextArrow = ({ onClick }: { onClick?: () => void }) => (
       }
     }}
   >
-    <ChevronRight fontSize="large" />
+    <ChevronRight fontSize={window.innerWidth < 600 ? "medium" : "large"} />
   </IconButton>
 );
 
@@ -47,11 +47,11 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
     onClick={onClick}
     sx={{
       position: 'absolute',
-      left: '-25px',
+      left: { xs: '-15px', sm: '-25px' }, // Closer to content on mobile
       top: '50%',
       transform: 'translateY(-50%)',
-      width: '45px',
-      height: '45px',
+      width: { xs: '35px', sm: '45px' },
+      height: { xs: '35px', sm: '45px' },
       background: '#ffffff',
       border: '2px solid #e5e7eb',
       color: '#6b7280',
@@ -66,7 +66,7 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
       }
     }}
   >
-    <ChevronLeft fontSize="large" />
+    <ChevronLeft fontSize={window.innerWidth < 600 ? "medium" : "large"} />
   </IconButton>
 );
 
@@ -89,7 +89,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
   
   // Determine slides based on actual window width to match real device behavior
   const getSlidesToShow = () => {
-    if (windowWidth < 600) return 1; // Real mobile
+    if (windowWidth < 600) return 2; // Real mobile - show 2 products
     if (windowWidth < 900) return 2; // Tablet
     if (windowWidth < 1200) return 3; // Small desktop
     return 4; // Large desktop
@@ -123,9 +123,9 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          arrows: false,
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          arrows: true, // Enable arrows on mobile
           dots: true
         }
       }
