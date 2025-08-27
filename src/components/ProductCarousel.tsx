@@ -129,6 +129,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
           dots: false
         }
       }
+    ]
   };
 
   return (
