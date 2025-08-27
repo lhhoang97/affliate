@@ -481,10 +481,10 @@ const ProductDetailPage: React.FC = () => {
                   <LocalShipping sx={{ color: '#3b82f6', fontSize: '1.5rem' }} />
                   <Box>
                     <Typography variant="h6" sx={{ fontWeight: 600, color: '#1f2937' }}>
-                      Nơi bán: {product.retailer}
+                      Store: {product.retailer}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Được bán và vận chuyển bởi {product.retailer}
+                      Sold and shipped by {product.retailer}
                     </Typography>
                   </Box>
                   <Verified sx={{ color: '#10b981', ml: 'auto' }} />
@@ -506,7 +506,7 @@ const ProductDetailPage: React.FC = () => {
                     '&:hover': { backgroundColor: '#2563eb' }
                   }}
                 >
-                  Mua tại {product.retailer || 'Nhà bán'}
+                  Buy at {product.retailer || 'Store'}
                 </Button>
                 <IconButton onClick={handleShare} sx={{ color: '#6b7280' }}>
                   <Share />
@@ -552,14 +552,14 @@ const ProductDetailPage: React.FC = () => {
         <TabPanel value={selectedTab} index={0}>
           <Box sx={{ p: 3 }}>
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-              Chi tiết sản phẩm
+              Product Details
             </Typography>
             
             {/* Retailer Information Section */}
             {product.retailer && (
               <Box sx={{ mb: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#3b82f6' }}>
-                  🏪 Nơi bán hàng
+                  🏪 Store
                 </Typography>
                 <Box sx={{ 
                   p: 2, 
@@ -572,18 +572,18 @@ const ProductDetailPage: React.FC = () => {
                     {product.retailer}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Nhà bán lẻ uy tín, đảm bảo chất lượng sản phẩm và dịch vụ vận chuyển
+                    Trusted retailer, ensuring product quality and shipping service
                   </Typography>
                 </Box>
               </Box>
             )}
             
             <Typography variant="body1" sx={{ mb: 3 }}>
-              {product.dealDescription || `${product.retailer || 'Nhà bán'} có ${product.name} với giá ${product.price}$ + Miễn phí vận chuyển`}
+              {product.dealDescription || `${product.retailer || 'Store'} has ${product.name} for $${product.price} + Free shipping`}
             </Typography>
 
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-              Danh mục sản phẩm:
+              Product Category:
             </Typography>
             <Box sx={{ mb: 3 }}>
               {(product.dealCategories || [product.category, ...product.tags.slice(0, 2)]).map((category, index) => (
@@ -596,29 +596,29 @@ const ProductDetailPage: React.FC = () => {
             </Box>
 
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-              Thông tin sản phẩm:
+              Product Information:
             </Typography>
             <Box sx={{ mb: 2 }}>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • <strong>Tên sản phẩm:</strong> {product.name}
+                • <strong>Product Name:</strong> {product.name}
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • <strong>Giá hiện tại:</strong> ${product.price}
+                • <strong>Current Price:</strong> ${product.price}
               </Typography>
               {product.originalPrice && (
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  • <strong>Giá gốc:</strong> <span style={{ textDecoration: 'line-through' }}>${product.originalPrice}</span>
+                  • <strong>Original Price:</strong> <span style={{ textDecoration: 'line-through' }}>${product.originalPrice}</span>
                 </Typography>
               )}
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • <strong>Thương hiệu:</strong> {product.brand}
+                • <strong>Brand:</strong> {product.brand}
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • <strong>Đánh giá:</strong> {product.rating}/5 ({product.reviewCount} đánh giá)
+                • <strong>Rating:</strong> {product.rating}/5 ({product.reviewCount} reviews)
               </Typography>
               {product.retailer && (
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  • <strong>Nơi bán:</strong> {product.retailer}
+                  • <strong>Store:</strong> {product.retailer}
                 </Typography>
               )}
             </Box>

@@ -760,7 +760,7 @@ const Header: React.FC = () => {
               }
             }}
           >
-            🚪 Đăng xuất
+            🚪 Logout
           </Typography>
         </Box>
       ) : (
@@ -792,7 +792,7 @@ const Header: React.FC = () => {
             }}
           >
             <Login sx={{ fontSize: 20 }} />
-            Đăng nhập
+            Login
           </Typography>
           <Typography
             component={RouterLink}
@@ -816,7 +816,7 @@ const Header: React.FC = () => {
             }}
           >
             <PersonAdd sx={{ fontSize: 20 }} />
-            Đăng ký
+            Register
           </Typography>
         </Box>
       )}
@@ -1087,7 +1087,7 @@ const Header: React.FC = () => {
           }}
         >
           <Login sx={{ fontSize: 20 }} />
-          Đăng nhập
+          Login
         </MenuItem>
         <Divider />
         <MenuItem 
@@ -1103,7 +1103,7 @@ const Header: React.FC = () => {
           }}
         >
           <PersonAdd sx={{ fontSize: 20 }} />
-          Đăng ký
+          Register
         </MenuItem>
       </Menu>
     </>

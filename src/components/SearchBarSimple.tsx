@@ -561,7 +561,7 @@ const SearchBarSimple: React.FC<SearchBarSimpleProps> = ({
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <History sx={{ fontSize: 16, color: '#6b7280' }} />
                         <Typography variant="body2" color="text.secondary">
-                          Lịch sử tìm kiếm
+                          Search History
                         </Typography>
                       </Box>
                       <Button
@@ -579,7 +579,7 @@ const SearchBarSimple: React.FC<SearchBarSimpleProps> = ({
                           }
                         }}
                       >
-                        Xóa
+                        Clear
                       </Button>
                     </Box>
                     
@@ -630,7 +630,7 @@ const SearchBarSimple: React.FC<SearchBarSimpleProps> = ({
                 
                 {/* Popular Searches */}
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Tìm kiếm phổ biến
+                  Popular Searches
                 </Typography>
                 <List sx={{ py: 0 }}>
                   {['iPhone 15', 'Samsung Galaxy S24', 'MacBook Pro', 'AirPods Pro', 'Gaming Laptop', 'Smart Watch'].map((item, index) => (
