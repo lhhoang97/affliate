@@ -92,13 +92,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <Card 
         sx={{ 
           height: '100%',
-          borderRadius: 2,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          width: '100%',
+          borderRadius: { xs: 1.5, sm: 2 },
+          boxShadow: { xs: '0 1px 4px rgba(0,0,0,0.1)', sm: '0 2px 8px rgba(0,0,0,0.08)' },
           transition: 'all 0.2s ease-in-out',
           cursor: 'pointer',
+          border: { xs: '1px solid #e5e7eb', sm: 'none' },
           '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+            transform: { xs: 'none', sm: 'translateY(-2px)' },
+            boxShadow: { xs: '0 2px 6px rgba(0,0,0,0.15)', sm: '0 4px 16px rgba(0,0,0,0.12)' },
             borderColor: '#3b82f6'
           }
         }}
@@ -113,7 +115,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
             alt={product.name}
             sx={{ 
               objectFit: 'cover',
-              height: { xs: 120, sm: 140 }
+              height: { xs: 160, sm: 140 }, // Tăng height cho mobile để rõ hơn
+              width: '100%'
             }}
           />
           
@@ -162,19 +165,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </Box>
 
-        <CardContent sx={{ p: { xs: 1, sm: 1.5 }, pt: { xs: 0.5, sm: 1 } }}>
+        <CardContent sx={{ p: { xs: 1.2, sm: 1.5 }, pt: { xs: 0.8, sm: 1 } }}>
           {/* Product Name */}
           <Typography
             variant="body2"
             sx={{
               fontWeight: 600,
               color: '#1f2937',
-              mb: 0.5,
+              mb: { xs: 0.8, sm: 0.5 },
               overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              fontSize: '0.8rem',
-              lineHeight: 1.2
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              fontSize: { xs: '0.9rem', sm: '0.8rem' }, // Tăng font size cho mobile
+              lineHeight: { xs: 1.3, sm: 1.2 },
+              height: { xs: 'auto', sm: '2.4em' },
+              minHeight: { xs: '2.6em', sm: 'auto' }
             }}
           >
             {product.name}
@@ -184,8 +190,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <Box sx={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: 0.5, 
-            mb: 0.5
+            gap: { xs: 1, sm: 0.5 }, 
+            mb: { xs: 0.8, sm: 0.5 }
           }}>
             <Typography 
               variant="h6" 
@@ -193,7 +199,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               sx={{ 
                 fontWeight: 700,
                 color: '#059669',
-                fontSize: '1rem'
+                fontSize: { xs: '1.1rem', sm: '1rem' } // Tăng font size cho mobile
               }}
             >
               ${product.price?.toFixed(2) || '0.00'}
@@ -205,7 +211,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 sx={{ 
                   textDecoration: 'line-through',
                   color: '#dc2626',
-                  fontSize: '0.7rem',
+                  fontSize: { xs: '0.8rem', sm: '0.7rem' },
                   fontWeight: 500
                 }}
               >
@@ -221,8 +227,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
               color: '#6b7280',
               display: 'flex',
               alignItems: 'center',
-              gap: 0.5,
-              fontSize: '0.7rem'
+              gap: { xs: 0.7, sm: 0.5 },
+              fontSize: { xs: '0.8rem', sm: '0.7rem' } // Tăng font size cho mobile
             }}
           >
             ⭐ {product.rating || 4.5} ({product.reviewCount || 0})

@@ -19,16 +19,17 @@ const NextArrow = ({ onClick }: { onClick?: () => void }) => (
     onClick={onClick}
     sx={{
       position: 'absolute',
-      right: { xs: '-15px', sm: '-25px' }, // Closer to content on mobile
+      right: { xs: '-10px', sm: '-25px' }, // Gần hơn nữa cho mobile
       top: '50%',
       transform: 'translateY(-50%)',
-      width: { xs: '35px', sm: '45px' },
-      height: { xs: '35px', sm: '45px' },
+      width: { xs: '32px', sm: '45px' },
+      height: { xs: '32px', sm: '45px' },
       background: '#ffffff',
       border: '2px solid #e5e7eb',
       color: '#6b7280',
       zIndex: 10,
       transition: 'all 0.3s ease',
+      boxShadow: { xs: '0 2px 8px rgba(0,0,0,0.1)', sm: 'none' },
       '&:hover': {
         background: '#3b82f6',
         color: '#ffffff',
@@ -38,7 +39,7 @@ const NextArrow = ({ onClick }: { onClick?: () => void }) => (
       }
     }}
   >
-    <ChevronRight fontSize={window.innerWidth < 600 ? "medium" : "large"} />
+    <ChevronRight fontSize={window.innerWidth < 600 ? "small" : "large"} />
   </IconButton>
 );
 
@@ -47,16 +48,17 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
     onClick={onClick}
     sx={{
       position: 'absolute',
-      left: { xs: '-15px', sm: '-25px' }, // Closer to content on mobile
+      left: { xs: '-10px', sm: '-25px' }, // Gần hơn nữa cho mobile
       top: '50%',
       transform: 'translateY(-50%)',
-      width: { xs: '35px', sm: '45px' },
-      height: { xs: '35px', sm: '45px' },
+      width: { xs: '32px', sm: '45px' },
+      height: { xs: '32px', sm: '45px' },
       background: '#ffffff',
       border: '2px solid #e5e7eb',
       color: '#6b7280',
       zIndex: 10,
       transition: 'all 0.3s ease',
+      boxShadow: { xs: '0 2px 8px rgba(0,0,0,0.1)', sm: 'none' },
       '&:hover': {
         background: '#3b82f6',
         color: '#ffffff',
@@ -66,7 +68,7 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
       }
     }}
   >
-    <ChevronLeft fontSize={window.innerWidth < 600 ? "medium" : "large"} />
+    <ChevronLeft fontSize={window.innerWidth < 600 ? "small" : "large"} />
   </IconButton>
 );
 
@@ -133,9 +135,9 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
   };
 
   return (
-    <Box sx={{ mb: 5, px: 2 }}>
+    <Box sx={{ mb: { xs: 4, sm: 5 }, px: { xs: 1.5, sm: 2 } }}>
       {/* Title & Subtitle */}
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: { xs: 2.5, sm: 3 } }}>
         <Typography 
           variant="h5" 
           sx={{ 
@@ -144,12 +146,13 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
             position: 'relative',
             textAlign: 'left',
             mb: subtitle ? 1 : 0,
+            fontSize: { xs: '1.3rem', sm: '1.5rem' }, // Responsive font size
             '&::after': {
               content: '""',
               position: 'absolute',
               bottom: '-8px',
               left: 0,
-              width: '60px',
+              width: { xs: '50px', sm: '60px' },
               height: '4px',
               background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
               borderRadius: '2px',
@@ -165,7 +168,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
             variant="body1" 
             sx={{ 
               color: '#6b7280',
-              fontSize: '0.95rem',
+              fontSize: { xs: '0.9rem', sm: '0.95rem' },
               fontWeight: 500,
               mt: 0.5
             }}
