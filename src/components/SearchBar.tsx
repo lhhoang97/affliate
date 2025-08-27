@@ -14,15 +14,19 @@ import {
   Chip,
   Divider,
   useMediaQuery,
-  useTheme
+  useTheme,
+  Avatar
 } from '@mui/material';
 import {
   Search,
   Clear,
   TrendingUp,
   History,
-  LocalOffer
+  LocalOffer,
+  ShoppingBag
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { Product } from '../types';
 
 interface SearchBarProps {
   value: string;
@@ -32,6 +36,7 @@ interface SearchBarProps {
   showSuggestions?: boolean;
   recentSearches?: string[];
   trendingSearches?: string[];
+  products?: Product[];
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -41,16 +46,40 @@ const SearchBar: React.FC<SearchBarProps> = ({
   placeholder = "What are you looking for?",
   showSuggestions = true,
   recentSearches = [],
-  trendingSearches = []
+  trendingSearches = [],
+  products = []
 }) => {
   const anchorRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const navigate = useNavigate();
+
+  // Filter products based on search query
+  const filteredProducts = value.trim() 
+    ? products.filter(product =>
+        product.name.toLowerCase().includes(value.toLowerCase()) ||
+        product.description?.toLowerCase().includes(value.toLowerCase()) ||
+        product.category?.toLowerCase().includes(value.toLowerCase())
+      ).slice(0, 5) // Limit to 5 products
+    : [];
 
   const handleInputChange = (newValue: string) => {
     onChange(newValue);
+    
+    // Show dropdown if there are filtered products or default suggestions
+    if (newValue.trim()) {
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+    }
+  };
+
+  const handleProductClick = (product: Product) => {
+    setShowDropdown(false);
+    onChange('');
+    navigate(`/product/${product.id}`);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -173,10 +202,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
             }
           }}
                   InputProps={{
-            startAdornment: (
+                        startAdornment: (
               <InputAdornment position="start">
                 <Search sx={{ 
-                  color: { xs: '#94a3b8', sm: '#666' }, 
+                  color: { xs: '#94a3b8', sm: '#666' },
                   fontSize: { xs: '18px', sm: '20px' },
                   cursor: 'pointer'
                 }} />
@@ -231,6 +260,72 @@ const SearchBar: React.FC<SearchBarProps> = ({
             }
           }}
         >
+          {/* Product Suggestions */}
+          {filteredProducts.length > 0 && (
+            <>
+              <Box sx={{ p: { xs: 2, sm: 2 }, pb: { xs: 1, sm: 1 } }}>
+                <Typography variant="subtitle2" sx={{ 
+                  color: { xs: '#475569', sm: '#666' }, 
+                  fontWeight: 600,
+                  fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                }}>
+                  Products
+                </Typography>
+              </Box>
+              <List dense>
+                {filteredProducts.map((product) => (
+                  <ListItem
+                    key={product.id}
+                    onClick={() => handleProductClick(product)}
+                    sx={{ 
+                      py: { xs: 1.5, sm: 1 },
+                      px: { xs: 2, sm: 2 },
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: { xs: '#f1f5f9', sm: '#f5f5f5' }
+                      },
+                      '&:active': {
+                        backgroundColor: { xs: '#e2e8f0', sm: '#e0e0e0' }
+                      }
+                    }}
+                  >
+                    <ListItemIcon sx={{ minWidth: { xs: 46, sm: 46 } }}>
+                      <Avatar
+                        src={product.image}
+                        sx={{ 
+                          width: { xs: 32, sm: 36 }, 
+                          height: { xs: 32, sm: 36 },
+                          borderRadius: 1
+                        }}
+                      >
+                        <ShoppingBag sx={{ fontSize: { xs: 16, sm: 18 } }} />
+                      </Avatar>
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={product.name}
+                      secondary={`${product.category} • $${product.price}`}
+                      sx={{
+                        '& .MuiListItemText-primary': {
+                          fontSize: { xs: '0.875rem', sm: '0.9rem' },
+                          fontWeight: 500,
+                          color: { xs: '#1e293b', sm: '#333' },
+                          lineHeight: 1.2
+                        },
+                        '& .MuiListItemText-secondary': {
+                          fontSize: { xs: '0.75rem', sm: '0.8rem' },
+                          color: { xs: '#64748b', sm: '#666' },
+                          lineHeight: 1.1,
+                          mt: 0.5
+                        }
+                      }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+              {(recentSearches.length > 0 || trendingSearches.length > 0) && <Divider sx={{ my: 1 }} />}
+            </>
+          )}
+
           {/* Recent Searches */}
           {recentSearches.length > 0 && (
             <>
@@ -326,46 +421,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             </>
           )}
 
-          {/* Quick Categories */}
-          <Divider sx={{ my: { xs: 1, sm: 0 } }} />
-          <Box sx={{ p: { xs: 2.5, sm: 2 } }}>
-            <Typography variant="subtitle2" sx={{ 
-              color: { xs: '#475569', sm: '#666' }, 
-              fontWeight: 600, 
-              mb: { xs: 1.5, sm: 1 },
-              fontSize: { xs: '0.9rem', sm: '0.875rem' }
-            }}>
-              Popular Categories
-            </Typography>
-            <Box sx={{ 
-              display: 'flex', 
-              flexWrap: 'wrap', 
-              gap: { xs: 1.5, sm: 1 },
-              justifyContent: { xs: 'center', sm: 'flex-start' }
-            }}>
-              {['Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Books', 'Toys'].map((category) => (
-                <Chip
-                  key={category}
-                  label={category}
-                  size={isMobile ? "medium" : "small"}
-                  icon={<LocalOffer sx={{ fontSize: { xs: 18, sm: 16 } }} />}
-                  onClick={() => handleSuggestionClick(category)}
-                  sx={{
-                    cursor: 'pointer',
-                    fontSize: { xs: '0.9rem', sm: '0.875rem' },
-                    fontWeight: { xs: 500, sm: 400 },
-                    height: { xs: 36, sm: 32 },
-                    '&:hover': {
-                      backgroundColor: { xs: '#dbeafe', sm: '#e3f2fd' }
-                    },
-                    '&:active': {
-                      backgroundColor: { xs: '#bfdbfe', sm: '#bbdefb' }
-                    }
-                  }}
-                />
-              ))}
-            </Box>
-          </Box>
+
         </Paper>
       </Popper>
     </Box>

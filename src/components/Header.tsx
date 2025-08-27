@@ -36,6 +36,7 @@ import {
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
+import { useProducts } from '../contexts/ProductContext';
 import SearchBar from './SearchBar';
 import Logo from './Logo';
 import CategoryNavigation from './CategoryNavigation';
@@ -47,6 +48,7 @@ import { dealService, DealCategory } from '../services/dealService';
 const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { items } = useCart();
+  const { products } = useProducts();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   
@@ -892,6 +894,7 @@ const Header: React.FC = () => {
               onChange={setSearchTerm}
               onSearch={handleSearch}
               placeholder="Search..."
+              products={products}
             />
           </Box>
           
