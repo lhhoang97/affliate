@@ -238,27 +238,7 @@ const ProductDetailPage: React.FC = () => {
           <Typography variant="body2" color="primary">Hot Deals</Typography>
         </Breadcrumbs>
         
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button 
-            variant="outlined" 
-            size="small" 
-            onClick={refreshProducts}
-          >
-            Refresh Data
-          </Button>
-          <Button 
-            variant="outlined" 
-            size="small" 
-            onClick={() => {
-              setImageKey(Date.now());
-              setSelectedImage(0);
-              console.log('ProductDetailPage - Force clearing cache and resetting images');
-            }}
-            color="secondary"
-          >
-            Clear Cache
-          </Button>
-        </Box>
+
       </Box>
 
       {/* Main Deal Card */}
