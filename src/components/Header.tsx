@@ -37,7 +37,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 import { useProducts } from '../contexts/ProductContext';
-import SearchBar from './SearchBar';
+import SearchBarSimple from './SearchBarSimple';
 import Logo from './Logo';
 import CategoryNavigation from './CategoryNavigation';
 import { categories, featuredCategories, newCategories } from '../data/categories';
@@ -889,7 +889,7 @@ const Header: React.FC = () => {
             mx: { xs: 1, md: 2 },
             order: { xs: 2, md: 2 }
           }}>
-            <SearchBar
+            <SearchBarSimple
               value={searchTerm}
               onChange={setSearchTerm}
               onSearch={handleSearch}
