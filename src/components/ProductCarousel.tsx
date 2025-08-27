@@ -19,17 +19,17 @@ const NextArrow = ({ onClick }: { onClick?: () => void }) => (
     onClick={onClick}
     sx={{
       position: 'absolute',
-      right: { xs: '-10px', sm: '-25px' }, // Gần hơn nữa cho mobile
+      right: { xs: '5px', sm: '-25px' }, // Move inside container trên mobile
       top: '50%',
       transform: 'translateY(-50%)',
       width: { xs: '32px', sm: '45px' },
       height: { xs: '32px', sm: '45px' },
-      background: '#ffffff',
+      background: 'rgba(255,255,255,0.95)', // Slightly transparent
       border: '2px solid #e5e7eb',
       color: '#6b7280',
       zIndex: 10,
       transition: 'all 0.3s ease',
-      boxShadow: { xs: '0 2px 8px rgba(0,0,0,0.1)', sm: 'none' },
+      boxShadow: { xs: '0 2px 8px rgba(0,0,0,0.15)', sm: 'none' },
       '&:hover': {
         background: '#3b82f6',
         color: '#ffffff',
@@ -48,17 +48,17 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
     onClick={onClick}
     sx={{
       position: 'absolute',
-      left: { xs: '-10px', sm: '-25px' }, // Gần hơn nữa cho mobile
+      left: { xs: '5px', sm: '-25px' }, // Move inside container trên mobile
       top: '50%',
       transform: 'translateY(-50%)',
       width: { xs: '32px', sm: '45px' },
       height: { xs: '32px', sm: '45px' },
-      background: '#ffffff',
+      background: 'rgba(255,255,255,0.95)', // Slightly transparent
       border: '2px solid #e5e7eb',
       color: '#6b7280',
       zIndex: 10,
       transition: 'all 0.3s ease',
-      boxShadow: { xs: '0 2px 8px rgba(0,0,0,0.1)', sm: 'none' },
+      boxShadow: { xs: '0 2px 8px rgba(0,0,0,0.15)', sm: 'none' },
       '&:hover': {
         background: '#3b82f6',
         color: '#ffffff',
@@ -135,9 +135,18 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
   };
 
   return (
-    <Box sx={{ mb: { xs: 4, sm: 5 }, px: { xs: 1.5, sm: 2 } }}>
+    <Box sx={{ 
+      mb: { xs: 4, sm: 5 }, 
+      px: { xs: 0, sm: 2 }, // Remove side padding trên mobile
+      mx: { xs: 0, sm: 'auto' }, // No side margins trên mobile
+      width: '100%', // Full width
+      maxWidth: '100vw' // Ensure full viewport width
+    }}>
       {/* Title & Subtitle */}
-      <Box sx={{ mb: { xs: 2.5, sm: 3 } }}>
+      <Box sx={{ 
+        mb: { xs: 2.5, sm: 3 },
+        px: { xs: 1.5, sm: 0 } // Add padding back cho title trên mobile
+      }}>
         <Typography 
           variant="h5" 
           sx={{ 
@@ -182,7 +191,10 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
       <Box 
         sx={{ 
           position: 'relative',
-          mx: 3, // Add margin for arrows
+          mx: { xs: 0, sm: 3 }, // No margins trên mobile, margins cho desktop
+          px: { xs: 0.5, sm: 0 }, // Minimal padding chỉ để tránh cut-off
+          width: '100%',
+          overflow: 'visible', // Ensure arrows are visible
           '& .slick-dots li button:before': {
             display: 'none'
           },
@@ -194,7 +206,14 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
       >
         <Slider {...settings}>
           {products.map((product) => (
-            <Box key={product.id} sx={{ px: 1 }}>
+            <Box key={product.id} sx={{ 
+              px: { xs: 0.3, sm: 1 }, // Tối thiểu spacing để maximize card width
+              '& > div': {
+                margin: '0 auto', // Center align cards
+                width: '100%', // Full width cards
+                maxWidth: { xs: 'none', sm: '320px' } // No max width limit on mobile
+              }
+            }}>
               <Box
                 onClick={() => onProductClick(product)}
                 sx={{

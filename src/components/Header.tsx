@@ -880,20 +880,20 @@ const Header: React.FC = () => {
             </Box>
           </Box>
           
-          {/* Center: Search bar */}
+          {/* Center: Search bar - Larger like Slickdeals */}
           <Box sx={{ 
             display: 'flex',
             alignItems: 'center',
-            flex: { xs: 1, md: 1 },
-            maxWidth: { xs: '100%', md: 500 },
-            mx: { xs: 1, md: 2 },
+            flex: { xs: 1, md: 2 }, // More flex on desktop
+            maxWidth: { xs: '100%', md: '700px' }, // Wider max width
+            mx: { xs: 1, md: 3 }, // More margin for prominence
             order: { xs: 2, md: 2 }
           }}>
             <SearchBarSimple
               value={searchTerm}
               onChange={setSearchTerm}
               onSearch={handleSearch}
-              placeholder="Search..."
+              placeholder="Search products, deals..."
               products={products}
             />
           </Box>

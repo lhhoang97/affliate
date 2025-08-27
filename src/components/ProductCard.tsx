@@ -120,24 +120,46 @@ const ProductCard: React.FC<ProductCardProps> = ({
             }}
           />
           
-          {/* Discount Badge - Top Left */}
+          {/* Discount Badge - Bottom Right Corner */}
           {discountPercentage > 0 && (
-            <Chip
-              label={`-${discountPercentage}%`}
-              size="small"
+            <Box
               sx={{
                 position: 'absolute',
-                top: { xs: 6, sm: 8 },
-                left: { xs: 6, sm: 8 },
-                backgroundColor: '#dc2626',
+                bottom: { xs: 8, sm: 10 },
+                right: { xs: 8, sm: 10 },
+                backgroundColor: '#ff4444',
+                background: 'linear-gradient(135deg, #ff4444 0%, #cc0000 100%)',
                 color: 'white',
-                fontSize: { xs: '0.65rem', sm: '0.75rem' },
-                fontWeight: 700,
-                height: { xs: 20, sm: 24 },
-                borderRadius: { xs: '10px', sm: '12px' },
-                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                borderRadius: '8px',
+                padding: { xs: '4px 6px', sm: '6px 8px' },
+                boxShadow: '0 3px 10px rgba(255, 68, 68, 0.4)',
+                transform: 'rotate(-2deg)',
+                border: '2px solid white',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: '-2px',
+                  left: '-2px',
+                  right: '-2px',
+                  bottom: '-2px',
+                  background: 'linear-gradient(135deg, #ff6666, #ff0000)',
+                  borderRadius: '10px',
+                  zIndex: -1
+                }
               }}
-            />
+            >
+              <Typography
+                sx={{
+                  fontSize: { xs: '0.7rem', sm: '0.8rem' },
+                  fontWeight: 900,
+                  lineHeight: 1,
+                  textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                  letterSpacing: '0.5px'
+                }}
+              >
+                -{discountPercentage}%
+              </Typography>
+            </Box>
           )}
           
           {/* Retailer Badge */}
@@ -325,6 +347,49 @@ const ProductCard: React.FC<ProductCardProps> = ({
             }
           }}
         />
+
+        {/* Discount Badge - Bottom Right Corner */}
+        {discountPercentage > 0 && (
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: { xs: 10, sm: 12 },
+              right: { xs: 10, sm: 12 },
+              background: 'linear-gradient(135deg, #ff4444 0%, #cc0000 100%)',
+              color: 'white',
+              borderRadius: '12px',
+              padding: { xs: '6px 10px', sm: '8px 12px' },
+              boxShadow: '0 4px 15px rgba(255, 68, 68, 0.5)',
+              transform: 'rotate(-3deg)',
+              border: '3px solid white',
+              zIndex: 2,
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%) rotate(3deg)',
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)',
+                borderRadius: '9px',
+                pointerEvents: 'none'
+              }
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: { xs: '0.9rem', sm: '1rem' },
+                fontWeight: 900,
+                lineHeight: 1,
+                textShadow: '0 2px 4px rgba(0,0,0,0.4)',
+                letterSpacing: '0.8px'
+              }}
+            >
+              -{discountPercentage}%
+            </Typography>
+          </Box>
+        )}
 
         {/* Fullscreen Button */}
         <IconButton

@@ -11,22 +11,22 @@ const Logo: React.FC<LogoProps> = ({ variant = 'header', onClick }) => {
   const getIconSize = () => {
     switch (variant) {
       case 'mobile':
-        return { width: 20, height: 20 };
+        return { width: 16, height: 16 }; // Smaller
       case 'footer':
-        return { width: 24, height: 24 };
+        return { width: 20, height: 20 }; // Smaller
       default:
-        return { width: 28, height: 28 };
+        return { width: 22, height: 22 }; // Much smaller for header
     }
   };
 
   const getTextSize = () => {
     switch (variant) {
       case 'mobile':
-        return '16px';
+        return '13px'; // Smaller
       case 'footer':
-        return '18px';
+        return '15px'; // Smaller
       default:
-        return '20px';
+        return '16px'; // Much smaller for header
     }
   };
 
@@ -62,8 +62,8 @@ const Logo: React.FC<LogoProps> = ({ variant = 'header', onClick }) => {
         <ShoppingCart
           sx={{
             ...iconSize,
-            color: '#1976d2', // Blue color
-            transform: 'scale(1.2)', // Make it slightly larger
+            color: '#1976d2',
+            transform: variant === 'header' ? 'scale(1.0)' : 'scale(1.2)', // No scaling for header
           }}
         />
         
@@ -110,11 +110,12 @@ const Logo: React.FC<LogoProps> = ({ variant = 'header', onClick }) => {
       <Typography
         sx={{
           fontSize: textSize,
-          fontWeight: 'bold',
-          color: '#007bff', // Light blue color
+          fontWeight: variant === 'header' ? 600 : 'bold', // Lighter for header
+          color: '#007bff',
           textTransform: 'lowercase',
-          letterSpacing: '0.5px',
-          lineHeight: 1
+          letterSpacing: variant === 'header' ? '0.3px' : '0.5px',
+          lineHeight: variant === 'header' ? 0.9 : 1, // Tighter for header
+          mt: variant === 'header' ? 0.2 : 0 // Minimal top margin for header
         }}
       >
         shopwithus
