@@ -98,7 +98,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
   const slidesToShow = getSlidesToShow();
   
   const settings = {
-    dots: true,
+    dots: false,
     infinite: false,
     speed: 500,
     slidesToShow: slidesToShow,
@@ -126,25 +126,10 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
           slidesToShow: 2,
           slidesToScroll: 2,
           arrows: true, // Enable arrows on mobile
-          dots: true
+          dots: false
         }
       }
     ],
-    dotsClass: 'slick-dots custom-dots',
-    appendDots: (dots: React.ReactNode) => (
-      <Box sx={{ mt: 3 }}>
-        <ul style={{ 
-          display: 'flex !important', 
-          justifyContent: 'center', 
-          gap: '8px',
-          listStyle: 'none',
-          padding: 0,
-          margin: 0
-        }}>
-          {dots}
-        </ul>
-      </Box>
-    ),
     customPaging: () => (
       <Box
         sx={{
