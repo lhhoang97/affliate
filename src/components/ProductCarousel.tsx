@@ -129,23 +129,6 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
           dots: false
         }
       }
-    ],
-    customPaging: () => (
-      <Box
-        sx={{
-          width: '10px',
-          height: '10px',
-          borderRadius: '50%',
-          backgroundColor: '#d1d5db',
-          transition: 'all 0.3s ease',
-          cursor: 'pointer',
-          '&:hover': {
-            backgroundColor: '#9ca3af',
-            transform: 'scale(1.2)'
-          }
-        }}
-      />
-    )
   };
 
   return (
