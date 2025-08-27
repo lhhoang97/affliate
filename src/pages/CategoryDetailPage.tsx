@@ -165,8 +165,8 @@ const CategoryDetailPage: React.FC = () => {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchLower) ||
-        product.brand.toLowerCase().includes(searchLower) ||
-        product.description.toLowerCase().includes(searchLower)
+        (product.brand && product.brand.toLowerCase().includes(searchLower)) ||
+        (product.description && product.description.toLowerCase().includes(searchLower))
       );
     }
 
