@@ -244,9 +244,6 @@ function App() {
             <ProductProvider>
               <Router>
             <Routes>
-              {/* Search page without header/footer */}
-              <Route path="/search" element={<SearchPage />} />
-              
               {/* Regular layout with header/footer */}
               <Route path="/*" element={
                 <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -255,6 +252,7 @@ function App() {
                     <Routes>
                       {/* Public Routes */}
                       <Route path="/" element={<HomePage />} />
+                      <Route path="/search" element={<SearchPage />} />
                       <Route path="/products" element={<ProductsPage />} />
                       <Route path="/product/:id" element={<ProductDetailPage />} />
                       <Route path="/categories" element={<CategoriesPage />} />

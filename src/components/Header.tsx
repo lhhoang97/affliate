@@ -139,7 +139,8 @@ const Header: React.FC = () => {
   };
 
   const handleDrawerToggle = () => {
-    console.log('Drawer toggle clicked, current state:', mobileOpen);
+    console.log('🍔 Drawer toggle function called, current state:', mobileOpen);
+    console.log('🍔 Setting mobileOpen to:', !mobileOpen);
     setMobileOpen(!mobileOpen);
   };
 
@@ -856,17 +857,28 @@ const Header: React.FC = () => {
             order: { xs: 1, md: 1 }
           }}>
             <IconButton
-              onClick={handleDrawerToggle}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🍔 Hamburger menu clicked!');
+                handleDrawerToggle();
+              }}
               sx={{ 
                 color: '#333',
                 transition: 'all 0.2s ease-in-out',
+                zIndex: 1300,
+                position: 'relative',
                 '&:hover': {
                   backgroundColor: '#f8f9fa',
                   transform: 'scale(1.1)'
+                },
+                '&:active': {
+                  backgroundColor: '#e3f2fd',
+                  transform: 'scale(0.95)'
                 }
               }}
             >
-              <MenuIcon />
+              <MenuIcon sx={{ fontSize: 24 }} />
             </IconButton>
             
             <Box sx={{ 
@@ -967,14 +979,19 @@ const Header: React.FC = () => {
       <Drawer
         variant="temporary"
         open={mobileOpen}
-        onClose={handleDrawerToggle}
+        onClose={() => {
+          console.log('🍔 Drawer onClose triggered');
+          handleDrawerToggle();
+        }}
         ModalProps={{
           keepMounted: true
         }}
         sx={{
+          display: { xs: 'block', sm: 'block' }, // Always show on all screen sizes for testing
           '& .MuiDrawer-paper': {
             width: 280,
             backgroundColor: 'white',
+            zIndex: 1200,
             color: '#333',
             transform: mobileOpen ? 'translateX(0)' : 'translateX(-100%)',
             transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -999,7 +1016,18 @@ const Header: React.FC = () => {
           }
         }}
       >
-        {drawer}
+        <Box sx={{ 
+          p: 2, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          height: '100%',
+          backgroundColor: '#ffffff'
+        }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1976d2' }}>
+            🍔 Debug Menu (Working!)
+          </Typography>
+          {drawer}
+        </Box>
       </Drawer>
 
       {/* Profile Menu */}
