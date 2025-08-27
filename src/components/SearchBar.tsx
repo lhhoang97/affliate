@@ -66,6 +66,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     : [];
 
   const handleInputChange = (newValue: string) => {
+    console.log('SearchBar input change:', newValue); // Debug log
     onChange(newValue);
     
     // Show dropdown if there are filtered products or default suggestions
@@ -164,6 +165,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
           onBlur={handleInputBlur}
           placeholder={placeholder}
           size="small"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
           sx={{
             width: '100%',
             '& .MuiOutlinedInput-root': {
@@ -181,30 +186,52 @@ const SearchBar: React.FC<SearchBarProps> = ({
               }
             },
             '& .MuiOutlinedInput-input': {
-              fontSize: { xs: '16px', sm: '16px' }, // Prevent zoom on iOS
-              padding: { xs: '12px 14px', sm: '12px 16px' },
-              fontWeight: { xs: 400, sm: 400 },
-              color: { xs: '#000000 !important', sm: '#333' }, // Force black text on mobile
-              backgroundColor: { xs: 'transparent !important', sm: 'transparent' },
-              WebkitAppearance: { xs: 'none', sm: 'none' }, // iOS fix
-              WebkitTextFillColor: { xs: '#000000 !important', sm: '#333' }, // iOS text color fix
+              fontSize: '16px !important', // Prevent zoom on iOS
+              padding: { xs: '14px 16px', sm: '12px 16px' },
+              fontWeight: '400 !important',
+              color: '#000000 !important', // Force black text always
+              backgroundColor: 'transparent !important',
+              WebkitAppearance: 'none !important', // iOS fix
+              WebkitTextFillColor: '#000000 !important', // iOS text color fix
+              opacity: '1 !important', // Ensure visibility
+              textShadow: 'none !important',
               '&::placeholder': {
-                fontSize: { xs: '16px', sm: '16px' },
-                color: { xs: '#94a3b8 !important', sm: '#666' },
-                fontWeight: { xs: 400, sm: 400 },
-                WebkitTextFillColor: { xs: '#94a3b8 !important', sm: '#666' }
+                fontSize: '16px !important',
+                color: '#94a3b8 !important',
+                fontWeight: '400 !important',
+                WebkitTextFillColor: '#94a3b8 !important',
+                opacity: '1 !important'
               },
               '&:focus': {
-                color: { xs: '#000000 !important', sm: '#333' },
-                WebkitTextFillColor: { xs: '#000000 !important', sm: '#333' }
+                color: '#000000 !important',
+                WebkitTextFillColor: '#000000 !important',
+                opacity: '1 !important'
+              },
+              '&:active': {
+                color: '#000000 !important',
+                WebkitTextFillColor: '#000000 !important'
               }
             },
             '& .MuiInputAdornment-root': {
               margin: { xs: '0 8px', sm: '0 8px' }
             },
-            // Mobile-specific fixes
+            // Mobile-specific fixes and debug styles
             '& .MuiOutlinedInput-notchedOutline': {
               border: 'none'
+            },
+            // Emergency debug styles for mobile
+            '@media (max-width: 768px)': {
+              '& input': {
+                color: '#000000 !important',
+                WebkitTextFillColor: '#000000 !important',
+                fontSize: '16px !important',
+                opacity: '1 !important',
+                backgroundColor: 'white !important',
+                textIndent: '0 !important',
+                textTransform: 'none !important',
+                letterSpacing: 'normal !important',
+                lineHeight: 'normal !important'
+              }
             },
             '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
               border: 'none'
