@@ -39,7 +39,16 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       setError(null);
       console.log('ProductContext - Loading products from database...');
       const allProducts = await getAllProducts();
-      console.log('ProductContext - Loaded products:', allProducts);
+      console.log('ProductContext - Loaded products count:', allProducts.length);
+      console.log('ProductContext - Sample products:', allProducts.slice(0, 3).map(p => ({ id: p.id, name: p.name, category: p.category })));
+      
+      // Debug: Check for smartphone products
+      const smartphoneProducts = allProducts.filter(p => p.category === 'Smartphones');
+      console.log('ProductContext - Smartphone products found:', smartphoneProducts.length);
+      smartphoneProducts.forEach(p => {
+        console.log('ProductContext - Smartphone:', p.name, p.category);
+      });
+      
       setProducts(allProducts);
     } catch (err) {
       console.error('Error loading products:', err);

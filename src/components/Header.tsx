@@ -842,14 +842,14 @@ const Header: React.FC = () => {
         <Toolbar sx={{ 
           justifyContent: 'space-between', 
           px: { xs: 1, md: 3 },
-          flexWrap: { xs: 'wrap', md: 'nowrap' },
+          flexWrap: { xs: 'nowrap', md: 'nowrap' },
           gap: { xs: 1, md: 0 }
         }}>
           {/* Left side: Hamburger menu and Logo */}
           <Box sx={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: 2,
+            gap: { xs: 1, md: 2 },
             flexShrink: 0,
             order: { xs: 1, md: 1 }
           }}>
@@ -882,11 +882,10 @@ const Header: React.FC = () => {
           <Box sx={{ 
             display: 'flex',
             alignItems: 'center',
-            flex: { xs: '1 1 100%', md: 1 },
+            flex: { xs: 1, md: 1 },
             maxWidth: { xs: '100%', md: 500 },
-            mx: { xs: 0, md: 2 },
-            order: { xs: 3, md: 2 },
-            mt: { xs: 1, md: 0 }
+            mx: { xs: 1, md: 2 },
+            order: { xs: 2, md: 2 }
           }}>
             <SearchBar
               value={searchTerm}
@@ -902,7 +901,7 @@ const Header: React.FC = () => {
             alignItems: 'center', 
             gap: 1,
             flexShrink: 0,
-            order: { xs: 2, md: 3 }
+            order: { xs: 3, md: 3 }
           }}>
             {/* Cart Icon */}
             <IconButton

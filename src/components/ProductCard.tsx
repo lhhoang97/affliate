@@ -30,6 +30,8 @@ interface ProductCardProps {
     color?: string;
     likes?: number;
     comments?: number;
+    rating?: number;
+    reviewCount?: number;
     isForYou?: boolean;
     foundBy?: {
       name: string;
@@ -41,6 +43,7 @@ interface ProductCardProps {
   onShare?: (productId: string) => void;
   onComment?: (productId: string) => void;
   onView?: (productId: string) => void;
+  variant?: 'default' | 'compact';
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -48,7 +51,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onLike,
   onShare,
   onComment,
-  onView
+  onView,
+  variant = 'default'
 }) => {
   const [isLiked, setIsLiked] = React.useState(false);
   
@@ -82,6 +86,133 @@ const ProductCard: React.FC<ProductCardProps> = ({
     onView?.(product.id);
   };
 
+  // Compact variant for category pages
+  if (variant === 'compact') {
+    return (
+      <Card 
+        sx={{ 
+          height: '100%',
+          borderRadius: 2,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          transition: 'all 0.2s ease-in-out',
+          cursor: 'pointer',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+            borderColor: '#3b82f6'
+          }
+        }}
+        onClick={() => onView?.(product.id)}
+      >
+        {/* Product Image */}
+        <Box sx={{ position: 'relative' }}>
+          <CardMedia
+            component="img"
+            height="140"
+            image={product.image}
+            alt={product.name}
+            sx={{ 
+              objectFit: 'cover',
+              height: 140
+            }}
+          />
+          
+          {/* Retailer Badge */}
+          {product.retailer && (
+            <Chip
+              label={product.retailer}
+              size="small"
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                color: 'white',
+                fontSize: '0.6rem',
+                fontWeight: 600,
+                height: 18,
+                maxWidth: 60,
+                '& .MuiChip-label': {
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }
+              }}
+            />
+          )}
+        </Box>
+
+        <CardContent sx={{ p: 1.5, pt: 1 }}>
+          {/* Product Name */}
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: 600,
+              color: '#1f2937',
+              mb: 0.5,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              fontSize: '0.8rem',
+              lineHeight: 1.2
+            }}
+          >
+            {product.name}
+          </Typography>
+
+          {/* Pricing */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 0.5, 
+            mb: 0.5
+          }}>
+            <Typography 
+              variant="h6" 
+              component="span"
+              sx={{ 
+                fontWeight: 700,
+                color: '#059669',
+                fontSize: '1rem'
+              }}
+            >
+              ${product.price?.toFixed(2) || '0.00'}
+            </Typography>
+            {product.originalPrice && product.originalPrice > product.price && (
+              <Typography 
+                variant="body2" 
+                component="span"
+                sx={{ 
+                  textDecoration: 'line-through',
+                  color: '#dc2626',
+                  fontSize: '0.7rem',
+                  fontWeight: 500
+                }}
+              >
+                ${product.originalPrice?.toFixed(2) || '0.00'}
+              </Typography>
+            )}
+          </Box>
+
+          {/* Rating */}
+          <Typography
+            variant="body2"
+            sx={{
+              color: '#6b7280',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              fontSize: '0.7rem'
+            }}
+          >
+            ⭐ {product.rating || 4.5} ({product.reviewCount || 0})
+          </Typography>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Default variant
   return (
     <Card 
       sx={{ 

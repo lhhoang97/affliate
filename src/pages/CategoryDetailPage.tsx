@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -90,6 +90,7 @@ function TabPanel(props: TabPanelProps) {
 
 const CategoryDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const { products, loading } = useProducts();
   const { addToCart } = useCart();
   const theme = useTheme();
@@ -137,10 +138,22 @@ const CategoryDetailPage: React.FC = () => {
   // Filter products by category
   const categoryProducts = useMemo(() => {
     if (!category) return [];
-    return products.filter(product => 
+    
+    console.log('CategoryDetailPage - Filtering products for category:', category.name);
+    console.log('CategoryDetailPage - Total products available:', products.length);
+    console.log('CategoryDetailPage - Sample products:', products.slice(0, 3).map(p => ({ name: p.name, category: p.category })));
+    
+    const filtered = products.filter(product => 
       product.category.toLowerCase() === category.name.toLowerCase() ||
       product.category.toLowerCase().includes(category.name.toLowerCase())
     );
+    
+    console.log('CategoryDetailPage - Products matching category:', filtered.length);
+    filtered.forEach(p => {
+      console.log('CategoryDetailPage - Matching product:', p.name, p.category);
+    });
+    
+    return filtered;
   }, [products, category]);
 
   // Apply filters
@@ -632,14 +645,16 @@ const CategoryDetailPage: React.FC = () => {
         </Box>
 
         {/* Main Content */}
-        <Grid container spacing={{ xs: 2, md: 3 }}>
+        <Grid container spacing={{ xs: 1, md: 2 }}>
           {/* Filters Sidebar - Desktop */}
           {!isMobile && (
             <Grid item xs={12} md={3}>
               <Card sx={{ 
                 position: 'sticky', 
                 top: 20,
-                mb: { xs: 2, md: 0 }
+                mb: { xs: 2, md: 0 },
+                borderRadius: 2,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
               }}>
                 <CardContent sx={{ p: 2 }}>
                   <FilterContent />
@@ -700,15 +715,15 @@ const CategoryDetailPage: React.FC = () => {
 
             {/* Products Grid */}
             {loading ? (
-              <Grid container spacing={{ xs: 2, md: 3 }}>
+              <Grid container spacing={{ xs: 1, sm: 2, md: 2 }}>
                 {Array.from({ length: 8 }).map((_, index) => (
-                  <Grid item xs={6} sm={4} md={4} lg={3} key={index}>
-                    <Card>
-                      <Skeleton variant="rectangular" height={200} />
-                      <CardContent>
-                        <Skeleton variant="text" height={24} sx={{ mb: 1 }} />
-                        <Skeleton variant="text" height={20} sx={{ mb: 1 }} />
-                        <Skeleton variant="text" height={16} />
+                  <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
+                    <Card sx={{ height: '100%', borderRadius: 2 }}>
+                      <Skeleton variant="rectangular" height={160} sx={{ borderRadius: '8px 8px 0 0' }} />
+                      <CardContent sx={{ p: 1.5 }}>
+                        <Skeleton variant="text" height={20} sx={{ mb: 0.5 }} />
+                        <Skeleton variant="text" height={16} sx={{ mb: 0.5 }} />
+                        <Skeleton variant="text" height={14} />
                       </CardContent>
                     </Card>
                   </Grid>
@@ -753,10 +768,16 @@ const CategoryDetailPage: React.FC = () => {
                 </Button>
               </Box>
             ) : (
-              <Grid container spacing={{ xs: 2, md: 3 }}>
+              <Grid container spacing={{ xs: 1, sm: 2, md: 2 }}>
                 {sortedProducts.map((product) => (
-                  <Grid item xs={6} sm={4} md={4} lg={3} key={product.id}>
-                    <ProductCard product={product} />
+                  <Grid item xs={6} sm={4} md={3} lg={2} key={product.id}>
+                    <Box sx={{ height: '100%' }}>
+                      <ProductCard 
+                        product={product} 
+                        variant="compact"
+                        onView={() => navigate(`/product/${product.id}`)}
+                      />
+                    </Box>
                   </Grid>
                 ))}
               </Grid>

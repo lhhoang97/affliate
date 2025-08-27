@@ -134,25 +134,31 @@ const SearchBar: React.FC<SearchBarProps> = ({
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           placeholder={placeholder}
-          size="medium"
+          size="small"
           sx={{
             width: '100%',
             '& .MuiOutlinedInput-root': {
-              backgroundColor: '#f1f3f4',
-              borderRadius: '24px',
+              backgroundColor: { xs: '#f8fafc', sm: '#f1f3f4' },
+              borderRadius: { xs: '8px', sm: '24px' },
+              border: { xs: '1px solid #e2e8f0', sm: 'none' },
               '&:hover': {
-                backgroundColor: '#e8eaed'
+                backgroundColor: { xs: '#f1f5f9', sm: '#e8eaed' },
+                borderColor: { xs: '#cbd5e1', sm: 'transparent' }
               },
               '&.Mui-focused': {
                 backgroundColor: 'white',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                boxShadow: { xs: '0 2px 8px rgba(59, 130, 246, 0.12)', sm: '0 2px 8px rgba(0,0,0,0.1)' },
+                borderColor: { xs: '#3b82f6', sm: 'transparent' }
               }
             },
             '& .MuiOutlinedInput-input': {
-              fontSize: { xs: '16px', sm: '16px' }, // Prevent zoom on iOS
-              padding: { xs: '12px 16px', sm: '12px 16px' },
+              fontSize: { xs: '14px', sm: '16px' }, // Prevent zoom on iOS
+              padding: { xs: '10px 12px', sm: '12px 16px' },
+              fontWeight: { xs: 400, sm: 400 },
               '&::placeholder': {
-                fontSize: { xs: '16px', sm: '16px' }
+                fontSize: { xs: '14px', sm: '16px' },
+                color: { xs: '#94a3b8', sm: '#666' },
+                fontWeight: { xs: 400, sm: 400 }
               }
             },
             '& .MuiInputAdornment-root': {
@@ -170,8 +176,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
             startAdornment: (
               <InputAdornment position="start">
                 <Search sx={{ 
-                  color: '#666', 
-                  fontSize: { xs: '20px', sm: '20px' },
+                  color: { xs: '#94a3b8', sm: '#666' }, 
+                  fontSize: { xs: '18px', sm: '20px' },
                   cursor: 'pointer'
                 }} />
               </InputAdornment>
@@ -183,13 +189,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
                   onClick={handleClearClick}
                   edge="end"
                   sx={{
-                    p: 1,
+                    p: { xs: 1, sm: 1 },
+                    color: { xs: '#94a3b8', sm: '#666' },
                     '&:hover': {
-                      backgroundColor: 'rgba(0,0,0,0.04)'
+                      backgroundColor: { xs: 'rgba(59, 130, 246, 0.1)', sm: 'rgba(0,0,0,0.04)' }
                     }
                   }}
                 >
-                  <Clear sx={{ fontSize: { xs: '18px', sm: '20px' } }} />
+                  <Clear sx={{ fontSize: { xs: '16px', sm: '18px' } }} />
                 </IconButton>
               </InputAdornment>
             ),
@@ -210,20 +217,29 @@ const SearchBar: React.FC<SearchBarProps> = ({
         }}
       >
         <Paper
-          elevation={8}
+          elevation={isMobile ? 8 : 8}
           sx={{
-            mt: 1,
-            borderRadius: isMobile ? 0 : 2,
-            maxHeight: isMobile ? '60vh' : 400,
+            mt: { xs: 0.5, sm: 1 },
+            borderRadius: { xs: '8px', sm: 2 },
+            maxHeight: { xs: '40vh', sm: 400 },
             overflow: 'auto',
-            mx: isMobile ? 1 : 0
+            mx: { xs: 1, sm: 0 },
+            border: { xs: '1px solid #e2e8f0', sm: 'none' },
+            boxShadow: { 
+              xs: '0 4px 12px rgba(0, 0, 0, 0.1)', 
+              sm: '0 2px 8px rgba(0,0,0,0.1)' 
+            }
           }}
         >
           {/* Recent Searches */}
           {recentSearches.length > 0 && (
             <>
-              <Box sx={{ p: 2, pb: 1 }}>
-                <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 600 }}>
+              <Box sx={{ p: { xs: 2, sm: 2 }, pb: { xs: 1, sm: 1 } }}>
+                <Typography variant="subtitle2" sx={{ 
+                  color: { xs: '#475569', sm: '#666' }, 
+                  fontWeight: 600,
+                  fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                }}>
                   Recent Searches
                 </Typography>
               </Box>
@@ -233,24 +249,29 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     key={index}
                     onClick={() => handleSuggestionClick(search)}
                     sx={{ 
-                      py: isMobile ? 2 : 1,
+                      py: { xs: 1.5, sm: 1 },
+                      px: { xs: 2, sm: 2 },
                       cursor: 'pointer',
                       '&:hover': {
-                        backgroundColor: '#f5f5f5'
+                        backgroundColor: { xs: '#f1f5f9', sm: '#f5f5f5' }
                       },
                       '&:active': {
-                        backgroundColor: '#e0e0e0'
+                        backgroundColor: { xs: '#e2e8f0', sm: '#e0e0e0' }
                       }
                     }}
                   >
-                    <ListItemIcon sx={{ minWidth: 36 }}>
-                      <History sx={{ fontSize: 18, color: '#666' }} />
+                    <ListItemIcon sx={{ minWidth: { xs: 36, sm: 36 } }}>
+                      <History sx={{ 
+                        fontSize: { xs: 16, sm: 18 }, 
+                        color: { xs: '#64748b', sm: '#666' } 
+                      }} />
                     </ListItemIcon>
                     <ListItemText
                       primary={search}
                       primaryTypographyProps={{
-                        fontSize: isMobile ? '1rem' : '0.9rem',
-                        color: '#333'
+                        fontSize: { xs: '0.9rem', sm: '0.9rem' },
+                        color: { xs: '#1e293b', sm: '#333' },
+                        fontWeight: { xs: 400, sm: 400 }
                       }}
                     />
                   </ListItem>
@@ -263,67 +284,82 @@ const SearchBar: React.FC<SearchBarProps> = ({
           {/* Trending Searches */}
           {trendingSearches.length > 0 && (
             <>
-              <Box sx={{ p: 2, pb: 1 }}>
-                <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 600 }}>
+              <Box sx={{ p: { xs: 2, sm: 2 }, pb: { xs: 1, sm: 1 } }}>
+                <Typography variant="subtitle2" sx={{ 
+                  color: { xs: '#475569', sm: '#666' }, 
+                  fontWeight: 600,
+                  fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                }}>
                   Trending Searches
                 </Typography>
               </Box>
-                              <Box sx={{ p: 2, pt: 0 }}>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    flexWrap: 'wrap', 
-                    gap: 1,
-                    justifyContent: isMobile ? 'center' : 'flex-start'
-                  }}>
-                    {trendingSearches.slice(0, isMobile ? 6 : 8).map((trend, index) => (
-                      <Chip
-                        key={index}
-                        label={trend}
-                        size={isMobile ? "medium" : "small"}
-                        icon={<TrendingUp sx={{ fontSize: 16 }} />}
-                        onClick={() => handleSuggestionClick(trend)}
-                        sx={{
-                          cursor: 'pointer',
-                          '&:hover': {
-                            backgroundColor: '#e3f2fd'
-                          },
-                          '&:active': {
-                            backgroundColor: '#bbdefb'
-                          }
-                        }}
-                      />
-                    ))}
-                  </Box>
+              <Box sx={{ p: { xs: 2, sm: 2 }, pt: 0 }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexWrap: 'wrap', 
+                  gap: { xs: 1, sm: 1 },
+                  justifyContent: { xs: 'center', sm: 'flex-start' }
+                }}>
+                  {trendingSearches.slice(0, isMobile ? 6 : 8).map((trend, index) => (
+                    <Chip
+                      key={index}
+                      label={trend}
+                      size={isMobile ? "small" : "small"}
+                      icon={<TrendingUp sx={{ fontSize: { xs: 14, sm: 16 } }} />}
+                      onClick={() => handleSuggestionClick(trend)}
+                      sx={{
+                        cursor: 'pointer',
+                        fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                        fontWeight: { xs: 400, sm: 400 },
+                        height: { xs: 28, sm: 32 },
+                        '&:hover': {
+                          backgroundColor: { xs: '#dbeafe', sm: '#e3f2fd' }
+                        },
+                        '&:active': {
+                          backgroundColor: { xs: '#bfdbfe', sm: '#bbdefb' }
+                        }
+                      }}
+                    />
+                  ))}
                 </Box>
+              </Box>
             </>
           )}
 
           {/* Quick Categories */}
-          <Divider />
-          <Box sx={{ p: 2 }}>
-            <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 600, mb: 1 }}>
+          <Divider sx={{ my: { xs: 1, sm: 0 } }} />
+          <Box sx={{ p: { xs: 2.5, sm: 2 } }}>
+            <Typography variant="subtitle2" sx={{ 
+              color: { xs: '#475569', sm: '#666' }, 
+              fontWeight: 600, 
+              mb: { xs: 1.5, sm: 1 },
+              fontSize: { xs: '0.9rem', sm: '0.875rem' }
+            }}>
               Popular Categories
             </Typography>
             <Box sx={{ 
               display: 'flex', 
               flexWrap: 'wrap', 
-              gap: 1,
-              justifyContent: isMobile ? 'center' : 'flex-start'
+              gap: { xs: 1.5, sm: 1 },
+              justifyContent: { xs: 'center', sm: 'flex-start' }
             }}>
               {['Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Books', 'Toys'].map((category) => (
                 <Chip
                   key={category}
                   label={category}
                   size={isMobile ? "medium" : "small"}
-                  icon={<LocalOffer sx={{ fontSize: 16 }} />}
+                  icon={<LocalOffer sx={{ fontSize: { xs: 18, sm: 16 } }} />}
                   onClick={() => handleSuggestionClick(category)}
                   sx={{
                     cursor: 'pointer',
+                    fontSize: { xs: '0.9rem', sm: '0.875rem' },
+                    fontWeight: { xs: 500, sm: 400 },
+                    height: { xs: 36, sm: 32 },
                     '&:hover': {
-                      backgroundColor: '#e3f2fd'
+                      backgroundColor: { xs: '#dbeafe', sm: '#e3f2fd' }
                     },
                     '&:active': {
-                      backgroundColor: '#bbdefb'
+                      backgroundColor: { xs: '#bfdbfe', sm: '#bbdefb' }
                     }
                   }}
                 />

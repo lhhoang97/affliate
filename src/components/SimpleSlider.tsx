@@ -179,7 +179,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
         {/* Products Grid with Animation */}
         <Box sx={{
           display: 'flex',
-          gap: { xs: 1, sm: 2 },
+          gap: { xs: 0.5, sm: 2 },
           overflow: 'hidden',
           transition: 'transform 0.3s ease-in-out',
           transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`
@@ -189,10 +189,10 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
               key={product.id}
               onClick={() => onProductClick(product)}
               sx={{
-                flex: { xs: '0 0 calc(50% - 4px)', sm: '0 0 calc(33.333% - 8px)', md: '0 0 calc(25% - 12px)' },
+                flex: { xs: '0 0 calc(50% - 2px)', sm: '0 0 calc(33.333% - 8px)', md: '0 0 calc(25% - 12px)' },
                 cursor: 'pointer',
                 background: '#ffffff',
-                borderRadius: '8px',
+                borderRadius: { xs: '6px', sm: '8px' },
                 border: '1px solid #e5e7eb',
                 overflow: 'hidden',
                 transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
@@ -206,7 +206,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
             >
               {/* Product Image with Zoom Animation */}
               <Box sx={{
-                height: '200px',
+                height: { xs: '140px', sm: '200px' },
                 overflow: 'hidden',
                 background: '#f9fafb'
               }}>
@@ -229,18 +229,18 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
               </Box>
 
               {/* Product Info */}
-              <Box sx={{ p: 2 }}>
+              <Box sx={{ p: { xs: 1, sm: 2 } }}>
                 {/* Product Name */}
                 <Typography
                   variant="body2"
                   sx={{
                     fontWeight: 600,
                     color: '#1f2937',
-                    mb: 1,
+                    mb: { xs: 0.5, sm: 1 },
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    fontSize: '0.9rem',
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' },
                     lineHeight: 1.3
                   }}
                 >
@@ -248,13 +248,13 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                 </Typography>
 
                 {/* Pricing Information */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 }, mb: { xs: 0.5, sm: 1 } }}>
                   <Typography
                     variant="h6"
                     sx={{
                       fontWeight: 700,
                       color: '#059669',
-                      fontSize: '1.1rem'
+                      fontSize: { xs: '0.9rem', sm: '1.1rem' }
                     }}
                   >
                     ${product.price}
@@ -266,7 +266,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                       sx={{
                         textDecoration: 'line-through',
                         color: '#dc2626',
-                        fontSize: '0.8rem',
+                        fontSize: { xs: '0.7rem', sm: '0.8rem' },
                         fontWeight: 500
                       }}
                     >
@@ -281,8 +281,8 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: 0.5, 
-                    mb: 1,
-                    p: 0.5,
+                    mb: { xs: 0.5, sm: 1 },
+                    p: { xs: 0.25, sm: 0.5 },
                     backgroundColor: '#f0f9ff',
                     borderRadius: 1,
                     border: '1px solid #bae6fd'
@@ -291,7 +291,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                       variant="body2"
                       sx={{
                         color: '#3b82f6',
-                        fontSize: '0.75rem',
+                        fontSize: { xs: '0.65rem', sm: '0.75rem' },
                         fontWeight: 600,
                         textTransform: 'uppercase',
                         letterSpacing: '0.5px'
@@ -310,7 +310,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                     display: 'flex',
                     alignItems: 'center',
                     gap: 0.5,
-                    fontSize: '0.8rem'
+                    fontSize: { xs: '0.7rem', sm: '0.8rem' }
                   }}
                 >
                   ⭐ {product.rating} ({product.reviewCount} reviews)
