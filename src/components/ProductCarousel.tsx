@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Slider from 'react-slick';
-import { Box, Typography, IconButton } from '@mui/material';
+import { Box, Typography, IconButton, useTheme, useMediaQuery } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Product } from '../types';
 import "slick-carousel/slick/slick.css";
@@ -71,34 +71,62 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
 );
 
 const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subtitle, onProductClick }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  
+  // State to force re-render on window resize
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  // Determine slides based on actual window width to match real device behavior
+  const getSlidesToShow = () => {
+    if (windowWidth < 600) return 1; // Real mobile
+    if (windowWidth < 900) return 2; // Tablet
+    if (windowWidth < 1200) return 3; // Small desktop
+    return 4; // Large desktop
+  };
+  
+  const slidesToShow = getSlidesToShow();
+  
   const settings = {
     dots: true,
     infinite: false,
     speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 4,
+    slidesToShow: slidesToShow,
+    slidesToScroll: slidesToShow,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     responsive: [
       {
-        breakpoint: 1024, // Desktop
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 4,
-        }
-      },
-      {
-        breakpoint: 768, // Tablet
+        breakpoint: 1200,
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
         }
       },
       {
-        breakpoint: 480, // Mobile
+        breakpoint: 900,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 2,
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          arrows: false,
+          dots: true
         }
       }
     ],
