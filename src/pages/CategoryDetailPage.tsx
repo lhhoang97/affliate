@@ -269,225 +269,308 @@ const CategoryDetailPage: React.FC = () => {
     setSortBy('featured');
   };
 
-  // Filter content component
+  // Enhanced Filter content component
   const FilterContent = () => (
-    <Box sx={{ p: { xs: 2, md: 0 } }}>
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between', 
-        mb: 2,
-        ...(isMobile && { 
-          position: 'sticky', 
-          top: 0, 
-          backgroundColor: 'background.paper',
-          zIndex: 1,
-          pb: 2,
-          borderBottom: '1px solid',
-          borderColor: 'divider'
-        })
-      }}>
-        <Typography variant="h6" sx={{ 
+    <Box sx={{ p: 3 }}>
+      {/* Search */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle2" sx={{ 
           fontWeight: 600, 
-          fontSize: { xs: '1.1rem', md: '1.25rem' },
+          color: '#374151', 
+          mb: 1.5,
           display: 'flex',
           alignItems: 'center',
           gap: 1
         }}>
-          <FilterList />
-          Filters
+          <Search sx={{ fontSize: '1.1rem', color: '#667eea' }} />
+          Search Products
         </Typography>
-        <Button 
-          size="small" 
-          onClick={clearAllFilters}
-          sx={{ 
-            fontSize: { xs: '0.875rem', md: '0.75rem' },
-            px: { xs: 2, md: 1 }
-          }}
-        >
-          Clear All
-        </Button>
-      </Box>
-
-      {/* Search */}
-      <Box sx={{ mb: 3 }}>
         <TextField
           fullWidth
           placeholder="Search products..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          size="small"
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                background: '#f1f5f9',
+                borderColor: '#667eea'
+              },
+              '&.Mui-focused': {
+                background: 'white',
+                borderColor: '#667eea',
+                boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)'
+              }
+            }
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Search />
+                <Search sx={{ color: '#6b7280' }} />
               </InputAdornment>
             ),
-          }}
-          size="small"
-          sx={{
-            '& .MuiOutlinedInput-input': {
-              fontSize: '16px', // Prevent zoom on iOS
-              padding: { xs: '14px 16px', md: '8px 12px' }
-            },
-            '& .MuiInputAdornment-root': {
-              margin: { xs: '0 8px', md: '0 4px' }
-            }
           }}
         />
       </Box>
 
       {/* Price Range */}
-      <Accordion 
-        expanded={expandedFilters.includes('price')}
-        onChange={() => handleFilterToggle('price')}
-        sx={{ mb: 1 }}
-      >
-        <AccordionSummary 
-          expandIcon={<ExpandMore />}
-          sx={{ 
-            '& .MuiAccordionSummary-content': {
-              margin: { xs: '12px 0', md: '8px 0' }
-            }
-          }}
-        >
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            Price Range
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box sx={{ px: 1 }}>
-            <Slider
-              value={priceRange}
-              onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
-              valueLabelDisplay="auto"
-              min={priceRangeData[0]}
-              max={priceRangeData[1]}
-              step={10}
-              sx={{
-                '& .MuiSlider-thumb': {
-                  width: { xs: 20, md: 16 },
-                  height: { xs: 20, md: 16 }
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle2" sx={{ 
+          fontWeight: 600, 
+          color: '#374151', 
+          mb: 2,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1
+        }}>
+          <LocalOffer sx={{ fontSize: '1.1rem', color: '#667eea' }} />
+          Price Range
+        </Typography>
+        <Box sx={{ 
+          p: 2.5, 
+          background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+          borderRadius: 2,
+          border: '1px solid #e2e8f0'
+        }}>
+          <Slider
+            value={priceRange}
+            onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
+            valueLabelDisplay="auto"
+            min={priceRangeData[0]}
+            max={priceRangeData[1]}
+            step={10}
+            valueLabelFormat={(value) => `$${value}`}
+            sx={{
+              '& .MuiSlider-thumb': {
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                border: '3px solid white',
+                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                width: 20,
+                height: 20,
+                '&:hover': {
+                  boxShadow: '0 6px 16px rgba(102, 126, 234, 0.6)'
                 }
-              }}
+              },
+              '& .MuiSlider-track': {
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                border: 'none',
+                height: 6
+              },
+              '& .MuiSlider-rail': {
+                background: '#cbd5e1',
+                height: 6
+              },
+              '& .MuiSlider-valueLabel': {
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                '&:before': {
+                  borderTopColor: '#667eea'
+                }
+              }
+            }}
+          />
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            mt: 2,
+            p: 1.5,
+            background: 'white',
+            borderRadius: 1.5,
+            border: '1px solid #e2e8f0'
+          }}>
+            <Chip 
+              label={`$${priceRange[0]}`} 
+              size="small" 
+              sx={{ 
+                fontWeight: 600, 
+                color: '#059669',
+                background: '#d1fae5'
+              }} 
             />
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-              <Typography variant="body2">${priceRange[0]}</Typography>
-              <Typography variant="body2">${priceRange[1]}</Typography>
-            </Box>
+            <Typography variant="body2" sx={{ color: '#6b7280', alignSelf: 'center' }}>
+              to
+            </Typography>
+            <Chip 
+              label={`$${priceRange[1]}`} 
+              size="small" 
+              sx={{ 
+                fontWeight: 600, 
+                color: '#059669',
+                background: '#d1fae5'
+              }} 
+            />
           </Box>
-        </AccordionDetails>
-      </Accordion>
+        </Box>
+      </Box>
 
       {/* Brands */}
-      <Accordion 
-        expanded={expandedFilters.includes('brands')}
-        onChange={() => handleFilterToggle('brands')}
-        sx={{ mb: 1 }}
-      >
-        <AccordionSummary 
-          expandIcon={<ExpandMore />}
-          sx={{ 
-            '& .MuiAccordionSummary-content': {
-              margin: { xs: '12px 0', md: '8px 0' }
-            }
-          }}
-        >
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            Brands ({availableBrands.length})
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
-            {availableBrands.map(brand => (
-              <FormControlLabel
-                key={brand}
-                control={
-                  <Checkbox
-                    checked={selectedBrands.includes(brand)}
-                    onChange={() => handleBrandChange(brand)}
-                    size="small"
-                  />
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle2" sx={{ 
+          fontWeight: 600, 
+          color: '#374151', 
+          mb: 1.5,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1
+        }}>
+          <Star sx={{ fontSize: '1.1rem', color: '#667eea' }} />
+          Brands ({availableBrands.length})
+        </Typography>
+        <Box sx={{ 
+          p: 2, 
+          background: '#f8fafc',
+          borderRadius: 2,
+          border: '1px solid #e2e8f0',
+          maxHeight: 220,
+          overflowY: 'auto'
+        }}>
+          {availableBrands.map(brand => (
+            <Box
+              key={brand}
+              onClick={() => handleBrandChange(brand)}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                p: 1.5,
+                borderRadius: 1.5,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                background: selectedBrands.includes(brand) ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'transparent',
+                color: selectedBrands.includes(brand) ? 'white' : '#374151',
+                '&:hover': {
+                  background: selectedBrands.includes(brand) 
+                    ? 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)'
+                    : '#e2e8f0',
+                  transform: 'translateX(4px)'
                 }
-                label={brand}
-                sx={{ 
-                  display: 'block', 
-                  mb: 0.5,
-                  '& .MuiFormControlLabel-label': {
-                    fontSize: { xs: '0.9rem', md: '0.875rem' }
-                  }
-                }}
-              />
-            ))}
-          </Box>
-        </AccordionDetails>
-      </Accordion>
+              }}
+            >
+              <Box sx={{
+                width: 18,
+                height: 18,
+                borderRadius: '50%',
+                border: selectedBrands.includes(brand) ? '2px solid white' : '2px solid #d1d5db',
+                background: selectedBrands.includes(brand) ? 'white' : 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                {selectedBrands.includes(brand) && (
+                  <Box sx={{ 
+                    width: 8, 
+                    height: 8, 
+                    borderRadius: '50%', 
+                    background: '#667eea' 
+                  }} />
+                )}
+              </Box>
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                {brand}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      </Box>
 
       {/* Ratings */}
-      <Accordion 
-        expanded={expandedFilters.includes('ratings')}
-        onChange={() => handleFilterToggle('ratings')}
-        sx={{ mb: 1 }}
-      >
-        <AccordionSummary 
-          expandIcon={<ExpandMore />}
-          sx={{ 
-            '& .MuiAccordionSummary-content': {
-              margin: { xs: '12px 0', md: '8px 0' }
-            }
-          }}
-        >
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            Ratings
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle2" sx={{ 
+          fontWeight: 600, 
+          color: '#374151', 
+          mb: 1.5,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1
+        }}>
+          <Star sx={{ fontSize: '1.1rem', color: '#667eea' }} />
+          Ratings
+        </Typography>
+        <Box sx={{ 
+          p: 2, 
+          background: '#f8fafc',
+          borderRadius: 2,
+          border: '1px solid #e2e8f0'
+        }}>
           {availableRatings.map(rating => (
-            <FormControlLabel
+            <Box
               key={rating}
-              control={
-                <Checkbox
-                  checked={selectedRatings.includes(rating)}
-                  onChange={() => handleRatingChange(rating)}
-                  size="small"
-                />
-              }
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  {Array.from({ length: rating }, (_, i) => (
-                    <Star key={i} sx={{ fontSize: '1rem', color: '#fbbf24' }} />
-                  ))}
-                  <Typography variant="body2">+ ({rating})</Typography>
-                </Box>
-              }
-              sx={{ 
-                display: 'block', 
-                mb: 0.5,
-                '& .MuiFormControlLabel-label': {
-                  fontSize: { xs: '0.9rem', md: '0.875rem' }
+              onClick={() => handleRatingChange(rating)}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                p: 1.5,
+                borderRadius: 1.5,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                background: selectedRatings.includes(rating) ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'transparent',
+                color: selectedRatings.includes(rating) ? 'white' : '#374151',
+                '&:hover': {
+                  background: selectedRatings.includes(rating) 
+                    ? 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)'
+                    : '#e2e8f0',
+                  transform: 'translateX(4px)'
+                }
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                {Array.from({ length: rating }, (_, i) => (
+                  <Star key={i} sx={{ 
+                    fontSize: '1rem', 
+                    color: selectedRatings.includes(rating) ? '#fbbf24' : '#fbbf24' 
+                  }} />
+                ))}
+                <Typography variant="body2" sx={{ ml: 0.5, fontWeight: 500 }}>
+                  & up
+                </Typography>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+
+      {/* Stock Filter */}
+      <Box sx={{
+        p: 2,
+        background: showOnlyInStock ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#f8fafc',
+        borderRadius: 2,
+        border: '1px solid #e2e8f0',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          transform: 'translateY(-2px)',
+          boxShadow: '0 4px 12px rgba(102, 126, 234, 0.2)'
+        }
+      }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={showOnlyInStock}
+              onChange={(e) => setShowOnlyInStock(e.target.checked)}
+              sx={{
+                color: showOnlyInStock ? 'white' : '#667eea',
+                '&.Mui-checked': {
+                  color: 'white'
                 }
               }}
             />
-          ))}
-        </AccordionDetails>
-      </Accordion>
-
-      {/* Stock Filter */}
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={showOnlyInStock}
-            onChange={(e) => setShowOnlyInStock(e.target.checked)}
-            size="small"
-          />
-        }
-        label="In Stock Only"
-        sx={{ 
-          mt: 2,
-          '& .MuiFormControlLabel-label': {
-            fontSize: { xs: '0.9rem', md: '0.875rem' }
           }
-        }}
-      />
+          label={
+            <Typography variant="body2" sx={{ 
+              fontWeight: 600,
+              color: showOnlyInStock ? 'white' : '#374151'
+            }}>
+              In Stock Only
+            </Typography>
+          }
+          sx={{ margin: 0 }}
+        />
+      </Box>
     </Box>
   );
 
@@ -574,92 +657,73 @@ const CategoryDetailPage: React.FC = () => {
                 whiteSpace: 'nowrap'
               }}
             >
-              {category.icon && <span>{category.icon}</span>}
               {category.name}
             </Typography>
           </Breadcrumbs>
         </Box>
 
-        {/* Category Header */}
-        <Box sx={{ mb: { xs: 3, md: 4 } }}>
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: { xs: 'flex-start', md: 'center' }, 
-            gap: { xs: 1, md: 2 }, 
-            mb: 2,
-            flexDirection: { xs: 'column', sm: 'row' }
-          }}>
-            {category.icon && (
-              <Typography variant="h1" sx={{ 
-                fontSize: { xs: '2.5rem', md: '3rem' },
-                lineHeight: 1
-              }}>
-                {category.icon}
-              </Typography>
-            )}
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography 
-                variant="h3" 
-                component="h1" 
-                sx={{ 
-                  fontWeight: 700, 
-                  color: '#1f2937',
-                  fontSize: { xs: '1.5rem', sm: '2rem', md: '3rem' },
-                  lineHeight: { xs: 1.2, md: 1.1 }
-                }}
-              >
-                {category.name}
-              </Typography>
-              <Typography 
-                variant="h6" 
-                color="text.secondary" 
-                sx={{ 
-                  mb: 1,
-                  fontSize: { xs: '0.875rem', md: '1.25rem' },
-                  lineHeight: { xs: 1.4, md: 1.2 }
-                }}
-              >
-                {category.description}
-              </Typography>
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 1,
-                flexWrap: 'wrap'
-              }}>
-                <Chip 
-                  label={`${categoryProducts.length} products`} 
-                  color="primary" 
-                  size="small"
-                  sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
-                />
-                <Chip 
-                  label={`${filteredProducts.length} filtered`} 
-                  color="secondary" 
-                  size="small"
-                  sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}
-                />
-              </Box>
-            </Box>
-          </Box>
-        </Box>
+
 
         {/* Main Content */}
         <Grid container spacing={{ xs: 1, md: 2 }}>
           {/* Filters Sidebar - Desktop */}
           {!isMobile && (
             <Grid item xs={12} md={3}>
-              <Card sx={{ 
-                position: 'sticky', 
-                top: 20,
-                mb: { xs: 2, md: 0 },
-                borderRadius: 2,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
-              }}>
-                <CardContent sx={{ p: 2 }}>
-                  <FilterContent />
-                </CardContent>
-              </Card>
+              <Box sx={{ position: 'sticky', top: 20 }}>
+                {/* Filter Header */}
+                <Card sx={{ 
+                  mb: 2,
+                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white'
+                }}>
+                  <CardContent sx={{ p: 2.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box sx={{
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        borderRadius: '50%',
+                        p: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        <Tune sx={{ fontSize: '1.2rem' }} />
+                      </Box>
+                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                        Filters
+                      </Typography>
+                      {(selectedBrands.length > 0 || selectedRatings.length > 0 || priceRange[0] > 0 || priceRange[1] < 5000 || searchTerm) && (
+                        <Button
+                          size="small"
+                          onClick={clearAllFilters}
+                          sx={{
+                            ml: 'auto',
+                            color: 'white',
+                            fontSize: '0.75rem',
+                            textTransform: 'none',
+                            '&:hover': {
+                              background: 'rgba(255, 255, 255, 0.1)'
+                            }
+                          }}
+                        >
+                          Clear All
+                        </Button>
+                      )}
+                    </Box>
+                  </CardContent>
+                </Card>
+
+                {/* Enhanced Filter Content */}
+                <Card sx={{ 
+                  borderRadius: 3,
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                  border: '1px solid rgba(255,255,255,0.2)'
+                }}>
+                  <CardContent sx={{ p: 0 }}>
+                    <FilterContent />
+                  </CardContent>
+                </Card>
+              </Box>
             </Grid>
           )}
 

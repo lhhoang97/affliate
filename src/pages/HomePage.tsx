@@ -1,33 +1,94 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { 
   Box, 
   Container, 
-  Typography,
-  Card,
-  CardContent
+  Typography
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import SimpleSlider from '../components/SimpleSlider';
+import ProductCarousel from '../components/ProductCarousel';
 import { useProducts } from '../contexts/ProductContext';
 import { Product } from '../types';
+import { getDealConfig, DealConfig } from '../services/dealConfigService';
 
 const HomePage: React.FC = () => {
   const { products, loading } = useProducts();
   const navigate = useNavigate();
+  const dealConfig = getDealConfig();
 
   // Create sections from actual products with memoization to prevent unnecessary re-renders
-  const justForYouDeals = useMemo(() => 
-    products.slice(0, 8), 
-    [products]
-  );
-  const hotDeals = useMemo(() => 
-    products.filter(p => p.price < 100).slice(0, 8), 
-    [products]
-  );
-  const trendingDeals = useMemo(() => 
-    products.filter(p => p.rating > 4.5).slice(0, 8), 
-    [products]
-  );
+  const justForYouDeals = useMemo(() => {
+    // Random selection for personalized experience
+    const shuffled = [...products].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 12);
+  }, [products]);
+  
+  const hotDeals = useMemo(() => {
+    // Start with products that have discounts or are affordable
+    let deals = products.filter(p => {
+      const hasDiscount = p.originalPrice && p.originalPrice > p.price;
+      const discountPercent = p.originalPrice ? ((p.originalPrice - p.price) / p.originalPrice) * 100 : 0;
+      const isAffordable = p.price < dealConfig.hotDeals.maxPrice;
+      const hasGoodDiscount = discountPercent >= dealConfig.hotDeals.minDiscountPercent;
+      return (hasDiscount && hasGoodDiscount) || isAffordable;
+    });
+    
+    // If not enough deals, add more products sorted by price (cheapest first)
+    if (deals.length < 12) {
+      const remaining = products
+        .filter(p => !deals.includes(p))
+        .sort((a, b) => a.price - b.price)
+        .slice(0, 12 - deals.length);
+      deals = [...deals, ...remaining];
+    }
+    
+    // Sort final list by discount percentage first, then by price
+    return deals
+      .sort((a, b) => {
+        const discountA = a.originalPrice ? ((a.originalPrice - a.price) / a.originalPrice) * 100 : 0;
+        const discountB = b.originalPrice ? ((b.originalPrice - b.price) / b.originalPrice) * 100 : 0;
+        if (discountA !== discountB) return discountB - discountA;
+        return a.price - b.price;
+      })
+      .slice(0, 12);
+  }, [products, dealConfig]);
+  
+  const trendingDeals = useMemo(() => {
+    // Start with high-rated products
+    let trending = products.filter(p => p.rating >= dealConfig.trendingDeals.minRating && p.reviewCount >= dealConfig.trendingDeals.minReviews);
+    
+    // If not enough trending products, add products with good ratings
+    if (trending.length < 12) {
+      const additional = products
+        .filter(p => !trending.includes(p) && p.rating >= 3.5)
+        .sort((a, b) => {
+          // Sort by rating first, then by review count
+          if (a.rating !== b.rating) return b.rating - a.rating;
+          return b.reviewCount - a.reviewCount;
+        })
+        .slice(0, 12 - trending.length);
+      trending = [...trending, ...additional];
+    }
+    
+    // If still not enough, fill with remaining products sorted by rating
+    if (trending.length < 12) {
+      const remaining = products
+        .filter(p => !trending.includes(p))
+        .sort((a, b) => {
+          if (a.rating !== b.rating) return b.rating - a.rating;
+          return b.reviewCount - a.reviewCount;
+        })
+        .slice(0, 12 - trending.length);
+      trending = [...trending, ...remaining];
+    }
+    
+    // Final sort by rating and review count
+    return trending
+      .sort((a, b) => {
+        if (a.rating !== b.rating) return b.rating - a.rating;
+        return b.reviewCount - a.reviewCount;
+      })
+      .slice(0, 12);
+  }, [products, dealConfig]);
 
   // Debug log to check products from database
   console.log('HomePage - Products from database:', products);
@@ -61,31 +122,32 @@ const HomePage: React.FC = () => {
     <Box sx={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
       <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
         
-
-        
         {/* Just For You Section */}
         {justForYouDeals.length > 0 && (
-          <SimpleSlider
+          <ProductCarousel
             products={justForYouDeals}
-            title="Just For You"
+            title={dealConfig.justForYou.title}
+            subtitle={dealConfig.justForYou.subtitle}
             onProductClick={handleProductClick}
           />
         )}
 
         {/* Hot Deals Section */}
         {hotDeals.length > 0 && (
-          <SimpleSlider
+          <ProductCarousel
             products={hotDeals}
-            title="Hot Deals"
+            title={dealConfig.hotDeals.title}
+            subtitle={dealConfig.hotDeals.subtitle}
             onProductClick={handleProductClick}
           />
         )}
 
         {/* Trending Deals Section */}
         {trendingDeals.length > 0 && (
-          <SimpleSlider
+          <ProductCarousel
             products={trendingDeals}
-            title="Trending Deals"
+            title={dealConfig.trendingDeals.title}
+            subtitle={dealConfig.trendingDeals.subtitle}
             onProductClick={handleProductClick}
           />
         )}
@@ -97,7 +159,8 @@ const HomePage: React.FC = () => {
             py: 8,
             backgroundColor: 'white',
             borderRadius: 3,
-            border: '1px solid #e5e7eb'
+            border: '1px solid #e5e7eb',
+            mt: 4
           }}>
             <Typography 
               variant="h3" 
@@ -108,7 +171,7 @@ const HomePage: React.FC = () => {
                 mb: 2
               }}
             >
-              No Products Available
+              🔄 Setting up your store...
             </Typography>
             <Typography 
               variant="body1" 
@@ -117,7 +180,7 @@ const HomePage: React.FC = () => {
                 mb: 4
               }}
             >
-              Check back later for amazing deals!
+              We're preparing amazing deals for you. Check back in a moment!
             </Typography>
           </Box>
         )}

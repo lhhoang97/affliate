@@ -35,7 +35,10 @@ import AdminSectionProductsPage from './pages/AdminSectionProductsPage';
 import AdminMenuManagementPage from './pages/AdminMenuManagementPage';
 import AdminCouponManagementPage from './pages/AdminCouponManagementPage';
 import AdminDealManagementPage from './pages/AdminDealManagementPage';
+import AdminDealConfigPage from './pages/AdminDealConfigPage';
 import ProductCardDemo from './pages/ProductCardDemo';
+import NotFoundPage from './pages/NotFoundPage';
+import ServerErrorPage from './pages/ServerErrorPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
@@ -300,9 +303,14 @@ function App() {
                         <Route path="menu-management" element={<AdminMenuManagementPage />} />
                         <Route path="coupon-management" element={<AdminCouponManagementPage />} />
                         <Route path="deal-management" element={<AdminDealManagementPage />} />
+                        <Route path="deal-config" element={<AdminDealConfigPage />} />
                         <Route path="users" element={<AdminUsersPage />} />
                         <Route path="settings" element={<AdminSettingsPage />} />
                       </Route>
+                      
+                      {/* Error Pages */}
+                      <Route path="/500" element={<ServerErrorPage />} />
+                      <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                   </main>
                   <Footer />

@@ -14,12 +14,12 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const autoPlayIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Responsive items per view
+  // Responsive items per view - số sản phẩm hiển thị tại một thời điểm
   const getItemsPerView = () => {
     if (typeof window !== 'undefined') {
-      if (window.innerWidth < 600) return 2; // Mobile
-      if (window.innerWidth < 960) return 3; // Tablet
-      return 4; // Desktop
+      if (window.innerWidth < 600) return 2; // Mobile: 2 products per slide
+      if (window.innerWidth < 960) return 3; // Tablet: 3 products per slide  
+      return 4; // Desktop: 4 products per slide
     }
     return 4; // Default
   };
@@ -27,19 +27,26 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
   const [itemsPerView, setItemsPerView] = useState(getItemsPerView());
 
   const nextSlide = () => {
-    const maxIndex = Math.max(0, products.length - itemsPerView);
-    if (currentIndex < maxIndex) {
+    // Calculate how many slides we can move forward
+    const totalSlides = Math.ceil(products.length / itemsPerView);
+    const maxSlideIndex = totalSlides - 1;
+    
+    if (currentIndex < maxSlideIndex) {
+      setIsAutoPlaying(false); // Pause auto-play when user interacts
       setCurrentIndex(currentIndex + 1);
     }
   };
 
   const prevSlide = () => {
     if (currentIndex > 0) {
+      setIsAutoPlaying(false); // Pause auto-play when user interacts
       setCurrentIndex(currentIndex - 1);
     }
   };
 
-  const canGoNext = currentIndex < Math.max(0, products.length - itemsPerView);
+  // Fix navigation logic to work with slides instead of individual items
+  const totalSlides = Math.ceil(products.length / itemsPerView);
+  const canGoNext = currentIndex < totalSlides - 1;
   const canGoPrev = currentIndex > 0;
 
   // Auto-play functionality
@@ -47,10 +54,10 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
     if (isAutoPlaying && products.length > itemsPerView) {
       autoPlayIntervalRef.current = setInterval(() => {
         setCurrentIndex((prev) => {
-          const maxIndex = Math.max(0, products.length - itemsPerView);
-          return prev >= maxIndex ? 0 : prev + 1;
+          const totalSlides = Math.ceil(products.length / itemsPerView);
+          return prev >= totalSlides - 1 ? 0 : prev + 1;
         });
-      }, 6000); // Change slide every 6 seconds (increased to reduce flickering)
+      }, 4000); // Change slide every 4 seconds for better user experience
     } else {
       if (autoPlayIntervalRef.current) {
         clearInterval(autoPlayIntervalRef.current);
@@ -75,15 +82,29 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
     setIsAutoPlaying(false);
   };
 
-  // Handle window resize
+  // Handle window resize with debounce
   useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout;
+    
     const handleResize = () => {
-      setItemsPerView(getItemsPerView());
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const newItemsPerView = getItemsPerView();
+        setItemsPerView(newItemsPerView);
+        // Reset current index if it's out of bounds
+        const totalSlides = Math.ceil(products.length / newItemsPerView);
+        if (currentIndex >= totalSlides) {
+          setCurrentIndex(Math.max(0, totalSlides - 1));
+        }
+      }, 150); // Debounce resize events
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
+    };
+  }, [currentIndex, products.length]);
 
   return (
     <Box sx={{ mb: 4 }}>
@@ -181,15 +202,19 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
           display: 'flex',
           gap: { xs: 0.5, sm: 2 },
           overflow: 'hidden',
-          transition: 'transform 0.3s ease-in-out',
-          transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`
+          transition: 'opacity 0.3s ease-in-out',
+          opacity: 1
         }}>
-          {products.map((product) => (
+          {/* Render only products for current slide */}
+          {products
+            .slice(currentIndex * itemsPerView, (currentIndex + 1) * itemsPerView)
+            .map((product) => (
             <Box
               key={product.id}
               onClick={() => onProductClick(product)}
               sx={{
-                flex: { xs: '0 0 calc(50% - 2px)', sm: '0 0 calc(33.333% - 8px)', md: '0 0 calc(25% - 12px)' },
+                flex: { xs: '0 0 calc(50% - 4px)', sm: '0 0 calc(33.333% - 8px)', md: '0 0 calc(25% - 12px)' },
+                minWidth: 0, // Prevent flex item from growing
                 cursor: 'pointer',
                 background: '#ffffff',
                 borderRadius: { xs: '6px', sm: '8px' },
@@ -206,7 +231,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
             >
               {/* Product Image with Zoom Animation */}
               <Box sx={{
-                height: { xs: '140px', sm: '200px' },
+                height: { xs: '140px', sm: '180px', md: '200px' },
                 overflow: 'hidden',
                 background: '#f9fafb'
               }}>
@@ -229,7 +254,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
               </Box>
 
               {/* Product Info */}
-              <Box sx={{ p: { xs: 1, sm: 2 } }}>
+              <Box sx={{ p: { xs: 1, sm: 1.5, md: 2 } }}>
                 {/* Product Name */}
                 <Typography
                   variant="body2"
@@ -240,7 +265,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                    fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
                     lineHeight: 1.3
                   }}
                 >
@@ -254,7 +279,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                     sx={{
                       fontWeight: 700,
                       color: '#059669',
-                      fontSize: { xs: '0.9rem', sm: '1.1rem' }
+                      fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.2rem' }
                     }}
                   >
                     ${product.price}
@@ -266,7 +291,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                       sx={{
                         textDecoration: 'line-through',
                         color: '#dc2626',
-                        fontSize: { xs: '0.7rem', sm: '0.8rem' },
+                        fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' },
                         fontWeight: 500
                       }}
                     >
@@ -291,7 +316,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                       variant="body2"
                       sx={{
                         color: '#3b82f6',
-                        fontSize: { xs: '0.65rem', sm: '0.75rem' },
+                        fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.8rem' },
                         fontWeight: 600,
                         textTransform: 'uppercase',
                         letterSpacing: '0.5px'
@@ -310,7 +335,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                     display: 'flex',
                     alignItems: 'center',
                     gap: 0.5,
-                    fontSize: { xs: '0.7rem', sm: '0.8rem' }
+                    fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' }
                   }}
                 >
                   ⭐ {product.rating} ({product.reviewCount} reviews)
@@ -328,7 +353,7 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
             gap: 1, 
             mt: 2 
           }}>
-            {Array.from({ length: Math.ceil(products.length / itemsPerView) }).map((_, index) => (
+            {Array.from({ length: totalSlides }).map((_, index) => (
               <Box
                 key={index}
                 sx={{
@@ -343,7 +368,10 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                     transform: 'scale(1.2)'
                   }
                 }}
-                onClick={() => setCurrentIndex(index)}
+                onClick={() => {
+                  setIsAutoPlaying(false); // Pause auto-play when user clicks dots
+                  setCurrentIndex(index);
+                }}
               />
             ))}
           </Box>
