@@ -97,11 +97,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
           boxShadow: { xs: '0 1px 4px rgba(0,0,0,0.1)', sm: '0 2px 8px rgba(0,0,0,0.08)' },
           transition: 'all 0.2s ease-in-out',
           cursor: 'pointer',
-          border: { xs: '1px solid #e5e7eb', sm: 'none' },
+          border: '2px solid #e5e7eb', // Full border cho tất cả screen sizes
           '&:hover': {
             transform: { xs: 'none', sm: 'translateY(-2px)' },
             boxShadow: { xs: '0 2px 6px rgba(0,0,0,0.15)', sm: '0 4px 16px rgba(0,0,0,0.12)' },
-            borderColor: '#3b82f6'
+            borderColor: '#3b82f6' // Blue border khi hover
           }
         }}
         onClick={() => onView?.(product.id)}
@@ -246,10 +246,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         minWidth: { xs: 280, sm: 320 },
         borderRadius: 2,
         boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+        border: '2px solid #e5e7eb', // Full border cho default variant
+        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out',
         '&:hover': {
           transform: 'translateY(-4px)',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+          boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+          borderColor: '#3b82f6' // Blue border khi hover
         }
       }}
     >
