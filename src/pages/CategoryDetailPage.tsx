@@ -178,7 +178,7 @@ const CategoryDetailPage: React.FC = () => {
     // Brand filter
     if (selectedBrands.length > 0) {
       filtered = filtered.filter(product =>
-        selectedBrands.includes(product.brand)
+        product.brand && selectedBrands.includes(product.brand)
       );
     }
 
@@ -219,7 +219,11 @@ const CategoryDetailPage: React.FC = () => {
 
   // Get unique brands and ratings
   const availableBrands = useMemo(() => {
-    const brands = new Set(categoryProducts.map(p => p.brand));
+    const brands = new Set(
+      categoryProducts
+        .filter(p => p.brand && p.brand.trim() !== '')
+        .map(p => p.brand)
+    );
     return Array.from(brands).sort();
   }, [categoryProducts]);
 
