@@ -167,15 +167,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
           sx={{
             width: '100%',
             '& .MuiOutlinedInput-root': {
-              backgroundColor: { xs: '#f8fafc', sm: '#f1f3f4' },
+              backgroundColor: { xs: '#ffffff', sm: '#f1f3f4' }, // White background for mobile
               borderRadius: { xs: '8px', sm: '24px' },
               border: { xs: '1px solid #e2e8f0', sm: 'none' },
               '&:hover': {
-                backgroundColor: { xs: '#f1f5f9', sm: '#e8eaed' },
+                backgroundColor: { xs: '#ffffff', sm: '#e8eaed' },
                 borderColor: { xs: '#cbd5e1', sm: 'transparent' }
               },
               '&.Mui-focused': {
-                backgroundColor: 'white',
+                backgroundColor: { xs: '#ffffff !important', sm: 'white' },
                 boxShadow: { xs: '0 2px 8px rgba(59, 130, 246, 0.12)', sm: '0 2px 8px rgba(0,0,0,0.1)' },
                 borderColor: { xs: '#3b82f6', sm: 'transparent' }
               }
@@ -184,11 +184,19 @@ const SearchBar: React.FC<SearchBarProps> = ({
               fontSize: { xs: '16px', sm: '16px' }, // Prevent zoom on iOS
               padding: { xs: '12px 14px', sm: '12px 16px' },
               fontWeight: { xs: 400, sm: 400 },
-              color: { xs: '#1e293b', sm: '#333' }, // Explicit text color for mobile
+              color: { xs: '#000000 !important', sm: '#333' }, // Force black text on mobile
+              backgroundColor: { xs: 'transparent !important', sm: 'transparent' },
+              WebkitAppearance: { xs: 'none', sm: 'none' }, // iOS fix
+              WebkitTextFillColor: { xs: '#000000 !important', sm: '#333' }, // iOS text color fix
               '&::placeholder': {
                 fontSize: { xs: '16px', sm: '16px' },
-                color: { xs: '#94a3b8', sm: '#666' },
-                fontWeight: { xs: 400, sm: 400 }
+                color: { xs: '#94a3b8 !important', sm: '#666' },
+                fontWeight: { xs: 400, sm: 400 },
+                WebkitTextFillColor: { xs: '#94a3b8 !important', sm: '#666' }
+              },
+              '&:focus': {
+                color: { xs: '#000000 !important', sm: '#333' },
+                WebkitTextFillColor: { xs: '#000000 !important', sm: '#333' }
               }
             },
             '& .MuiInputAdornment-root': {
