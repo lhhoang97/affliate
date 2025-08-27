@@ -181,11 +181,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
               }
             },
             '& .MuiOutlinedInput-input': {
-              fontSize: { xs: '14px', sm: '16px' }, // Prevent zoom on iOS
-              padding: { xs: '10px 12px', sm: '12px 16px' },
+              fontSize: { xs: '16px', sm: '16px' }, // Prevent zoom on iOS
+              padding: { xs: '12px 14px', sm: '12px 16px' },
               fontWeight: { xs: 400, sm: 400 },
+              color: { xs: '#1e293b', sm: '#333' }, // Explicit text color for mobile
               '&::placeholder': {
-                fontSize: { xs: '14px', sm: '16px' },
+                fontSize: { xs: '16px', sm: '16px' },
                 color: { xs: '#94a3b8', sm: '#666' },
                 fontWeight: { xs: 400, sm: 400 }
               }
