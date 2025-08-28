@@ -380,7 +380,12 @@ const AdminPage: React.FC = () => {
                     <Tooltip title="Xem chi tiết">
                       <IconButton 
                         size="small" 
-                        onClick={() => window.open(`/product/${product.id}`, '_blank')}
+                        onClick={() => {
+                          console.log('View Details clicked for product:', product.id);
+                          const url = `${window.location.origin}/product/${product.id}`;
+                          console.log('Opening URL:', url);
+                          window.open(url, '_blank');
+                        }}
                       >
                         <Visibility />
                       </IconButton>
