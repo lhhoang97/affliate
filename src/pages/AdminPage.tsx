@@ -378,7 +378,10 @@ const AdminPage: React.FC = () => {
                 <TableCell>
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     <Tooltip title="Xem chi tiết">
-                      <IconButton size="small">
+                      <IconButton 
+                        size="small" 
+                        onClick={() => window.open(`/product/${product.id}`, '_blank')}
+                      >
                         <Visibility />
                       </IconButton>
                     </Tooltip>
