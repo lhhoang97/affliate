@@ -29,15 +29,31 @@ const SmartLink: React.FC<SmartLinkProps> = ({
   ...props 
 }) => {
   const handleClick = (e: React.MouseEvent) => {
+    console.log('🖱️ SmartLink Click Event:', {
+      button: e.button,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+      type: e.type,
+      url: to
+    });
+
     // Call custom onClick if provided
     if (onClick) {
       onClick(e);
     }
 
     // Handle special key combinations
-    if (e.ctrlKey || e.metaKey || e.button === 1) {
-      // Ctrl+Click, Cmd+Click, or Middle-click
-      // Let browser handle opening in new tab
+    if (e.ctrlKey || e.metaKey) {
+      // Ctrl+Click, Cmd+Click - let browser handle
+      console.log('🖱️ Modifier key detected, letting browser handle');
+      return;
+    }
+
+    // Handle middle click
+    if (e.button === 1) {
+      console.log('🖱️ Middle click detected, opening new tab');
+      e.preventDefault();
+      window.open(to, '_blank', 'noopener,noreferrer');
       return;
     }
 
@@ -48,9 +64,16 @@ const SmartLink: React.FC<SmartLinkProps> = ({
     }
   };
 
-  const handleMiddleClick = (e: React.MouseEvent) => {
+  const handleMouseDown = (e: React.MouseEvent) => {
+    console.log('🖱️ SmartLink MouseDown Event:', {
+      button: e.button,
+      type: e.type,
+      url: to
+    });
+
     if (e.button === 1) {
       // Middle mouse button
+      console.log('🖱️ Middle mousedown detected, opening new tab');
       e.preventDefault();
       window.open(to, '_blank', 'noopener,noreferrer');
     }
@@ -62,7 +85,8 @@ const SmartLink: React.FC<SmartLinkProps> = ({
       <a
         href={to}
         onClick={handleClick}
-        onMouseDown={handleMiddleClick}
+        onMouseDown={handleMouseDown}
+        onMouseUp={(e) => console.log('🖱️ External link mouse up:', e.button)}
         target="_blank"
         rel="noopener noreferrer"
         style={{ textDecoration: 'none', color: 'inherit' }}
@@ -78,7 +102,8 @@ const SmartLink: React.FC<SmartLinkProps> = ({
     <RouterLink
       to={to}
       onClick={handleClick}
-      onMouseDown={handleMiddleClick}
+      onMouseDown={handleMouseDown}
+      onMouseUp={(e) => console.log('🖱️ Internal link mouse up:', e.button)}
       style={{ textDecoration: 'none', color: 'inherit' }}
       {...props}
     >
