@@ -218,3 +218,4 @@ const getCategoryColor = (categoryName: string): string => {
 
 Truy cập http://localhost:3000 để xem kết quả.
 
+

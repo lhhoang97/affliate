@@ -295,7 +295,7 @@ export class AIAssistantService {
     }
 
     return { 
-      data,
+      data: data || [],
       message: `Updated records successfully` 
     };
   }
@@ -329,7 +329,7 @@ export class AIAssistantService {
     }
 
     return { 
-      data,
+      data: data || [],
       message: `Deleted records successfully` 
     };
   }
@@ -344,7 +344,7 @@ export class AIAssistantService {
     }
 
     return { 
-      data: result,
+      data: result || [],
       message: `Added new record successfully` 
     };
   }

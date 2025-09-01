@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -46,6 +46,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 import { ProductProvider } from './contexts/ProductContext';
 import SupabaseTest from './components/SupabaseTest';
+
+const AdminAmazonPage = React.lazy(() => import('./pages/AdminAmazonPage'));
 
 // Create a SlickDeals-inspired theme
 const theme = createTheme({
@@ -304,6 +306,11 @@ function App() {
                         <Route path="deal-management" element={<AdminDealManagementPage />} />
                         <Route path="deal-config" element={<AdminDealConfigPage />} />
                         <Route path="ai-assistant" element={<AdminAIAssistantPage />} />
+                        <Route path="amazon" element={
+                          <Suspense fallback={<div>Loading Amazon Products...</div>}>
+                            <AdminAmazonPage />
+                          </Suspense>
+                        } />
                         <Route path="users" element={<AdminUsersPage />} />
                         <Route path="settings" element={<AdminSettingsPage />} />
                       </Route>

@@ -17,6 +17,8 @@ export interface Product {
   tags: string[];
   externalUrl?: string;
   affiliateLink?: string;
+  source?: 'manual' | 'amazon' | 'ebay' | 'aliexpress';
+  asin?: string;
   // Deal Details content
   dealTitle?: string;
   dealDescription?: string;

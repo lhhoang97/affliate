@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
   TextField,
   Button,
   IconButton,
@@ -38,14 +36,12 @@ interface AdminUserRow {
 
 const AdminUsersPage: React.FC = () => {
   const [users, setUsers] = useState<AdminUserRow[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<AdminUserRow | null>(null);
   const [role, setRole] = useState<'admin' | 'user'>('user');
 
   const fetchUsers = async () => {
-    setIsLoading(true);
     try {
       const { data, error } = await supabase.from('profiles').select('id, name, email, role, is_verified, created_at');
       if (error) throw error;
@@ -60,8 +56,6 @@ const AdminUsersPage: React.FC = () => {
       setUsers(rows);
     } catch (err) {
       console.error(err);
-    } finally {
-      setIsLoading(false);
     }
   };
 

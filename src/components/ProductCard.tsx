@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Card,
   CardContent,
-  CardMedia,
   Typography,
   Box,
   Chip,
@@ -19,6 +18,7 @@ import {
   Person
 } from '@mui/icons-material';
 import SmartLink from './SmartLink';
+import OptimizedImage from './OptimizedImage';
 
 interface ProductCardProps {
   product: {
@@ -34,6 +34,10 @@ interface ProductCardProps {
     rating?: number;
     reviewCount?: number;
     isForYou?: boolean;
+    source?: 'manual' | 'amazon' | 'ebay' | 'aliexpress';
+    asin?: string;
+    affiliateLink?: string;
+    externalUrl?: string;
     foundBy?: {
       name: string;
       avatar?: string;
@@ -47,7 +51,7 @@ interface ProductCardProps {
   variant?: 'default' | 'compact';
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
+const ProductCard: React.FC<ProductCardProps> = React.memo(({
   product,
   onLike,
   onShare,
@@ -57,16 +61,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const [isLiked, setIsLiked] = React.useState(false);
   
-  // Debug log to check product data
-  console.log('ProductCard - Product data:', {
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    originalPrice: product.originalPrice,
-    retailer: product.retailer,
-    hasRetailer: !!product.retailer,
-    retailerType: typeof product.retailer
-  });
+  // Debug log to check product data (development only)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('ProductCard - Product data:', {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      retailer: product.retailer,
+      hasRetailer: !!product.retailer,
+      retailerType: typeof product.retailer
+    });
+  }
   
   const discountPercentage = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
 
@@ -119,20 +125,39 @@ const ProductCard: React.FC<ProductCardProps> = ({
             justifyContent: 'center',
             backgroundColor: '#f9fafb'
           }}>
-            <img
+            <OptimizedImage
               src={product.image}
               alt={product.name}
               style={{
                 maxWidth: '100%',
                 maxHeight: '100%',
                 width: 'auto',
-                height: 'auto',
-                objectFit: 'scale-down', // Không scale up
-                display: 'block'
+                height: 'auto'
               }}
             />
           </Box>
           
+          {/* Amazon Badge - Top Left Corner */}
+          {product.source === 'amazon' && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: { xs: 8, sm: 10 },
+                left: { xs: 8, sm: 10 },
+                backgroundColor: '#FF9900',
+                color: 'white',
+                borderRadius: '6px',
+                padding: { xs: '3px 6px', sm: '4px 8px' },
+                fontSize: { xs: '10px', sm: '11px' },
+                fontWeight: 'bold',
+                boxShadow: '0 2px 8px rgba(255, 153, 0, 0.3)',
+                zIndex: 2
+              }}
+            >
+              Amazon
+            </Box>
+          )}
+
           {/* Discount Badge - Bottom Right Corner */}
           {discountPercentage > 0 && (
             <Box
@@ -322,22 +347,41 @@ const ProductCard: React.FC<ProductCardProps> = ({
           justifyContent: 'center',
           backgroundColor: '#f9fafb'
         }}>
-          <img
+          <OptimizedImage
             src={product.image}
             alt={product.name}
             style={{
               maxWidth: '100%',
               maxHeight: '100%',
               width: 'auto',
-              height: 'auto',
-              objectFit: 'scale-down', // Không scale up
-              display: 'block'
+              height: 'auto'
             }}
           />
         </Box>
         
+        {/* Amazon Badge */}
+        {product.source === 'amazon' && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 8,
+              left: 8,
+              backgroundColor: '#FF9900',
+              color: 'white',
+              borderRadius: '6px',
+              padding: { xs: '4px 8px', sm: '6px 10px' },
+              fontSize: { xs: '0.65rem', sm: '0.7rem' },
+              fontWeight: 'bold',
+              boxShadow: '0 2px 8px rgba(255, 153, 0, 0.3)',
+              zIndex: 2
+            }}
+          >
+            Amazon
+          </Box>
+        )}
+
         {/* For You Badge */}
-        {product.isForYou && (
+        {product.isForYou && !product.source && (
           <Chip
             label="For You"
             size="small"
@@ -729,6 +773,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     </Card>
     </SmartLink>
   );
-};
+});
 
 export default ProductCard;

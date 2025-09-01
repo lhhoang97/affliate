@@ -33,7 +33,8 @@ import {
   LocalOffer,
   Whatshot,
   Tune,
-  Psychology
+  Psychology,
+  ShoppingCart
 } from '@mui/icons-material';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -73,6 +74,7 @@ const AdminLayout: React.FC = () => {
     { text: 'Deal Management', icon: <Whatshot />, path: '/admin/deal-management' },
     { text: 'Deal Configuration', icon: <Tune />, path: '/admin/deal-config' },
     { text: 'AI Assistant', icon: <Psychology />, path: '/admin/ai-assistant' },
+    { text: 'Amazon Products', icon: <ShoppingCart />, path: '/admin/amazon' },
     { text: 'Price Updates', icon: <Update />, path: '/admin/price-updates' },
     { text: 'Section Management', icon: <ViewList />, path: '/admin/section-management' },
     { text: 'Section Products', icon: <Slideshow />, path: '/admin/section-products' },
