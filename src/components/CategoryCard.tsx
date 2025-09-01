@@ -136,20 +136,33 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
 
       {/* Category Image */}
       <Box sx={{ position: 'relative', height: 200 }}>
-        <CardMedia
-          component="img"
-          image={category.image}
-          alt={category.name}
-          sx={{
-            height: '100%',
-            objectFit: 'contain', // Giữ aspect ratio cho category images
-            backgroundColor: '#f9fafb', // Background cho empty space
-            transition: 'transform 0.3s ease-in-out',
-            '&:hover': {
-              transform: 'scale(1.05)'
-            }
-          }}
-        />
+        <Box sx={{
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f9fafb'
+        }}>
+          <img
+            src={category.image}
+            alt={category.name}
+            style={{
+              maxWidth: '100%',
+              maxHeight: '100%',
+              width: 'auto',
+              height: 'auto',
+              objectFit: 'scale-down', // Không scale up
+              transition: 'transform 0.3s ease-in-out',
+              display: 'block'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          />
+        </Box>
         
         {/* Overlay with icon/letter */}
         <Box

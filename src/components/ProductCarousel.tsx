@@ -248,11 +248,14 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
                     src={product.image}
                     alt={product.name}
                     style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'contain', // Giữ aspect ratio, không crop
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      width: 'auto',
+                      height: 'auto',
+                      objectFit: 'scale-down', // Scale down nếu cần, KHÔNG scale up
                       transition: 'transform 0.3s ease',
-                      backgroundColor: '#ffffff' // Background cho empty space
+                      display: 'block',
+                      margin: '0 auto' // Center image
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'scale(1.05)';

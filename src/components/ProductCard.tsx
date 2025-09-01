@@ -112,18 +112,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
         >
         {/* Product Image */}
         <Box sx={{ position: 'relative' }}>
-          <CardMedia
-            component="img"
-            height="140"
-            image={product.image}
-            alt={product.name}
-            sx={{ 
-              objectFit: 'contain', // Giữ aspect ratio
-              height: { xs: 160, sm: 140 },
-              width: '100%',
-              backgroundColor: '#f9fafb' // Background cho empty space
-            }}
-          />
+          <Box sx={{
+            height: { xs: 160, sm: 140 },
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#f9fafb'
+          }}>
+            <img
+              src={product.image}
+              alt={product.name}
+              style={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                width: 'auto',
+                height: 'auto',
+                objectFit: 'scale-down', // Không scale up
+                display: 'block'
+              }}
+            />
+          </Box>
           
           {/* Discount Badge - Bottom Right Corner */}
           {discountPercentage > 0 && (
@@ -307,17 +315,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product Image */}
       <Box sx={{ position: 'relative' }}>
-        <CardMedia
-          component="img"
-          height="200"
-          image={product.image}
-          alt={product.name}
-          sx={{ 
-            objectFit: 'contain', // Giữ aspect ratio
-            height: { xs: 180, sm: 200 },
-            backgroundColor: '#f9fafb' // Background cho empty space
-          }}
-        />
+        <Box sx={{
+          height: { xs: 180, sm: 200 },
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f9fafb'
+        }}>
+          <img
+            src={product.image}
+            alt={product.name}
+            style={{
+              maxWidth: '100%',
+              maxHeight: '100%',
+              width: 'auto',
+              height: 'auto',
+              objectFit: 'scale-down', // Không scale up
+              display: 'block'
+            }}
+          />
+        </Box>
         
         {/* For You Badge */}
         {product.isForYou && (

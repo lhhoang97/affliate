@@ -239,11 +239,14 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                   src={product.image}
                   alt={product.name}
                   style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain', // Giữ aspect ratio
-                    backgroundColor: '#ffffff', // Background cho empty space
-                    transition: 'transform 0.3s ease'
+                    maxWidth: '100%',
+                    maxHeight: '100%', 
+                    width: 'auto',
+                    height: 'auto',
+                    objectFit: 'scale-down', // Không scale up
+                    transition: 'transform 0.3s ease',
+                    display: 'block',
+                    margin: '0 auto' // Center image
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'scale(1.1)';
