@@ -139,8 +139,6 @@ const Header: React.FC = () => {
   };
 
   const handleDrawerToggle = () => {
-    console.log('🍔 Drawer toggle function called, current state:', mobileOpen);
-    console.log('🍔 Setting mobileOpen to:', !mobileOpen);
     setMobileOpen(!mobileOpen);
   };
 
@@ -860,7 +858,6 @@ const Header: React.FC = () => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('🍔 Hamburger menu clicked!');
                 handleDrawerToggle();
               }}
               sx={{ 
@@ -979,10 +976,7 @@ const Header: React.FC = () => {
       <Drawer
         variant="temporary"
         open={mobileOpen}
-        onClose={() => {
-          console.log('🍔 Drawer onClose triggered');
-          handleDrawerToggle();
-        }}
+        onClose={handleDrawerToggle}
         ModalProps={{
           keepMounted: true
         }}
@@ -1024,7 +1018,7 @@ const Header: React.FC = () => {
           backgroundColor: '#ffffff'
         }}>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1976d2' }}>
-            🍔 Debug Menu (Working!)
+            Menu
           </Typography>
           {drawer}
         </Box>
