@@ -380,11 +380,28 @@ const AdminPage: React.FC = () => {
                     <Tooltip title="Xem chi tiết">
                       <IconButton 
                         size="small" 
-                        onClick={() => {
-                          console.log('View Details clicked for product:', product.id);
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log('🔥 BUTTON CLICKED! Product ID:', product.id);
+                          console.log('🔥 Product object:', product);
+                          alert(`Clicked View Details for Product ID: ${product.id}`);
                           const url = `${window.location.origin}/product/${product.id}`;
-                          console.log('Opening URL:', url);
-                          window.open(url, '_blank');
+                          console.log('🔥 Opening URL:', url);
+                          
+                          // Try multiple methods
+                          try {
+                            window.open(url, '_blank', 'noopener,noreferrer');
+                          } catch (error) {
+                            console.error('🚨 Window.open failed:', error);
+                            // Fallback: direct navigation
+                            window.location.href = url;
+                          }
+                        }}
+                        style={{ 
+                          backgroundColor: '#ff4444', 
+                          color: 'white',
+                          border: '2px solid #000'
                         }}
                       >
                         <Visibility />

@@ -18,6 +18,7 @@ import {
   Fullscreen,
   Person
 } from '@mui/icons-material';
+import SmartLink from './SmartLink';
 
 interface ProductCardProps {
   product: {
@@ -89,23 +90,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
   // Compact variant for category pages
   if (variant === 'compact') {
     return (
-      <Card 
-        sx={{ 
-          height: '100%',
-          width: '100%',
-          borderRadius: { xs: 1.5, sm: 2 },
-          boxShadow: { xs: '0 1px 4px rgba(0,0,0,0.1)', sm: '0 2px 8px rgba(0,0,0,0.08)' },
-          transition: 'all 0.2s ease-in-out',
-          cursor: 'pointer',
-          border: '2px solid #e5e7eb', // Full border cho tất cả screen sizes
-          '&:hover': {
-            transform: { xs: 'none', sm: 'translateY(-2px)' },
-            boxShadow: { xs: '0 2px 6px rgba(0,0,0,0.15)', sm: '0 4px 16px rgba(0,0,0,0.12)' },
-            borderColor: '#3b82f6' // Blue border khi hover
-          }
-        }}
+      <SmartLink 
+        to={`/product/${product.id}`}
         onClick={() => onView?.(product.id)}
       >
+        <Card 
+          sx={{ 
+            height: '100%',
+            width: '100%',
+            borderRadius: { xs: 1.5, sm: 2 },
+            boxShadow: { xs: '0 1px 4px rgba(0,0,0,0.1)', sm: '0 2px 8px rgba(0,0,0,0.08)' },
+            transition: 'all 0.2s ease-in-out',
+            cursor: 'pointer',
+            border: '2px solid #e5e7eb', // Full border cho tất cả screen sizes
+            '&:hover': {
+              transform: { xs: 'none', sm: 'translateY(-2px)' },
+              boxShadow: { xs: '0 2px 6px rgba(0,0,0,0.15)', sm: '0 4px 16px rgba(0,0,0,0.12)' },
+              borderColor: '#3b82f6' // Blue border khi hover
+            }
+          }}
+        >
         {/* Product Image */}
         <Box sx={{ position: 'relative' }}>
           <CardMedia
@@ -257,26 +261,31 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </Typography>
         </CardContent>
       </Card>
+      </SmartLink>
     );
   }
 
   // Default variant
   return (
-    <Card 
-      sx={{ 
-        maxWidth: { xs: '100%', sm: 400 },
-        minWidth: { xs: 280, sm: 320 },
-        borderRadius: 2,
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-        border: '2px solid #e5e7eb', // Full border cho default variant
-        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-          borderColor: '#3b82f6' // Blue border khi hover
-        }
-      }}
+    <SmartLink 
+      to={`/product/${product.id}`}
+      onClick={() => onView?.(product.id)}
     >
+      <Card 
+        sx={{ 
+          maxWidth: { xs: '100%', sm: 400 },
+          minWidth: { xs: 280, sm: 320 },
+          borderRadius: 2,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          border: '2px solid #e5e7eb', // Full border cho default variant
+          transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out',
+          '&:hover': {
+            transform: 'translateY(-4px)',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+            borderColor: '#3b82f6' // Blue border khi hover
+          }
+        }}
+      >
       {/* User who found the deal */}
       {product.foundBy && (
         <Box sx={{ p: 2, pb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -699,6 +708,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </Box>
       </CardContent>
     </Card>
+    </SmartLink>
   );
 };
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { ShoppingCart } from '@mui/icons-material';
+import SmartLink from './SmartLink';
 
 interface LogoProps {
   variant?: 'header' | 'footer' | 'mobile';
@@ -34,20 +35,23 @@ const Logo: React.FC<LogoProps> = ({ variant = 'header', onClick }) => {
   const textSize = getTextSize();
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        cursor: onClick ? 'pointer' : 'default',
-        '&:hover': onClick ? {
-          opacity: 0.8,
-          transform: 'scale(1.05)',
-          transition: 'all 0.2s ease-in-out'
-        } : {}
-      }}
+    <SmartLink 
+      to="/"
       onClick={onClick}
     >
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          cursor: 'pointer',
+          '&:hover': {
+            opacity: 0.8,
+            transform: 'scale(1.05)',
+            transition: 'all 0.2s ease-in-out'
+          }
+        }}
+      >
       {/* Shopping Cart Icon */}
       <Box
         sx={{
@@ -121,6 +125,7 @@ const Logo: React.FC<LogoProps> = ({ variant = 'header', onClick }) => {
         shopwithus
       </Typography>
     </Box>
+    </SmartLink>
   );
 };
 

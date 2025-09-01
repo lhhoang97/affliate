@@ -16,6 +16,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Category } from '../types';
+import SmartLink from './SmartLink';
 
 interface CategoryCardProps {
   category: Category;
@@ -114,19 +115,22 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   };
 
   return (
-    <Card
-      sx={{
-        cursor: 'pointer',
-        transition: 'all 0.3s ease-in-out',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        overflow: 'hidden',
-        ...getVariantStyles()
-      }}
+    <SmartLink 
+      to={`/category/${category.slug}`}
       onClick={handleClick}
     >
+      <Card
+        sx={{
+          cursor: 'pointer',
+          transition: 'all 0.3s ease-in-out',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          overflow: 'hidden',
+          ...getVariantStyles()
+        }}
+      >
       {/* Variant Badge */}
       {getVariantBadge()}
 
@@ -263,6 +267,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         </Box>
       </CardContent>
     </Card>
+    </SmartLink>
   );
 };
 

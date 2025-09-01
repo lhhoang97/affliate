@@ -17,6 +17,7 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import SearchBar from '../components/SearchBar';
+import SmartLink from '../components/SmartLink';
 import Logo from '../components/Logo';
 import { Product } from '../types';
 import { useProducts } from '../contexts/ProductContext';
@@ -168,17 +169,20 @@ const SearchPage: React.FC = () => {
                     gap: { xs: 1.5, md: 2 }
                   }}>
                     {searchResults.map((product) => (
-                      <Card
-                        key={product.id} 
-                        sx={{ 
-                          height: '100%',
-                          cursor: 'pointer',
-                          '&:hover': {
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-                          }
-                        }}
+                      <SmartLink 
+                        key={product.id}
+                        to={`/product/${product.id}`}
                         onClick={() => navigate(`/product/${product.id}`)}
                       >
+                        <Card
+                          sx={{ 
+                            height: '100%',
+                            cursor: 'pointer',
+                            '&:hover': {
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                            }
+                          }}
+                        >
                         <CardMedia
                           component="img"
                           height="180"
@@ -239,6 +243,7 @@ const SearchPage: React.FC = () => {
                           )}
                         </CardContent>
                       </Card>
+                      </SmartLink>
                     ))}
                   </Box>
                 ) : (
