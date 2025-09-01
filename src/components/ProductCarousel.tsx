@@ -3,6 +3,7 @@ import Slider from 'react-slick';
 import { Box, Typography, IconButton, useTheme, useMediaQuery } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Product } from '../types';
+import SmartLink from './SmartLink';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -214,25 +215,28 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
                 maxWidth: { xs: 'none', sm: '320px' } // No max width limit on mobile
               }
             }}>
-              <Box
+              <SmartLink
+                to={`/product/${product.id}`}
                 onClick={() => onProductClick(product)}
-                sx={{
-                  cursor: 'pointer',
-                  background: '#ffffff',
-                  borderRadius: '12px',
-                  border: '1px solid #e5e7eb',
-                  overflow: 'hidden',
-                  transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                  height: '380px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  '&:hover': {
-                    transform: 'translateY(-8px)',
-                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
-                    borderColor: '#3b82f6'
-                  }
-                }}
               >
+                <Box
+                  sx={{
+                    cursor: 'pointer',
+                    background: '#ffffff',
+                    borderRadius: '12px',
+                    border: '1px solid #e5e7eb',
+                    overflow: 'hidden',
+                    transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    height: '380px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    '&:hover': {
+                      transform: 'translateY(-8px)',
+                      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
+                      borderColor: '#3b82f6'
+                    }
+                  }}
+                >
                 {/* Product Image */}
                 <Box sx={{
                   height: '200px',
@@ -370,6 +374,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
                   </Box>
                 </Box>
               </Box>
+              </SmartLink>
             </Box>
           ))}
         </Slider>
