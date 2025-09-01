@@ -250,8 +250,9 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
                     style={{
                       width: '100%',
                       height: '100%',
-                      objectFit: 'cover',
-                      transition: 'transform 0.3s ease'
+                      objectFit: 'contain', // Giữ aspect ratio, không crop
+                      transition: 'transform 0.3s ease',
+                      backgroundColor: '#ffffff' // Background cho empty space
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'scale(1.05)';

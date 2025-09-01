@@ -241,7 +241,8 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
                   style={{
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover',
+                    objectFit: 'contain', // Giữ aspect ratio
+                    backgroundColor: '#ffffff', // Background cho empty space
                     transition: 'transform 0.3s ease'
                   }}
                   onMouseEnter={(e) => {

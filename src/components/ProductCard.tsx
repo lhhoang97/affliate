@@ -118,9 +118,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
             image={product.image}
             alt={product.name}
             sx={{ 
-              objectFit: 'cover',
-              height: { xs: 160, sm: 140 }, // Tăng height cho mobile để rõ hơn
-              width: '100%'
+              objectFit: 'contain', // Giữ aspect ratio
+              height: { xs: 160, sm: 140 },
+              width: '100%',
+              backgroundColor: '#f9fafb' // Background cho empty space
             }}
           />
           
@@ -312,8 +313,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
           image={product.image}
           alt={product.name}
           sx={{ 
-            objectFit: 'cover',
-            height: { xs: 180, sm: 200 }
+            objectFit: 'contain', // Giữ aspect ratio
+            height: { xs: 180, sm: 200 },
+            backgroundColor: '#f9fafb' // Background cho empty space
           }}
         />
         

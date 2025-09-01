@@ -142,7 +142,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
           alt={category.name}
           sx={{
             height: '100%',
-            objectFit: 'cover',
+            objectFit: 'contain', // Giữ aspect ratio cho category images
+            backgroundColor: '#f9fafb', // Background cho empty space
             transition: 'transform 0.3s ease-in-out',
             '&:hover': {
               transform: 'scale(1.05)'
