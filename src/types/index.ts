@@ -19,6 +19,10 @@ export interface Product {
   affiliateLink?: string;
   source?: 'manual' | 'amazon' | 'ebay' | 'aliexpress';
   asin?: string;
+  // Video fields
+  videoUrl?: string;
+  videoFile?: string;
+  videoType?: 'youtube' | 'vimeo' | 'direct' | 'upload';
   // Deal Details content
   dealTitle?: string;
   dealDescription?: string;

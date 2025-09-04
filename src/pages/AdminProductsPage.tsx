@@ -40,6 +40,7 @@ import {
 import { Product, Category } from '../types';
 import { fetchCategories } from '../services/productService';
 import { useProducts } from '../contexts/ProductContext';
+import VideoPlayer from '../components/VideoPlayer';
 
 interface ProductFormData {
   id: string;
@@ -61,6 +62,10 @@ interface ProductFormData {
   tags: string[];
   externalUrl?: string;
   affiliateLink?: string;
+  // Video fields
+  videoUrl?: string;
+  videoFile?: string;
+  videoType?: 'youtube' | 'vimeo' | 'direct' | 'upload';
   // Deal Details content
   dealTitle?: string;
   dealDescription?: string;
@@ -197,7 +202,11 @@ const AdminProductsPage: React.FC = () => {
     images: [],
     tags: [],
     externalUrl: '',
-    affiliateLink: ''
+    affiliateLink: '',
+    // Video fields
+    videoUrl: '',
+    videoFile: '',
+    videoType: undefined
   });
 
   // Filter products
@@ -247,6 +256,10 @@ const AdminProductsPage: React.FC = () => {
         tags: [...product.tags],
         externalUrl: (product as any).externalUrl || '',
         affiliateLink: (product as any).affiliateLink || '',
+        // Video fields
+        videoUrl: (product as any).videoUrl || '',
+        videoFile: (product as any).videoFile || '',
+        videoType: (product as any).videoType || undefined,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
       });
@@ -271,7 +284,11 @@ const AdminProductsPage: React.FC = () => {
         images: [],
         tags: [],
         externalUrl: '',
-        affiliateLink: ''
+        affiliateLink: '',
+        // Video fields
+        videoUrl: '',
+        videoFile: '',
+        videoType: undefined
       });
     }
     setOpenDialog(true);
@@ -1026,6 +1043,109 @@ const AdminProductsPage: React.FC = () => {
             helperText="Your affiliate link for this product (required for commission)"
             placeholder="https://example.com/product?ref=your-affiliate-id"
           />
+
+          {/* Video Section */}
+          <Box sx={{ mt: 3, mb: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Product Video
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Add a video to showcase your product. You can use YouTube, Vimeo, or upload a video file.
+            </Typography>
+            
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Video Type</InputLabel>
+              <Select
+                value={formData.videoType || ''}
+                onChange={(e) => handleInputChange('videoType', e.target.value)}
+                label="Video Type"
+              >
+                <MenuItem value="">No Video</MenuItem>
+                <MenuItem value="youtube">YouTube</MenuItem>
+                <MenuItem value="vimeo">Vimeo</MenuItem>
+                <MenuItem value="direct">Direct Video URL</MenuItem>
+                <MenuItem value="upload">Upload Video File</MenuItem>
+              </Select>
+            </FormControl>
+
+            {formData.videoType && formData.videoType !== 'upload' && (
+              <TextField
+                fullWidth
+                label={`${formData.videoType === 'youtube' ? 'YouTube' : formData.videoType === 'vimeo' ? 'Vimeo' : 'Video'} URL`}
+                value={formData.videoUrl || ''}
+                onChange={(e) => handleInputChange('videoUrl', e.target.value)}
+                margin="normal"
+                helperText={
+                  formData.videoType === 'youtube' 
+                    ? "Paste YouTube video URL (e.g., https://www.youtube.com/watch?v=VIDEO_ID)"
+                    : formData.videoType === 'vimeo'
+                    ? "Paste Vimeo video URL (e.g., https://vimeo.com/VIDEO_ID)"
+                    : "Direct link to video file (MP4, WebM, etc.)"
+                }
+                placeholder={
+                  formData.videoType === 'youtube'
+                    ? "https://www.youtube.com/watch?v=VIDEO_ID"
+                    : formData.videoType === 'vimeo'
+                    ? "https://vimeo.com/VIDEO_ID"
+                    : "https://example.com/video.mp4"
+                }
+              />
+            )}
+
+            {formData.videoType === 'upload' && (
+              <Box sx={{ mt: 2 }}>
+                <input
+                  accept="video/*"
+                  style={{ display: 'none' }}
+                  id="video-upload"
+                  type="file"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      // For now, we'll store the file name. In production, you'd upload to Supabase Storage
+                      handleInputChange('videoFile', file.name);
+                    }
+                  }}
+                />
+                <label htmlFor="video-upload">
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    startIcon={<CloudUpload />}
+                    sx={{ mr: 2 }}
+                  >
+                    Upload Video
+                  </Button>
+                </label>
+                {formData.videoFile && (
+                  <Typography variant="body2" color="text.secondary">
+                    Selected: {formData.videoFile}
+                  </Typography>
+                )}
+                <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 1 }}>
+                  Supported formats: MP4, WebM, MOV, AVI (Max 100MB)
+                </Typography>
+              </Box>
+            )}
+
+            {/* Video Preview */}
+            {formData.videoUrl && formData.videoType && (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Video Preview:
+                </Typography>
+                <Box sx={{ maxWidth: 400, maxHeight: 300 }}>
+                  <VideoPlayer
+                    videoUrl={formData.videoUrl}
+                    videoType={formData.videoType as 'youtube' | 'vimeo' | 'direct'}
+                    width="100%"
+                    height="auto"
+                    controls={true}
+                  />
+                </Box>
+              </Box>
+            )}
+          </Box>
           
           <TextField
             fullWidth

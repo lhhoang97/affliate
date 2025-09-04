@@ -54,6 +54,7 @@ import {
 import { useCart } from '../contexts/CartContext';
 import { useProducts } from '../contexts/ProductContext';
 import { Product, Review } from '../types';
+import VideoPlayer from '../components/VideoPlayer';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -437,6 +438,30 @@ const ProductDetailPage: React.FC = () => {
                   sx={{ fontWeight: 600 }}
                 />
               </Box>
+
+              {/* Product Video Section */}
+              {product.videoUrl && product.videoType && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                    Product Video
+                  </Typography>
+                  <Box sx={{ 
+                    maxWidth: '100%',
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    boxShadow: 2
+                  }}>
+                    <VideoPlayer
+                      videoUrl={product.videoUrl}
+                      videoType={product.videoType as 'youtube' | 'vimeo' | 'direct'}
+                      width="100%"
+                      height="auto"
+                      controls={true}
+                      poster={product.image}
+                    />
+                  </Box>
+                </Box>
+              )}
 
               {/* Interaction Stats */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 3 }}>
