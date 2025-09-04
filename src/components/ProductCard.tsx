@@ -400,7 +400,7 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
 
         {/* Retailer Badge */}
         <Chip
-          label={product.retailer || 'ShopWithUs'}
+          label={product.retailer || 'BestFinds'}
           size="small"
           sx={{
             position: 'absolute',
@@ -606,7 +606,7 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
                 color: '#374151'
               }}
             >
-              {product.retailer || 'ShopWithUs'}
+              {product.retailer || 'BestFinds'}
             </Typography>
           </Box>
           
@@ -714,7 +714,7 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
             }
           }}
         >
-          Get Deal at {product.retailer || 'ShopWithUs'}
+          Get Deal at {product.retailer || 'BestFinds'}
         </Button>
 
         {/* Interaction Buttons */}

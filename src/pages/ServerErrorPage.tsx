@@ -33,7 +33,7 @@ const ServerErrorPage: React.FC = () => {
 
   const handleReportBug = () => {
     // In production, this could open a bug report form or email
-    window.open('mailto:support@shopwithus.com?subject=Bug Report - Server Error', '_blank');
+    window.open('mailto:support@bestfinds.com?subject=Bug Report - Server Error', '_blank');
   };
 
   return (

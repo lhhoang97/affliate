@@ -831,7 +831,7 @@ const Header: React.FC = () => {
           color: '#666',
           textAlign: 'center'
         }}>
-          ©2025 ShopWithUs
+          ©2025 BestFinds
         </Typography>
       </Box>
     </Box>

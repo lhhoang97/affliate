@@ -110,19 +110,19 @@ const Logo: React.FC<LogoProps> = ({ variant = 'header', onClick }) => {
         />
       </Box>
 
-      {/* Text "shopwithus" */}
+      {/* Text "BestFinds" */}
       <Typography
         sx={{
           fontSize: textSize,
           fontWeight: variant === 'header' ? 600 : 'bold', // Lighter for header
           color: '#007bff',
-          textTransform: 'lowercase',
+          textTransform: 'none', // Keep original case
           letterSpacing: variant === 'header' ? '0.3px' : '0.5px',
           lineHeight: variant === 'header' ? 0.9 : 1, // Tighter for header
           mt: variant === 'header' ? 0.2 : 0 // Minimal top margin for header
         }}
       >
-        shopwithus
+        BestFinds
       </Typography>
     </Box>
     </SmartLink>

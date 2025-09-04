@@ -171,7 +171,7 @@ const ProductDetailPage: React.FC = () => {
       window.open(product.affiliateLink, '_blank', 'noopener,noreferrer');
     } else {
       // Fallback to a generic affiliate link
-      const affiliateLink = `https://${product?.retailer?.toLowerCase().replace(/\s+/g, '')}.com/product/${product?.id}?ref=shopwithus`;
+      const affiliateLink = `https://${product?.retailer?.toLowerCase().replace(/\s+/g, '')}.com/product/${product?.id}?ref=bestfinds`;
       window.open(affiliateLink, '_blank', 'noopener,noreferrer');
     }
   };
@@ -230,7 +230,7 @@ const ProductDetailPage: React.FC = () => {
           sx={{ color: '#6b7280' }}
         >
           <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Typography variant="body2">ShopWithUs</Typography>
+            <Typography variant="body2">BestFinds</Typography>
           </Link>
           <Link to="/deals" style={{ textDecoration: 'none', color: 'inherit' }}>
             <Typography variant="body2">Forums</Typography>
@@ -407,7 +407,7 @@ const ProductDetailPage: React.FC = () => {
 
               {/* Poster and Date */}
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                ShopWithUs Staff posted {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                BestFinds Staff posted {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
               </Typography>
 
               {/* Deal Title */}
@@ -658,7 +658,7 @@ const ProductDetailPage: React.FC = () => {
               <Avatar sx={{ bgcolor: '#3b82f6' }}>SW</Avatar>
               <Box>
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  ShopWithUs Staff
+                  BestFinds Staff
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Deal Curator

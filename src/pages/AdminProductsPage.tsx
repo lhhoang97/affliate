@@ -1148,7 +1148,7 @@ const AdminProductsPage: React.FC = () => {
             multiline
             rows={3}
             helperText="Information about who posted this deal"
-            placeholder="ShopWithUs Staff - Verified Deals Expert"
+            placeholder="BestFinds Staff - Verified Deals Expert"
           />
         </DialogContent>
         <DialogActions>

@@ -36,7 +36,7 @@ const CartPage: React.FC = () => {
       window.open((firstItem.product as any).externalUrl, '_blank', 'noopener,noreferrer');
     } else {
       // Default affiliate link
-      const defaultAffiliateLink = `https://shopwithus.com/checkout?ref=cart&items=${items.map(item => item.productId).join(',')}`;
+      const defaultAffiliateLink = `https://bestfinds.com/checkout?ref=cart&items=${items.map(item => item.productId).join(',')}`;
       window.open(defaultAffiliateLink, '_blank', 'noopener,noreferrer');
     }
     
@@ -53,7 +53,7 @@ const CartPage: React.FC = () => {
     } else if ((product as any).externalUrl) {
       window.open((product as any).externalUrl, '_blank', 'noopener,noreferrer');
     } else {
-      const defaultLink = `https://shopwithus.com/product/${product.id}?ref=cart`;
+      const defaultLink = `https://bestfinds.com/product/${product.id}?ref=cart`;
       window.open(defaultLink, '_blank', 'noopener,noreferrer');
     }
   };

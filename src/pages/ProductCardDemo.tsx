@@ -71,13 +71,13 @@ const ProductCardDemo: React.FC = () => {
                 product={{
                   ...product,
                   originalPrice: product.originalPrice || product.price,
-                  retailer: product.retailer || 'ShopWithUs',
+                  retailer: product.retailer || 'BestFinds',
                   color: 'Black',
                   likes: Math.floor(Math.random() * 50) + 5,
                   comments: Math.floor(Math.random() * 20) + 2,
                   isForYou: Math.random() > 0.5,
                   foundBy: {
-                    name: 'ShopWithUs',
+                    name: 'BestFinds',
                     avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=24&h=24&fit=crop',
                     time: 'Recently'
                   }

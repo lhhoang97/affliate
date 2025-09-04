@@ -46,7 +46,7 @@ const SupabaseTest: React.FC = () => {
         // Test 4: Authentication
         try {
           const { error } = await supabase.auth.signInWithPassword({
-            email: 'hoang@shopwithus.com',
+            email: 'hoang@bestfinds.com',
             password: 'hoang123@'
           });
           results.auth = !error;
@@ -112,7 +112,7 @@ const SupabaseTest: React.FC = () => {
               Authentication Test
             </Typography>
             <Typography variant="body2" color="text.secondary" gutterBottom>
-              Testing login with: hoang@shopwithus.com
+              Testing login with: hoang@bestfinds.com
             </Typography>
             <Alert severity={testResults.auth ? 'success' : 'error'} sx={{ mt: 1 }}>
               {testResults.auth ? 'Authentication successful' : 'Authentication failed'}

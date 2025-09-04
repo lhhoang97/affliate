@@ -116,7 +116,7 @@ const ProductsPage: React.FC = () => {
       window.open(selectedProduct.externalUrl, '_blank', 'noopener,noreferrer');
     } else {
       // Fallback to default affiliate link
-      const affiliateLink = `https://techmart.vn/product/${selectedProduct.id}?ref=shopwithus`;
+      const affiliateLink = `https://techmart.vn/product/${selectedProduct.id}?ref=bestfinds`;
       window.open(affiliateLink, '_blank', 'noopener,noreferrer');
     }
   };

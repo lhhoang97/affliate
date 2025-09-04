@@ -176,10 +176,10 @@ const Footer: React.FC = () => {
             mb: 1,
             textTransform: 'lowercase'
           }}>
-            ShopWithUs
+            BestFinds
           </Typography>
           <Typography variant="body2" sx={{ color: '#666' }}>
-            ©2025 ShopWithUs
+            ©2025 BestFinds
           </Typography>
         </Box>
       </Container>
