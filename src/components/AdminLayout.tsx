@@ -46,6 +46,7 @@ const AdminLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notificationAnchor, setNotificationAnchor] = useState<null | HTMLElement>(null);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -57,6 +58,14 @@ const AdminLayout: React.FC = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleNotificationMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setNotificationAnchor(event.currentTarget);
+  };
+
+  const handleNotificationClose = () => {
+    setNotificationAnchor(null);
   };
 
   const handleLogout = () => {
@@ -153,7 +162,10 @@ const AdminLayout: React.FC = () => {
             Admin Dashboard
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconButton color="inherit">
+            <IconButton 
+              color="inherit"
+              onClick={handleNotificationMenu}
+            >
               <Badge badgeContent={4} color="error">
                 <Notifications />
               </Badge>
@@ -166,14 +178,89 @@ const AdminLayout: React.FC = () => {
                 {user?.name?.charAt(0) || <AccountCircle />}
               </Avatar>
             </IconButton>
+            {/* Notification Menu */}
+            <Menu
+              anchorEl={notificationAnchor}
+              open={Boolean(notificationAnchor)}
+              onClose={handleNotificationClose}
+              PaperProps={{
+                sx: {
+                  width: 320,
+                  maxHeight: 400
+                }
+              }}
+            >
+              <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+                <Typography variant="h6">Notifications</Typography>
+              </Box>
+              <MenuItem onClick={handleNotificationClose}>
+                <Box>
+                  <Typography variant="body2" fontWeight="bold">
+                    New Product Added
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    iPhone 15 Pro Max has been added to inventory
+                  </Typography>
+                  <Typography variant="caption" display="block" color="text.secondary">
+                    2 minutes ago
+                  </Typography>
+                </Box>
+              </MenuItem>
+              <MenuItem onClick={handleNotificationClose}>
+                <Box>
+                  <Typography variant="body2" fontWeight="bold">
+                    Price Update
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    MacBook Pro M3 price has been updated
+                  </Typography>
+                  <Typography variant="caption" display="block" color="text.secondary">
+                    1 hour ago
+                  </Typography>
+                </Box>
+              </MenuItem>
+              <MenuItem onClick={handleNotificationClose}>
+                <Box>
+                  <Typography variant="body2" fontWeight="bold">
+                    New User Registration
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    John Doe has registered as a new user
+                  </Typography>
+                  <Typography variant="caption" display="block" color="text.secondary">
+                    3 hours ago
+                  </Typography>
+                </Box>
+              </MenuItem>
+              <MenuItem onClick={handleNotificationClose}>
+                <Box>
+                  <Typography variant="body2" fontWeight="bold">
+                    System Update
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    System maintenance completed successfully
+                  </Typography>
+                  <Typography variant="caption" display="block" color="text.secondary">
+                    1 day ago
+                  </Typography>
+                </Box>
+              </MenuItem>
+              <Box sx={{ p: 1, borderTop: 1, borderColor: 'divider', textAlign: 'center' }}>
+                <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
+                  View All Notifications
+                </Typography>
+              </Box>
+            </Menu>
+
+            {/* Profile Menu */}
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-                          <MenuItem onClick={handleClose}>Profile</MenuItem>
-            <MenuItem onClick={handleClose}>Settings</MenuItem>
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleClose}>Settings</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </Box>
         </Toolbar>
