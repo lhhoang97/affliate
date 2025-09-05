@@ -93,8 +93,20 @@ const AdminLayout: React.FC = () => {
   ];
 
   const drawer = (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ p: 2, textAlign: 'center', borderBottom: 1, borderColor: 'divider', flexShrink: 0 }}>
+    <Box sx={{ 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column',
+      backgroundColor: 'white'
+    }}>
+      <Box sx={{ 
+        p: 2, 
+        textAlign: 'center', 
+        borderBottom: 1, 
+        borderColor: 'divider', 
+        flexShrink: 0,
+        backgroundColor: '#f8f9fa'
+      }}>
         <Typography variant="h6" color="primary" fontWeight="bold">
           Admin Panel
         </Typography>
@@ -102,8 +114,24 @@ const AdminLayout: React.FC = () => {
           Quản lý hệ thống
         </Typography>
       </Box>
-      <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
-        <List>
+      <Box sx={{ 
+        flexGrow: 1, 
+        overflowY: 'auto',
+        '&::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: '#f1f1f1',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#c1c1c1',
+          borderRadius: '3px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: '#a8a8a8',
+        },
+      }}>
+        <List sx={{ p: 0 }}>
           {menuItems.map((item) => (
             <ListItem
               key={item.text}
@@ -113,6 +141,8 @@ const AdminLayout: React.FC = () => {
               }}
               sx={{
                 cursor: 'pointer',
+                py: 1.5,
+                px: 2,
                 '&:hover': {
                   backgroundColor: 'primary.light',
                   '& .MuiListItemIcon-root': {
@@ -121,22 +151,48 @@ const AdminLayout: React.FC = () => {
                 },
               }}
             >
-              <ListItemIcon sx={{ color: 'text.secondary' }}>
+              <ListItemIcon sx={{ color: 'text.secondary', minWidth: 40 }}>
                 {item.icon}
               </ListItemIcon>
-              <ListItemText primary={item.text} />
+              <ListItemText 
+                primary={item.text}
+                primaryTypographyProps={{
+                  fontSize: '14px',
+                  fontWeight: 500
+                }}
+              />
             </ListItem>
           ))}
         </List>
       </Box>
-      <Box sx={{ flexShrink: 0 }}>
+      <Box sx={{ flexShrink: 0, backgroundColor: '#f8f9fa' }}>
         <Divider />
-        <List>
-          <ListItem onClick={handleLogout} sx={{ cursor: 'pointer' }}>
-            <ListItemIcon>
+        <List sx={{ p: 0 }}>
+          <ListItem 
+            onClick={handleLogout} 
+            sx={{ 
+              cursor: 'pointer',
+              py: 1.5,
+              px: 2,
+              '&:hover': {
+                backgroundColor: 'error.light',
+                '& .MuiListItemIcon-root': {
+                  color: 'error.main',
+                },
+              },
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 40 }}>
               <Logout />
             </ListItemIcon>
-            <ListItemText primary="Logout" />
+            <ListItemText 
+              primary="Logout"
+              primaryTypographyProps={{
+                fontSize: '14px',
+                fontWeight: 500,
+                color: 'error.main'
+              }}
+            />
           </ListItem>
         </List>
       </Box>
@@ -288,8 +344,9 @@ const AdminLayout: React.FC = () => {
             '& .MuiDrawer-paper': { 
               boxSizing: 'border-box', 
               width: drawerWidth,
-              height: '100%',
-              overflow: 'hidden'
+              height: '100vh',
+              overflow: 'hidden',
+              backgroundColor: 'white'
             },
           }}
         >
