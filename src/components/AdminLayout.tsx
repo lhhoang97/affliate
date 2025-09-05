@@ -93,8 +93,8 @@ const AdminLayout: React.FC = () => {
   ];
 
   const drawer = (
-    <Box>
-      <Box sx={{ p: 2, textAlign: 'center', borderBottom: 1, borderColor: 'divider' }}>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ p: 2, textAlign: 'center', borderBottom: 1, borderColor: 'divider', flexShrink: 0 }}>
         <Typography variant="h6" color="primary" fontWeight="bold">
           Admin Panel
         </Typography>
@@ -102,37 +102,44 @@ const AdminLayout: React.FC = () => {
           Quản lý hệ thống
         </Typography>
       </Box>
-      <List>
-        {menuItems.map((item) => (
-          <ListItem
-            key={item.text}
-            onClick={() => navigate(item.path)}
-            sx={{
-              cursor: 'pointer',
-              '&:hover': {
-                backgroundColor: 'primary.light',
-                '& .MuiListItemIcon-root': {
-                  color: 'primary.main',
+      <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
+        <List>
+          {menuItems.map((item) => (
+            <ListItem
+              key={item.text}
+              onClick={() => {
+                navigate(item.path);
+                setMobileOpen(false); // Close mobile drawer after navigation
+              }}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'primary.light',
+                  '& .MuiListItemIcon-root': {
+                    color: 'primary.main',
+                  },
                 },
-              },
-            }}
-          >
-            <ListItemIcon sx={{ color: 'text.secondary' }}>
-              {item.icon}
+              }}
+            >
+              <ListItemIcon sx={{ color: 'text.secondary' }}>
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+      <Box sx={{ flexShrink: 0 }}>
+        <Divider />
+        <List>
+          <ListItem onClick={handleLogout} sx={{ cursor: 'pointer' }}>
+            <ListItemIcon>
+              <Logout />
             </ListItemIcon>
-            <ListItemText primary={item.text} />
+            <ListItemText primary="Logout" />
           </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        <ListItem onClick={handleLogout} sx={{ cursor: 'pointer' }}>
-          <ListItemIcon>
-            <Logout />
-          </ListItemIcon>
-                      <ListItemText primary="Logout" />
-        </ListItem>
-      </List>
+        </List>
+      </Box>
     </Box>
   );
 
@@ -278,7 +285,12 @@ const AdminLayout: React.FC = () => {
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': { 
+              boxSizing: 'border-box', 
+              width: drawerWidth,
+              height: '100%',
+              overflow: 'hidden'
+            },
           }}
         >
           {drawer}
