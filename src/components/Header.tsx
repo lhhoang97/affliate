@@ -226,6 +226,9 @@ const Header: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Logo variant="mobile" />
         </Box>
+        <Typography variant="caption" color="primary" sx={{ display: 'block', mt: 1, fontWeight: 'bold', textAlign: 'center' }}>
+          🏠 MAIN WEBSITE MENU
+        </Typography>
       </Box>
 
       {/* Navigation Menu */}
