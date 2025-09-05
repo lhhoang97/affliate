@@ -239,7 +239,14 @@ const AdminDealManagementPage: React.FC = () => {
           </Button>
         </Box>
 
-        <TableContainer>
+        <TableContainer
+          sx={{
+            overflowX: 'auto',
+            '& .MuiTable-root': {
+              minWidth: { xs: '600px', sm: 'auto' }
+            }
+          }}
+        >
           <Table>
             <TableHead>
               <TableRow>
@@ -319,7 +326,14 @@ const AdminDealManagementPage: React.FC = () => {
               </Box>
             </AccordionSummary>
             <AccordionDetails>
-              <TableContainer>
+              <TableContainer
+                sx={{
+                  overflowX: 'auto',
+                  '& .MuiTable-root': {
+                    minWidth: { xs: '500px', sm: 'auto' }
+                  }
+                }}
+              >
                 <Table size="small">
                   <TableHead>
                     <TableRow>

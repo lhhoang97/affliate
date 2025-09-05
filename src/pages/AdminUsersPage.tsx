@@ -103,15 +103,30 @@ const AdminUsersPage: React.FC = () => {
         User Management
       </Typography>
 
-      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        gap: 2, 
+        mb: 2,
+        flexDirection: { xs: 'column', sm: 'row' }
+      }}>
         <TextField
           label="Search users"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          fullWidth
+          sx={{ minWidth: { xs: '100%', sm: '300px' } }}
         />
       </Box>
 
-      <TableContainer component={Paper}>
+      <TableContainer 
+        component={Paper}
+        sx={{
+          overflowX: 'auto',
+          '& .MuiTable-root': {
+            minWidth: { xs: '600px', sm: 'auto' }
+          }
+        }}
+      >
         <Table>
           <TableHead>
             <TableRow>
@@ -147,10 +162,21 @@ const AdminUsersPage: React.FC = () => {
         </Table>
       </TableContainer>
 
-      <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="xs" fullWidth>
+      <Dialog 
+        open={editOpen} 
+        onClose={() => setEditOpen(false)} 
+        maxWidth="xs" 
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            margin: { xs: 2, sm: 'auto' },
+            width: { xs: 'calc(100% - 32px)', sm: 'auto' }
+          }
+        }}
+      >
         <DialogTitle>Update Role</DialogTitle>
         <DialogContent>
-          <FormControl fullWidth>
+          <FormControl fullWidth sx={{ mt: 1 }}>
             <InputLabel>Role</InputLabel>
             <Select value={role} label="Role" onChange={(e) => setRole(e.target.value as any)}>
               <MenuItem value="user">User</MenuItem>
@@ -158,9 +184,25 @@ const AdminUsersPage: React.FC = () => {
             </Select>
           </FormControl>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave}>Save</Button>
+        <DialogActions sx={{ 
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 1, sm: 0 },
+          px: { xs: 2, sm: 3 },
+          pb: { xs: 2, sm: 3 }
+        }}>
+          <Button 
+            onClick={() => setEditOpen(false)}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            variant="contained" 
+            onClick={handleSave}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
+          >
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

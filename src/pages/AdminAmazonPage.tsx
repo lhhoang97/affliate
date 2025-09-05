@@ -227,9 +227,24 @@ const AdminAmazonPage: React.FC = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       {/* Header */}
-      <Box display="flex" alignItems="center" mb={3}>
-        <AmazonIcon sx={{ mr: 2, fontSize: 32, color: '#FF9900' }} />
-        <Typography variant="h4" component="h1">
+      <Box 
+        display="flex" 
+        alignItems="center" 
+        mb={3}
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        textAlign={{ xs: 'center', sm: 'left' }}
+      >
+        <AmazonIcon sx={{ 
+          mr: { xs: 0, sm: 2 }, 
+          mb: { xs: 1, sm: 0 },
+          fontSize: { xs: 28, sm: 32 }, 
+          color: '#FF9900' 
+        }} />
+        <Typography 
+          variant="h4" 
+          component="h1"
+          sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
+        >
           Amazon Product Management
         </Typography>
       </Box>
@@ -418,7 +433,14 @@ const AdminAmazonPage: React.FC = () => {
             <CircularProgress />
           </Box>
         ) : (
-          <TableContainer>
+          <TableContainer
+            sx={{
+              overflowX: 'auto',
+              '& .MuiTable-root': {
+                minWidth: { xs: '800px', sm: 'auto' }
+              }
+            }}
+          >
             <Table>
               <TableHead>
                 <TableRow>
