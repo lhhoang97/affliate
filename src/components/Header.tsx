@@ -33,7 +33,7 @@ import {
   LocalOffer,
   Whatshot
 } from '@mui/icons-material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 import { useProducts } from '../contexts/ProductContext';
@@ -50,11 +50,8 @@ const Header: React.FC = () => {
   const { items } = useCart();
   const { products } = useProducts();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Debug user role
-  console.log('Header - Current user:', user);
-  console.log('Header - User role:', user?.role);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [accountMenuAnchor, setAccountMenuAnchor] = useState<null | HTMLElement>(null);
@@ -226,9 +223,6 @@ const Header: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Logo variant="mobile" />
         </Box>
-        <Typography variant="caption" color="primary" sx={{ display: 'block', mt: 1, fontWeight: 'bold', textAlign: 'center' }}>
-          🏠 MAIN WEBSITE MENU
-        </Typography>
       </Box>
 
       {/* Navigation Menu */}
@@ -840,6 +834,11 @@ const Header: React.FC = () => {
     </Box>
   );
 
+  // Hide header on admin routes
+  if (location.pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <>
       <AppBar position="static" sx={{ backgroundColor: 'white', color: '#333', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', minHeight: 64 }}>
@@ -985,10 +984,11 @@ const Header: React.FC = () => {
         }}
         sx={{
           display: { xs: 'block', sm: 'block' }, // Always show on all screen sizes for testing
+          zIndex: 1400,
           '& .MuiDrawer-paper': {
             width: 280,
             backgroundColor: 'white',
-            zIndex: 1200,
+            zIndex: 1400,
             color: '#333',
             transform: mobileOpen ? 'translateX(0)' : 'translateX(-100%)',
             transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -1009,7 +1009,8 @@ const Header: React.FC = () => {
             }
           },
           '& .MuiBackdrop-root': {
-            backgroundColor: 'transparent'
+            backgroundColor: 'transparent',
+            zIndex: 1399
           }
         }}
       >

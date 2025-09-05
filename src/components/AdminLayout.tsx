@@ -113,12 +113,6 @@ const AdminLayout: React.FC = () => {
         <Typography variant="caption" color="text.secondary">
           Quản lý hệ thống
         </Typography>
-        <Typography variant="caption" color="error" sx={{ display: 'block', mt: 1, fontWeight: 'bold' }}>
-          🔴 ADMIN SIDEBAR v3.0 - 15 ITEMS
-        </Typography>
-        <Typography variant="caption" color="error" sx={{ display: 'block', mt: 0.5, fontSize: '10px' }}>
-          Scroll down to see all menu items
-        </Typography>
       </Box>
       <Box sx={{ 
         flexGrow: 1, 
@@ -362,7 +356,10 @@ const AdminLayout: React.FC = () => {
           variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': { 
+              boxSizing: 'border-box', 
+              width: drawerWidth
+            },
           }}
           open
         >
