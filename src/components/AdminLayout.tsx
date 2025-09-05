@@ -113,6 +113,9 @@ const AdminLayout: React.FC = () => {
         <Typography variant="caption" color="text.secondary">
           Quản lý hệ thống
         </Typography>
+        <Typography variant="caption" color="error" sx={{ display: 'block', mt: 1 }}>
+          Mobile v3.0 - All 15 items
+        </Typography>
       </Box>
       <Box sx={{ 
         flexGrow: 1, 
