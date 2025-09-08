@@ -38,7 +38,7 @@ import {
   CloudUpload
 } from '@mui/icons-material';
 import { Product } from '../types';
-import { fetchCategories } from '../services/productService';
+// import { fetchCategories } from '../services/productService'; // TODO: Implement categories
 import { useProducts } from '../contexts/ProductContext';
 import { getAllProducts } from '../services/productService';
 import VideoPlayer from '../components/VideoPlayer';

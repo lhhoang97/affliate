@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Try to get current user from Supabase with timeout
         const currentUser = await Promise.race([
           getCurrentUser(),
-          new Promise((_, reject) => 
+          new Promise<null>((_, reject) => 
             setTimeout(() => reject(new Error('Auth timeout')), 5000)
           )
         ]);

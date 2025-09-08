@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product } from '../types';
-import { getAllProducts, getHomepageProducts, updateProduct, createProduct, deleteProduct } from '../services/productService';
+import { getAllProducts, updateProduct, createProduct, deleteProduct } from '../services/productService';
 
 interface ProductContextType {
   products: Product[];
@@ -44,7 +44,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
         // Use getAllProducts with timeout
         const allProducts = await Promise.race([
           getAllProducts(),
-          new Promise((_, reject) => 
+          new Promise<Product[]>((_, reject) => 
             setTimeout(() => reject(new Error('Products timeout')), 8000)
           )
         ]);
@@ -54,7 +54,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
         console.log('ProductContext - Loading all products from database...');
         const allProducts = await Promise.race([
           getAllProducts(),
-          new Promise((_, reject) => 
+          new Promise<Product[]>((_, reject) => 
             setTimeout(() => reject(new Error('Products timeout')), 8000)
           )
         ]);
