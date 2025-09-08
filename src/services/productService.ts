@@ -247,6 +247,8 @@ export const getAllProducts = async (): Promise<Product[]> => {
     console.log('Executing Supabase query...');
     const { data, error } = await supabase.from('products').select('*');
     console.log('Supabase query result:', { data: data?.length || 0, error });
+    console.log('Full error object:', error);
+    console.log('Full data object:', data);
     
     if (error) {
       console.error('Error fetching products from database:', error);
