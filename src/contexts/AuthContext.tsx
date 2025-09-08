@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const timeoutId = setTimeout(() => {
       console.log('AuthContext - Timeout reached, forcing loading to false');
       setIsLoading(false);
-    }, 5000); // 5 second timeout
+    }, 10000); // 10 second timeout - increased to match ProductContext
 
     initializeAuth().finally(() => {
       clearTimeout(timeoutId);

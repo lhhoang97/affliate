@@ -82,14 +82,14 @@ interface ProductFormData {
 const AdminProductsPage: React.FC = () => {
   const { updateProductById, createNewProduct, deleteProductById } = useProducts();
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState<Category[]>([]);
+  // const [loading, setLoading] = useState(true); // TODO: Implement loading state
+  // const [categories, setCategories] = useState<Category[]>([]); // TODO: Implement categories
   const [openDialog, setOpenDialog] = useState(false);
   const [editingProduct, setEditingProduct] = useState<ProductFormData | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  // const [expandedCategory, setExpandedCategory] = useState<string | null>(null); // TODO: Implement category expansion
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as any });
   const [isUploading, setIsUploading] = useState(false);
   const [showImagePreview, setShowImagePreview] = useState(false);
@@ -437,22 +437,23 @@ const AdminProductsPage: React.FC = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleFeaturesChange = (index: number, value: string) => {
-    const newFeatures = [...formData.features];
-    newFeatures[index] = value;
-    setFormData(prev => ({ ...prev, features: newFeatures }));
-  };
+  // TODO: Implement feature management functions
+  // const handleFeaturesChange = (index: number, value: string) => {
+  //   const newFeatures = [...formData.features];
+  //   newFeatures[index] = value;
+  //   setFormData(prev => ({ ...prev, features: newFeatures }));
+  // };
 
-  const addFeature = () => {
-    setFormData(prev => ({ ...prev, features: [...prev.features, ''] }));
-  };
+  // const addFeature = () => {
+  //   setFormData(prev => ({ ...prev, features: [...prev.features, ''] }));
+  // };
 
-  const removeFeature = (index: number) => {
-    setFormData(prev => ({ 
-      ...prev, 
-      features: prev.features.filter((_, i) => i !== index) 
-    }));
-  };
+  // const removeFeature = (index: number) => {
+  //   setFormData(prev => ({ 
+  //     ...prev, 
+  //     features: prev.features.filter((_, i) => i !== index)
+  //   }));
+  // };
 
   // Image upload functions
   const handleFileUpload = async (file: File, type: 'main' | 'additional') => {

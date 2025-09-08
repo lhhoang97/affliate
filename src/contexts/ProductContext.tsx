@@ -137,7 +137,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     const timeoutId = setTimeout(() => {
       console.log('ProductContext - Timeout reached, forcing loading to false');
       setLoading(false);
-    }, 10000); // 10 second timeout
+    }, 15000); // 15 second timeout - increased to allow for slower connections
 
     loadProducts(true, true).finally(() => {
       clearTimeout(timeoutId);

@@ -7,8 +7,6 @@ import {
   CardContent,
   CardMedia,
   Button,
-  Chip,
-  Rating,
   LinearProgress,
   Dialog,
   DialogTitle,
@@ -31,7 +29,7 @@ const ProductsPage: React.FC = () => {
   
   // Get category and search from URL parameters
   const categoryFromUrl = searchParams.get('category');
-  const searchFromUrl = searchParams.get('search');
+  // const searchFromUrl = searchParams.get('search'); // TODO: Implement search from URL
   
   // Data
   const [allProducts, setAllProducts] = useState<Product[]>([]);

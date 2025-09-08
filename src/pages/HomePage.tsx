@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import ProductCarousel from '../components/ProductCarousel';
 import { useProducts } from '../contexts/ProductContext';
 import { Product } from '../types';
-import { getDealConfig, DealConfig } from '../services/dealConfigService';
+import { getDealConfig } from '../services/dealConfigService';
 
 const HomePage: React.FC = () => {
   const { products, loading } = useProducts();
