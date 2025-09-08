@@ -34,6 +34,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
 
   const loadProducts = async (showLoading: boolean = true, useHomepageOptimization: boolean = true) => {
     try {
+      console.log('ProductContext - loadProducts called with:', { showLoading, useHomepageOptimization });
       if (showLoading) {
         setLoading(true);
       }
@@ -144,6 +145,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
   };
 
   useEffect(() => {
+    console.log('ProductContext - useEffect called, starting product loading...');
     // Add timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
       console.log('ProductContext - Timeout reached, forcing loading to false');
@@ -151,6 +153,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     }, 15000); // 15 second timeout - increased to allow for slower connections
 
     loadProducts(true, true).finally(() => {
+      console.log('ProductContext - loadProducts completed, clearing timeout');
       clearTimeout(timeoutId);
     });
   }, []);
