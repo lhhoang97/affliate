@@ -37,7 +37,7 @@ import {
   Search,
   CloudUpload
 } from '@mui/icons-material';
-import { Product, Category } from '../types';
+import { Product } from '../types';
 import { fetchCategories } from '../services/productService';
 import { useProducts } from '../contexts/ProductContext';
 import { getAllProducts } from '../services/productService';
@@ -99,13 +99,13 @@ const AdminProductsPage: React.FC = () => {
   useEffect(() => {
     const loadAllProducts = async () => {
       try {
-        setLoading(true);
+        // setLoading(true); // TODO: Implement loading state
         const allProducts = await getAllProducts();
         setProducts(allProducts);
       } catch (error) {
         console.error('Error loading products for admin:', error);
       } finally {
-        setLoading(false);
+        // setLoading(false); // TODO: Implement loading state
       }
     };
 
@@ -188,19 +188,20 @@ const AdminProductsPage: React.FC = () => {
     }
   ];
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const cats = await fetchCategories();
-        if (!mounted) return;
-        setCategories(cats);
-      } catch (e) {
-        console.error('Error loading categories:', e);
-      }
-    })();
-    return () => { mounted = false; };
-  }, []);
+  // TODO: Implement categories loading
+  // useEffect(() => {
+  //   let mounted = true;
+  //   (async () => {
+  //     try {
+  //       const cats = await fetchCategories();
+  //       if (!mounted) return;
+  //       setCategories(cats);
+  //     } catch (e) {
+  //       console.error('Error loading categories:', e);
+  //     }
+  //   })();
+  //   return () => { mounted = false; };
+  // }, []);
 
   // Form data
   const [formData, setFormData] = useState<ProductFormData>({
