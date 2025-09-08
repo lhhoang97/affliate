@@ -172,23 +172,63 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       return null;
     }
 
-    // Skip profiles table for now to avoid timeout
-    console.log('getCurrentUser - Skipping profiles table to avoid timeout');
+    // Try to get user profile from profiles table
+    try {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-    // Return basic user info without profiles table
-    return {
-      id: user.id,
-      name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
-      email: user.email || '',
-      avatar: user.user_metadata?.avatar_url || undefined,
-      isVerified: user.email_confirmed_at ? true : false,
-      role: 'user',
-      phone: user.user_metadata?.phone || undefined,
-      address: user.user_metadata?.address || undefined,
-      bio: user.user_metadata?.bio || undefined,
-      createdAt: user.created_at || new Date().toISOString(),
-      updatedAt: user.updated_at || new Date().toISOString(),
-    };
+      if (profileError) {
+        console.log('getCurrentUser - Profile not found, using basic user info');
+        // Return basic user info if profile doesn't exist
+        return {
+          id: user.id,
+          name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+          email: user.email || '',
+          avatar: user.user_metadata?.avatar_url || undefined,
+          isVerified: user.email_confirmed_at ? true : false,
+          role: 'user',
+          phone: user.user_metadata?.phone || undefined,
+          address: user.user_metadata?.address || undefined,
+          bio: user.user_metadata?.bio || undefined,
+          createdAt: user.created_at || new Date().toISOString(),
+          updatedAt: user.updated_at || new Date().toISOString(),
+        };
+      }
+
+      // Return profile data
+      return {
+        id: profile.id,
+        name: profile.name,
+        email: profile.email,
+        avatar: profile.avatar,
+        isVerified: profile.is_verified,
+        role: profile.role,
+        phone: profile.phone,
+        address: profile.address,
+        bio: profile.bio,
+        createdAt: profile.created_at,
+        updatedAt: profile.updated_at,
+      };
+    } catch (profileError) {
+      console.log('getCurrentUser - Profile fetch error, using basic user info:', profileError);
+      // Fallback to basic user info
+      return {
+        id: user.id,
+        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+        email: user.email || '',
+        avatar: user.user_metadata?.avatar_url || undefined,
+        isVerified: user.email_confirmed_at ? true : false,
+        role: 'user',
+        phone: user.user_metadata?.phone || undefined,
+        address: user.user_metadata?.address || undefined,
+        bio: user.user_metadata?.bio || undefined,
+        createdAt: user.created_at || new Date().toISOString(),
+        updatedAt: user.updated_at || new Date().toISOString(),
+      };
+    }
   } catch (error) {
     console.error('Supabase get current user error:', error);
     return null;
