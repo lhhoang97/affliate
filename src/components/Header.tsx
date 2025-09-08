@@ -34,6 +34,7 @@ import {
   Whatshot
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
+import analytics from '../services/analyticsService';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 import { useProducts } from '../contexts/ProductContext';
@@ -136,7 +137,11 @@ const Header: React.FC = () => {
   };
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+    const newState = !mobileOpen;
+    setMobileOpen(newState);
+    
+    // Track mobile menu interaction
+    analytics.trackMobileMenu(newState ? 'open' : 'close');
   };
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {

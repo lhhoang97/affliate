@@ -22,6 +22,7 @@ import {
 } from '@mui/icons-material';
 // Remove unused import
 import { Product } from '../types';
+import analytics from '../services/analyticsService';
 
 interface SearchBarSimpleProps {
   value: string;
@@ -170,6 +171,9 @@ const SearchBarSimple: React.FC<SearchBarSimpleProps> = ({
     onChange(suggestion);
     onSearch(suggestion);
     addToSearchHistory(suggestion);
+    
+    // Track search event
+    analytics.trackSearch(suggestion);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -179,6 +183,9 @@ const SearchBarSimple: React.FC<SearchBarSimpleProps> = ({
         onSearch(value.trim());
         addToSearchHistory(value.trim());
         setShowDropdown(false);
+        
+        // Track search event
+        analytics.trackSearch(value.trim());
       }
     }
   };
@@ -221,6 +228,9 @@ const SearchBarSimple: React.FC<SearchBarSimpleProps> = ({
     onSearch(searchValue);
     addToSearchHistory(searchValue);
     setMobileSearchValue('');
+    
+    // Track search event
+    analytics.trackSearch(searchValue);
   };
 
   const handleClear = () => {
@@ -295,7 +305,7 @@ const SearchBarSimple: React.FC<SearchBarSimpleProps> = ({
             outline: 'none',
             backgroundColor: 'transparent',
             flex: 1,
-            fontSize: window.innerWidth < 600 ? '15px' : '16px',
+            fontSize: typeof window !== 'undefined' && window.innerWidth < 600 ? '15px' : '16px',
             fontWeight: 400,
             color: '#000000',
             padding: '0',

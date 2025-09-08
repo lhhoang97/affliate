@@ -40,6 +40,7 @@ import {
 import { Product, Category } from '../types';
 import { fetchCategories } from '../services/productService';
 import { useProducts } from '../contexts/ProductContext';
+import { getAllProducts } from '../services/productService';
 import VideoPlayer from '../components/VideoPlayer';
 
 interface ProductFormData {
@@ -79,7 +80,9 @@ interface ProductFormData {
 }
 
 const AdminProductsPage: React.FC = () => {
-  const { products, loading, updateProductById, createNewProduct, deleteProductById } = useProducts();
+  const { updateProductById, createNewProduct, deleteProductById } = useProducts();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingProduct, setEditingProduct] = useState<ProductFormData | null>(null);
@@ -91,6 +94,23 @@ const AdminProductsPage: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [showImagePreview, setShowImagePreview] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load all products for admin (not just homepage optimized set)
+  useEffect(() => {
+    const loadAllProducts = async () => {
+      try {
+        setLoading(true);
+        const allProducts = await getAllProducts();
+        setProducts(allProducts);
+      } catch (error) {
+        console.error('Error loading products for admin:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAllProducts();
+  }, []);
   
   // Predefined categories with subcategories for easy product management
   const predefinedCategories = [
@@ -384,6 +404,11 @@ const AdminProductsPage: React.FC = () => {
           });
         setSnackbar({ open: true, message: 'New product added successfully!', severity: 'success' });
       }
+      
+      // Refresh the local products list after save
+      const updatedProducts = await getAllProducts();
+      setProducts(updatedProducts);
+      
       handleCloseDialog();
     } catch (e) {
               setSnackbar({ open: true, message: `Error saving product: ${e instanceof Error ? e.message : 'Unknown error'}`, severity: 'error' });
@@ -396,6 +421,11 @@ const AdminProductsPage: React.FC = () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
         await deleteProductById(productId);
+        
+        // Refresh the local products list after delete
+        const updatedProducts = await getAllProducts();
+        setProducts(updatedProducts);
+        
         setSnackbar({ open: true, message: 'Product deleted successfully!', severity: 'success' });
       } catch (e) {
         setSnackbar({ open: true, message: 'Error deleting product', severity: 'error' });

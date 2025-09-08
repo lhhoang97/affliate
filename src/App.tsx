@@ -1,10 +1,12 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import analytics from './services/analyticsService';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
+import PageTracker from './components/PageTracker';
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
@@ -227,6 +229,11 @@ const theme = createTheme({
 function App() {
   console.log('App component rendering...');
   
+  // Initialize Google Analytics
+  useEffect(() => {
+    analytics.initialize();
+  }, []);
+  
   // Simple fallback component
   if (!process.env.REACT_APP_SUPABASE_URL || !process.env.REACT_APP_SUPABASE_ANON_KEY) {
     return (
@@ -246,6 +253,7 @@ function App() {
           <CartProvider>
             <ProductProvider>
               <Router>
+                <PageTracker />
             <Routes>
               {/* Regular layout with header/footer */}
               <Route path="/*" element={

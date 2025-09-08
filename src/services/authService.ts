@@ -54,29 +54,47 @@ export async function signUpWithSupabase(credentials: RegisterCredentials): Prom
         data: {
           name: credentials.name,
         },
+        emailRedirectTo: undefined, // Disable email confirmation for development
       },
     });
 
     if (error) throw error;
     if (!data.user) throw new Error('Registration failed');
 
-    // Create profile in profiles table
+    // Profile will be created automatically by database trigger
+    console.log('User registered successfully, profile will be created by trigger');
+    
+    // Wait a moment for trigger to create profile
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Try to fetch the profile created by trigger
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .insert({
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+
+    if (profileError) {
+      console.log('Profile not created by trigger yet, will be created on first login');
+      // Return basic user info - profile will be created when they first login
+      return {
         id: data.user.id,
         name: credentials.name,
         email: credentials.email,
+        avatar: undefined,
+        isVerified: false,
         role: 'user',
-        is_verified: false,
-      })
-      .select()
-      .single();
+        phone: undefined,
+        address: undefined,
+        bio: undefined,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    }
 
-    if (profileError) throw profileError;
-
+    // Return the profile created by trigger
     return {
-      id: data.user.id,
+      id: profile.id,
       name: profile.name,
       email: profile.email,
       avatar: profile.avatar,
@@ -144,33 +162,32 @@ export async function updateProfileWithSupabase(userId: string, profileData: Par
 }
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
-
+  console.log('getCurrentUser - Starting...');
   try {
     const { data: { user }, error } = await supabase.auth.getUser();
+    console.log('getCurrentUser - Supabase auth result:', { user: user?.email, error });
     
-    if (error || !user) return null;
+    if (error || !user) {
+      console.log('getCurrentUser - No user or error, returning null');
+      return null;
+    }
 
-    // Get user profile from profiles table
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+    // Skip profiles table for now to avoid timeout
+    console.log('getCurrentUser - Skipping profiles table to avoid timeout');
 
-    if (profileError) return null;
-
+    // Return basic user info without profiles table
     return {
       id: user.id,
-      name: profile.name,
-      email: profile.email,
-      avatar: profile.avatar,
-      isVerified: profile.is_verified,
-      role: profile.role,
-      phone: profile.phone,
-      address: profile.address,
-      bio: profile.bio,
-      createdAt: profile.created_at,
-      updatedAt: profile.updated_at,
+      name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+      email: user.email || '',
+      avatar: user.user_metadata?.avatar_url || undefined,
+      isVerified: user.email_confirmed_at ? true : false,
+      role: 'user',
+      phone: user.user_metadata?.phone || undefined,
+      address: user.user_metadata?.address || undefined,
+      bio: user.user_metadata?.bio || undefined,
+      createdAt: user.created_at || new Date().toISOString(),
+      updatedAt: user.updated_at || new Date().toISOString(),
     };
   } catch (error) {
     console.error('Supabase get current user error:', error);

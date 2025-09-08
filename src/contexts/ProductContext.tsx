@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product } from '../types';
-import { getAllProducts, updateProduct, createProduct, deleteProduct } from '../services/productService';
+import { getAllProducts, getHomepageProducts, updateProduct, createProduct, deleteProduct } from '../services/productService';
 
 interface ProductContextType {
   products: Product[];
   loading: boolean;
   error: string | null;
   refreshProducts: () => Promise<void>;
+  refreshHomepageProducts: () => Promise<void>;
   updateProductById: (id: string, updates: Partial<Product>) => Promise<void>;
   createNewProduct: (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   deleteProductById: (id: string) => Promise<void>;
@@ -31,25 +32,33 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadProducts = async (showLoading: boolean = true) => {
+  const loadProducts = async (showLoading: boolean = true, useHomepageOptimization: boolean = true) => {
     try {
       if (showLoading) {
         setLoading(true);
       }
       setError(null);
-      console.log('ProductContext - Loading products from database...');
-      const allProducts = await getAllProducts();
-      console.log('ProductContext - Loaded products count:', allProducts.length);
-      console.log('ProductContext - Sample products:', allProducts.slice(0, 3).map(p => ({ id: p.id, name: p.name, category: p.category })));
       
-      // Debug: Check for smartphone products
-      const smartphoneProducts = allProducts.filter(p => p.category === 'Smartphones');
-      console.log('ProductContext - Smartphone products found:', smartphoneProducts.length);
-      smartphoneProducts.forEach(p => {
-        console.log('ProductContext - Smartphone:', p.name, p.category);
-      });
-      
-      setProducts(allProducts);
+      if (useHomepageOptimization) {
+        console.log('ProductContext - Loading optimized homepage products...');
+        const homepageProducts = await getHomepageProducts();
+        console.log('ProductContext - Loaded homepage products count:', homepageProducts.length);
+        setProducts(homepageProducts);
+      } else {
+        console.log('ProductContext - Loading all products from database...');
+        const allProducts = await getAllProducts();
+        console.log('ProductContext - Loaded products count:', allProducts.length);
+        console.log('ProductContext - Sample products:', allProducts.slice(0, 3).map(p => ({ id: p.id, name: p.name, category: p.category })));
+        
+        // Debug: Check for smartphone products
+        const smartphoneProducts = allProducts.filter(p => p.category === 'Smartphones');
+        console.log('ProductContext - Smartphone products found:', smartphoneProducts.length);
+        smartphoneProducts.forEach(p => {
+          console.log('ProductContext - Smartphone:', p.name, p.category);
+        });
+        
+        setProducts(allProducts);
+      }
     } catch (err) {
       console.error('Error loading products:', err);
       setError('Failed to load products from database');
@@ -63,8 +72,13 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
   };
 
   const refreshProducts = async () => {
-    console.log('ProductContext - Refreshing products...');
-    await loadProducts(true); // Show loading for manual refresh
+    console.log('ProductContext - Refreshing all products...');
+    await loadProducts(true, false); // Show loading for manual refresh, load all products
+  };
+
+  const refreshHomepageProducts = async () => {
+    console.log('ProductContext - Refreshing homepage products...');
+    await loadProducts(true, true); // Show loading for manual refresh, use homepage optimization
   };
 
   const updateProductById = async (id: string, updates: Partial<Product>) => {
@@ -119,15 +133,23 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
   };
 
   useEffect(() => {
-    loadProducts(true); // Show loading for initial load
+    // Add timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.log('ProductContext - Timeout reached, forcing loading to false');
+      setLoading(false);
+    }, 10000); // 10 second timeout
+
+    loadProducts(true, true).finally(() => {
+      clearTimeout(timeoutId);
+    });
   }, []);
 
-  // Auto-refresh products every 30 seconds to keep in sync (reduced frequency to prevent flickering)
+  // Auto-refresh homepage products every 5 minutes to keep in sync (optimized frequency)
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log('ProductContext - Auto-refreshing products...');
-      loadProducts(false); // Don't show loading for auto-refresh
-    }, 30000); // Refresh every 30 seconds instead of 5
+      console.log('ProductContext - Auto-refreshing homepage products...');
+      loadProducts(false, true); // Don't show loading for auto-refresh, use homepage optimization
+    }, 300000); // Refresh every 5 minutes instead of 30 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -137,6 +159,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     loading,
     error,
     refreshProducts,
+    refreshHomepageProducts,
     updateProductById,
     createNewProduct,
     deleteProductById,

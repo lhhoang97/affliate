@@ -7,6 +7,7 @@ import {
   updateProfileWithSupabase,
   getCurrentUser 
 } from '../services/authService';
+import { supabase } from '../utils/supabaseClient';
 
 
 interface AuthContextType extends AuthState {
@@ -39,20 +40,59 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        console.log('AuthContext - Starting auth initialization...');
         // Try to get current user from Supabase
         const currentUser = await getCurrentUser();
+        console.log('AuthContext - getCurrentUser result:', currentUser);
         if (currentUser) {
           setUser(currentUser);
           setIsAuthenticated(true);
+          console.log('AuthContext - User authenticated:', currentUser.email);
+        } else {
+          console.log('AuthContext - No user found, setting as unauthenticated');
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
       } finally {
+        console.log('AuthContext - Setting isLoading to false');
         setIsLoading(false);
       }
     };
 
-    initializeAuth();
+    // Add timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.log('AuthContext - Timeout reached, forcing loading to false');
+      setIsLoading(false);
+    }, 5000); // 5 second timeout
+
+    initializeAuth().finally(() => {
+      clearTimeout(timeoutId);
+    });
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id);
+      
+      if (event === 'SIGNED_IN' && session?.user) {
+        try {
+          const currentUser = await getCurrentUser();
+          if (currentUser) {
+            setUser(currentUser);
+            setIsAuthenticated(true);
+          }
+        } catch (err) {
+          console.error('Error handling sign in:', err);
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setIsAuthenticated(false);
+        setError(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (credentials: LoginCredentials) => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material';
 import SmartLink from './SmartLink';
 import OptimizedImage from './OptimizedImage';
+import analytics from '../services/analyticsService';
 
 interface ProductCardProps {
   product: {
@@ -60,6 +61,17 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
   variant = 'default'
 }) => {
   const [isLiked, setIsLiked] = React.useState(false);
+  
+  // Track product view when component mounts
+  useEffect(() => {
+    analytics.trackProductView({
+      id: product.id,
+      name: product.name,
+      category: (product as any).category || 'General',
+      price: product.price,
+      brand: product.retailer,
+    });
+  }, [product]);
   
   // Debug log to check product data (development only)
   if (process.env.NODE_ENV === 'development') {
@@ -696,26 +708,34 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
 
 
         {/* Buy Button with Retailer */}
-        <Button
-          variant="contained"
-          size="small"
-          fullWidth
-          onClick={handleView}
-          sx={{
-            mb: 1.5,
-            backgroundColor: '#3b82f6',
-            color: 'white',
-            fontWeight: 600,
-            textTransform: 'none',
-            fontSize: { xs: '0.8rem', sm: '0.9rem' },
-            py: { xs: 0.75, sm: 1 },
-            '&:hover': {
-              backgroundColor: '#2563eb'
-            }
-          }}
+        <SmartLink
+          to={product.affiliateLink || product.externalUrl || '#'}
+          external={true}
+          productId={product.id}
+          productName={product.name}
+          productPrice={product.price}
+          retailer={product.retailer}
         >
-          Get Deal at {product.retailer || 'BestFinds'}
-        </Button>
+          <Button
+            variant="contained"
+            size="small"
+            fullWidth
+            sx={{
+              mb: 1.5,
+              backgroundColor: '#3b82f6',
+              color: 'white',
+              fontWeight: 600,
+              textTransform: 'none',
+              fontSize: { xs: '0.8rem', sm: '0.9rem' },
+              py: { xs: 0.75, sm: 1 },
+              '&:hover': {
+                backgroundColor: '#2563eb'
+              }
+            }}
+          >
+            Get Deal at {product.retailer || 'BestFinds'}
+          </Button>
+        </SmartLink>
 
         {/* Interaction Buttons */}
         <Box sx={{ 

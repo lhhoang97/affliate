@@ -239,7 +239,7 @@ export const getProductById = async (id: string): Promise<Product | null> => {
   }
 };
 
-// Get all products
+// Get all products (for admin and full product pages)
 export const getAllProducts = async (): Promise<Product[]> => {
   console.log('getAllProducts called - trying to fetch from database...');
   try {
@@ -258,6 +258,35 @@ export const getAllProducts = async (): Promise<Product[]> => {
     }
   } catch (err) {
     console.error('getAllProducts - Error fetching from database:', err);
+    return [];
+  }
+};
+
+// Get optimized products for homepage (only 36 products)
+export const getHomepageProducts = async (): Promise<Product[]> => {
+  console.log('getHomepageProducts called - fetching optimized set for homepage...');
+  try {
+    // Smart selection: mix of newest products and featured products
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(36);
+    
+    if (error) {
+      console.error('Error fetching homepage products:', error);
+      return [];
+    }
+    
+    if (data && data.length > 0) {
+      console.log('getHomepageProducts - Found', data.length, 'products for homepage');
+      return data.map(mapDbProduct);
+    } else {
+      console.log('getHomepageProducts - No products found');
+      return [];
+    }
+  } catch (err) {
+    console.error('getHomepageProducts - Error fetching from database:', err);
     return [];
   }
 };

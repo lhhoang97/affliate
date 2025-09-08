@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import analytics from '../services/analyticsService';
 
 interface SmartLinkProps {
   to: string;
@@ -8,6 +9,11 @@ interface SmartLinkProps {
   className?: string;
   style?: React.CSSProperties;
   external?: boolean;
+  // Analytics tracking props
+  productId?: string;
+  productName?: string;
+  productPrice?: number;
+  retailer?: string;
   [key: string]: any;
 }
 
@@ -26,6 +32,10 @@ const SmartLink: React.FC<SmartLinkProps> = ({
   children, 
   onClick,
   external = false,
+  productId,
+  productName,
+  productPrice,
+  retailer,
   ...props 
 }) => {
   const handleClick = (e: React.MouseEvent) => {
@@ -61,6 +71,17 @@ const SmartLink: React.FC<SmartLinkProps> = ({
     if (external) {
       e.preventDefault();
       window.open(to, '_blank', 'noopener,noreferrer');
+      
+      // Track affiliate click if product data is provided
+      if (productId && productName) {
+        analytics.trackAffiliateClick({
+          id: productId,
+          name: productName,
+          retailer: retailer || 'Unknown',
+          url: to,
+          price: productPrice,
+        });
+      }
     }
   };
 

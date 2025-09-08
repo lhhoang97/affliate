@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Product } from '../types';
-import { fetchProducts } from '../services/productService';
+import { getAllProducts } from '../services/productService';
 import { useCart } from '../contexts/CartContext';
 
 
@@ -40,7 +40,7 @@ const ProductsPage: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     setIsLoading(true);
-    fetchProducts()
+    getAllProducts()
       .then((items) => { if (isMounted) setAllProducts(items); })
       .finally(() => { if (isMounted) setIsLoading(false); });
     return () => { isMounted = false; };
