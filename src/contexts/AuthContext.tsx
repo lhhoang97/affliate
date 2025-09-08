@@ -41,8 +41,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const initializeAuth = async () => {
       try {
         console.log('AuthContext - Starting auth initialization...');
-        // Try to get current user from Supabase
-        const currentUser = await getCurrentUser();
+        // Try to get current user from Supabase with timeout
+        const currentUser = await Promise.race([
+          getCurrentUser(),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Auth timeout')), 5000)
+          )
+        ]);
         console.log('AuthContext - getCurrentUser result:', currentUser);
         if (currentUser) {
           setUser(currentUser);
@@ -53,6 +58,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
+        console.log('AuthContext - Setting as unauthenticated due to error');
       } finally {
         console.log('AuthContext - Setting isLoading to false');
         setIsLoading(false);

@@ -41,12 +41,23 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       
       if (useHomepageOptimization) {
         console.log('ProductContext - Loading optimized homepage products...');
-        const homepageProducts = await getHomepageProducts();
-        console.log('ProductContext - Loaded homepage products count:', homepageProducts.length);
-        setProducts(homepageProducts);
+        // Use getAllProducts with timeout
+        const allProducts = await Promise.race([
+          getAllProducts(),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Products timeout')), 8000)
+          )
+        ]);
+        console.log('ProductContext - Loaded products count:', allProducts.length);
+        setProducts(allProducts);
       } else {
         console.log('ProductContext - Loading all products from database...');
-        const allProducts = await getAllProducts();
+        const allProducts = await Promise.race([
+          getAllProducts(),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Products timeout')), 8000)
+          )
+        ]);
         console.log('ProductContext - Loaded products count:', allProducts.length);
         console.log('ProductContext - Sample products:', allProducts.slice(0, 3).map(p => ({ id: p.id, name: p.name, category: p.category })));
         
