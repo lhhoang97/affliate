@@ -41,13 +41,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const initializeAuth = async () => {
       try {
         console.log('AuthContext - Starting auth initialization...');
-        // Try to get current user from Supabase with timeout
-        const currentUser = await Promise.race([
-          getCurrentUser(),
-          new Promise<null>((_, reject) => 
-            setTimeout(() => reject(new Error('Auth timeout')), 5000)
-          )
-        ]);
+        // Try to get current user from Supabase
+        const currentUser = await getCurrentUser();
         console.log('AuthContext - getCurrentUser result:', currentUser);
         if (currentUser) {
           setUser(currentUser);
@@ -69,7 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const timeoutId = setTimeout(() => {
       console.log('AuthContext - Timeout reached, forcing loading to false');
       setIsLoading(false);
-    }, 10000); // 10 second timeout - increased to match ProductContext
+    }, 30000); // 30 second timeout - increased to allow for slower connections
 
     initializeAuth().finally(() => {
       clearTimeout(timeoutId);

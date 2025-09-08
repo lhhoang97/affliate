@@ -42,23 +42,13 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       
       if (useHomepageOptimization) {
         console.log('ProductContext - Loading optimized homepage products...');
-        // Use getAllProducts with timeout
-        const allProducts = await Promise.race([
-          getAllProducts(),
-          new Promise<Product[]>((_, reject) => 
-            setTimeout(() => reject(new Error('Products timeout')), 8000)
-          )
-        ]);
+        // Use getAllProducts
+        const allProducts = await getAllProducts();
         console.log('ProductContext - Loaded products count:', allProducts.length);
         setProducts(allProducts);
       } else {
         console.log('ProductContext - Loading all products from database...');
-        const allProducts = await Promise.race([
-          getAllProducts(),
-          new Promise<Product[]>((_, reject) => 
-            setTimeout(() => reject(new Error('Products timeout')), 8000)
-          )
-        ]);
+        const allProducts = await getAllProducts();
         console.log('ProductContext - Loaded products count:', allProducts.length);
         console.log('ProductContext - Sample products:', allProducts.slice(0, 3).map(p => ({ id: p.id, name: p.name, category: p.category })));
         
@@ -150,7 +140,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     const timeoutId = setTimeout(() => {
       console.log('ProductContext - Timeout reached, forcing loading to false');
       setLoading(false);
-    }, 15000); // 15 second timeout - increased to allow for slower connections
+    }, 30000); // 30 second timeout - increased to allow for slower connections
 
     loadProducts(true, true).finally(() => {
       console.log('ProductContext - loadProducts completed, clearing timeout');
