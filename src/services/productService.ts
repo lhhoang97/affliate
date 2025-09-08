@@ -242,8 +242,12 @@ export const getProductById = async (id: string): Promise<Product | null> => {
 // Get all products (for admin and full product pages)
 export const getAllProducts = async (): Promise<Product[]> => {
   console.log('getAllProducts called - trying to fetch from database...');
+  console.log('Supabase client:', supabase ? 'Available' : 'Not available');
   try {
+    console.log('Executing Supabase query...');
     const { data, error } = await supabase.from('products').select('*');
+    console.log('Supabase query result:', { data: data?.length || 0, error });
+    
     if (error) {
       console.error('Error fetching products from database:', error);
       return [];
@@ -251,7 +255,10 @@ export const getAllProducts = async (): Promise<Product[]> => {
     
     if (data && data.length > 0) {
       console.log('getAllProducts - Found', data.length, 'products from database');
-      return data.map(mapDbProduct);
+      console.log('Sample raw product:', data[0]);
+      const mappedProducts = data.map(mapDbProduct);
+      console.log('Sample mapped product:', mappedProducts[0]);
+      return mappedProducts;
     } else {
       console.log('getAllProducts - No products in database');
       return [];
