@@ -256,6 +256,12 @@ export const getAllProducts = async (): Promise<Product[]> => {
     console.log('Data length:', data?.length);
     console.log('First item:', data?.[0]);
     
+    // Check if this is a React environment issue
+    console.log('Environment check:');
+    console.log('- process.env.NODE_ENV:', process.env.NODE_ENV);
+    console.log('- window object:', typeof window !== 'undefined' ? 'Available' : 'Not available');
+    console.log('- document object:', typeof document !== 'undefined' ? 'Available' : 'Not available');
+    
     if (error) {
       console.error('Error fetching products from database:', error);
       return [];
