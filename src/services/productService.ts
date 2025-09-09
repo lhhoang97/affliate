@@ -250,6 +250,12 @@ export const getAllProducts = async (): Promise<Product[]> => {
     console.log('Full error object:', error);
     console.log('Full data object:', data);
     
+    // Additional debugging
+    console.log('Data type:', typeof data);
+    console.log('Is array:', Array.isArray(data));
+    console.log('Data length:', data?.length);
+    console.log('First item:', data?.[0]);
+    
     if (error) {
       console.error('Error fetching products from database:', error);
       return [];
