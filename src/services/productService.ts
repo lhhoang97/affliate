@@ -262,6 +262,11 @@ export const getAllProducts = async (): Promise<Product[]> => {
     console.log('- window object:', typeof window !== 'undefined' ? 'Available' : 'Not available');
     console.log('- document object:', typeof document !== 'undefined' ? 'Available' : 'Not available');
     
+    // Force a delay to see if it's a timing issue
+    console.log('Adding 1 second delay...');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log('Delay completed');
+    
     if (error) {
       console.error('Error fetching products from database:', error);
       return [];
