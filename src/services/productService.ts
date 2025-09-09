@@ -245,7 +245,16 @@ export const getAllProducts = async (): Promise<Product[]> => {
   console.log('Supabase client:', supabase ? 'Available' : 'Not available');
   try {
     console.log('Executing Supabase query...');
-    const { data, error } = await supabase.from('products').select('*');
+    
+    // Add timeout to prevent hanging
+    const queryPromise = supabase.from('products').select('*');
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Query timeout after 10 seconds')), 10000)
+    );
+    
+    console.log('Starting query with timeout...');
+    const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
+    
     console.log('Supabase query result:', { data: data?.length || 0, error });
     console.log('Full error object:', error);
     console.log('Full data object:', data);
@@ -261,11 +270,6 @@ export const getAllProducts = async (): Promise<Product[]> => {
     console.log('- process.env.NODE_ENV:', process.env.NODE_ENV);
     console.log('- window object:', typeof window !== 'undefined' ? 'Available' : 'Not available');
     console.log('- document object:', typeof document !== 'undefined' ? 'Available' : 'Not available');
-    
-    // Force a delay to see if it's a timing issue
-    console.log('Adding 1 second delay...');
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Delay completed');
     
     if (error) {
       console.error('Error fetching products from database:', error);
