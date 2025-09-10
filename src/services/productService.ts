@@ -243,52 +243,205 @@ export const getProductById = async (id: string): Promise<Product | null> => {
 export const getAllProducts = async (): Promise<Product[]> => {
   console.log('getAllProducts called - trying to fetch from database...');
   console.log('Supabase client:', supabase ? 'Available' : 'Not available');
+  
+  // FALLBACK PRODUCTS - Hiển thị ngay lập tức
+  const fallbackProducts: Product[] = [
+    {
+      id: 'fallback-1',
+      name: 'Samsung Galaxy S21',
+      description: 'Flagship smartphone with amazing camera and performance',
+      price: 699.99,
+      originalPrice: 799.99,
+      discount: 12,
+      image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400',
+      category: 'Smartphones',
+      brand: 'Samsung',
+      rating: 4.5,
+      reviewCount: 128,
+      inStock: true,
+      features: ['5G', '128GB Storage', 'Triple Camera'],
+      specifications: {
+        'Display': '6.2" Dynamic AMOLED',
+        'Processor': 'Exynos 2100',
+        'RAM': '8GB',
+        'Storage': '128GB',
+        'Camera': '64MP + 12MP + 12MP',
+        'Battery': '4000mAh'
+      },
+      retailer: 'Amazon',
+      retailerUrl: 'https://amazon.com',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'fallback-2',
+      name: 'iPhone 13',
+      description: 'Latest iPhone with A15 Bionic chip and improved cameras',
+      price: 799.99,
+      originalPrice: 899.99,
+      discount: 11,
+      image: 'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=400',
+      category: 'Smartphones',
+      brand: 'Apple',
+      rating: 4.7,
+      reviewCount: 256,
+      inStock: true,
+      features: ['5G', '128GB Storage', 'Dual Camera'],
+      specifications: {
+        'Display': '6.1" Super Retina XDR',
+        'Processor': 'A15 Bionic',
+        'RAM': '4GB',
+        'Storage': '128GB',
+        'Camera': '12MP + 12MP',
+        'Battery': '3240mAh'
+      },
+      retailer: 'Apple Store',
+      retailerUrl: 'https://apple.com',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'fallback-3',
+      name: 'MacBook Air M2',
+      description: 'Ultra-thin laptop with M2 chip for incredible performance',
+      price: 1199.99,
+      originalPrice: 1299.99,
+      discount: 8,
+      image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400',
+      category: 'Laptops',
+      brand: 'Apple',
+      rating: 4.8,
+      reviewCount: 89,
+      inStock: true,
+      features: ['M2 Chip', '8GB RAM', '256GB SSD'],
+      specifications: {
+        'Display': '13.6" Liquid Retina',
+        'Processor': 'Apple M2',
+        'RAM': '8GB',
+        'Storage': '256GB SSD',
+        'Graphics': '8-core GPU',
+        'Battery': 'Up to 18 hours'
+      },
+      retailer: 'Apple Store',
+      retailerUrl: 'https://apple.com',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'fallback-4',
+      name: 'Sony WH-1000XM4',
+      description: 'Industry-leading noise canceling wireless headphones',
+      price: 279.99,
+      originalPrice: 349.99,
+      discount: 20,
+      image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400',
+      category: 'Audio',
+      brand: 'Sony',
+      rating: 4.6,
+      reviewCount: 342,
+      inStock: true,
+      features: ['Noise Canceling', '30h Battery', 'Quick Charge'],
+      specifications: {
+        'Driver': '40mm',
+        'Frequency': '4Hz-40kHz',
+        'Battery': '30 hours',
+        'Charging': 'Quick Charge 10min = 5h',
+        'Connectivity': 'Bluetooth 5.0',
+        'Weight': '254g'
+      },
+      retailer: 'Best Buy',
+      retailerUrl: 'https://bestbuy.com',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'fallback-5',
+      name: 'Nintendo Switch OLED',
+      description: 'Gaming console with vibrant OLED display',
+      price: 349.99,
+      originalPrice: 399.99,
+      discount: 12,
+      image: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400',
+      category: 'Gaming',
+      brand: 'Nintendo',
+      rating: 4.4,
+      reviewCount: 178,
+      inStock: true,
+      features: ['OLED Display', '64GB Storage', 'Joy-Con Controllers'],
+      specifications: {
+        'Display': '7" OLED',
+        'Storage': '64GB',
+        'Battery': '4.5-9 hours',
+        'Connectivity': 'Wi-Fi, Bluetooth',
+        'Resolution': '1280x720',
+        'Weight': '420g'
+      },
+      retailer: 'GameStop',
+      retailerUrl: 'https://gamestop.com',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'fallback-6',
+      name: 'iPad Air 5th Gen',
+      description: 'Powerful tablet with M1 chip and all-day battery',
+      price: 599.99,
+      originalPrice: 649.99,
+      discount: 8,
+      image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400',
+      category: 'Tablets',
+      brand: 'Apple',
+      rating: 4.5,
+      reviewCount: 203,
+      inStock: true,
+      features: ['M1 Chip', '10.9" Display', 'Touch ID'],
+      specifications: {
+        'Display': '10.9" Liquid Retina',
+        'Processor': 'Apple M1',
+        'RAM': '8GB',
+        'Storage': '64GB',
+        'Camera': '12MP',
+        'Battery': 'Up to 10 hours'
+      },
+      retailer: 'Apple Store',
+      retailerUrl: 'https://apple.com',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+  ];
+
   try {
     console.log('Executing Supabase query...');
     
     // Add timeout to prevent hanging
     const queryPromise = supabase.from('products').select('*');
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Query timeout after 10 seconds')), 10000)
+      setTimeout(() => reject(new Error('Query timeout after 5 seconds')), 5000)
     );
     
     console.log('Starting query with timeout...');
     const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
     
     console.log('Supabase query result:', { data: data?.length || 0, error });
-    console.log('Full error object:', error);
-    console.log('Full data object:', data);
-    
-    // Additional debugging
-    console.log('Data type:', typeof data);
-    console.log('Is array:', Array.isArray(data));
-    console.log('Data length:', data?.length);
-    console.log('First item:', data?.[0]);
-    
-    // Check if this is a React environment issue
-    console.log('Environment check:');
-    console.log('- process.env.NODE_ENV:', process.env.NODE_ENV);
-    console.log('- window object:', typeof window !== 'undefined' ? 'Available' : 'Not available');
-    console.log('- document object:', typeof document !== 'undefined' ? 'Available' : 'Not available');
     
     if (error) {
       console.error('Error fetching products from database:', error);
-      return [];
+      console.log('Using fallback products instead');
+      return fallbackProducts;
     }
-    
+
     if (data && data.length > 0) {
       console.log('getAllProducts - Found', data.length, 'products from database');
-      console.log('Sample raw product:', data[0]);
       const mappedProducts = data.map(mapDbProduct);
-      console.log('Sample mapped product:', mappedProducts[0]);
       return mappedProducts;
     } else {
-      console.log('getAllProducts - No products in database');
-      return [];
+      console.log('getAllProducts - No products in database, using fallback');
+      return fallbackProducts;
     }
   } catch (err) {
     console.error('getAllProducts - Error fetching from database:', err);
-    return [];
+    console.log('Using fallback products instead');
+    return fallbackProducts;
   }
 };
 
