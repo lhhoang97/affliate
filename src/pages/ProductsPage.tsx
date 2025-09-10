@@ -84,7 +84,7 @@ const ProductsPage: React.FC = () => {
   );
 
   const handleAddToCart = (product: Product) => {
-    addToCart(product, 1);
+    addToCart(product.id, 1);
   };
 
   const handleGuestBuyNow = (product: Product) => {

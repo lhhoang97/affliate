@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -9,29 +9,32 @@ import {
   Grid,
   Chip,
   Divider,
-  Avatar,
   Tabs,
   Tab,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  Stepper,
-  Step,
-  StepLabel,
-  StepContent
+  Alert,
+  CircularProgress,
+  Paper,
+  Stack,
+  IconButton,
+  Tooltip,
+  TextField,
+  InputAdornment
 } from '@mui/material';
 import {
-  ShoppingCart,
+  ShoppingBag,
+  Search,
+  FilterList,
+  Refresh,
+  TrendingUp,
   LocalShipping,
   CheckCircle,
-  Schedule,
-  Receipt,
-  Star,
-  Refresh,
-  Visibility
+  Pending,
+  Cancel
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { useOrders } from '../contexts/OrdersContext';
 import { useAuth } from '../contexts/AuthContext';
+import OrderCard from '../components/OrderCard';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -56,92 +59,52 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const OrdersPage: React.FC = () => {
-  const { user } = useAuth();
-  const [tabValue, setTabValue] = useState(0);
+  const navigate = useNavigate();
+  const { orders, orderStatistics, isLoading, error, refreshOrders } = useOrders();
+  const { isAuthenticated } = useAuth();
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      refreshOrders();
+    }
+  }, [isAuthenticated, refreshOrders]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
+    setSelectedTab(newValue);
   };
 
-  const mockOrders = [
-    {
-      id: 'ORD-001',
-      date: '2024-01-15',
-      status: 'Delivered',
-      total: 299.99,
-      items: [
-        {
-          id: '1',
-          name: 'iPhone 15 Pro',
-          price: 999.99,
-          quantity: 1,
-          image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=100'
-        },
-        {
-          id: '2',
-          name: 'AirPods Pro',
-          price: 249.99,
-          quantity: 1,
-          image: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=100'
-        }
-      ],
-      trackingNumber: '1Z999AA1234567890',
-      estimatedDelivery: '2024-01-18',
-      actualDelivery: '2024-01-17',
-      shippingAddress: '123 Main St, New York, NY 10001',
-      paymentMethod: 'Visa ending in 1234'
-    },
-    {
-      id: 'ORD-002',
-      date: '2024-01-10',
-      status: 'Shipped',
-      total: 149.99,
-      items: [
-        {
-          id: '3',
-          name: 'Samsung Galaxy S24',
-          price: 899.99,
-          quantity: 1,
-          image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100'
-        }
-      ],
-      trackingNumber: '1Z999AA1234567891',
-      estimatedDelivery: '2024-01-15',
-      actualDelivery: null,
-      shippingAddress: '123 Main St, New York, NY 10001',
-      paymentMethod: 'Mastercard ending in 5678'
-    },
-    {
-      id: 'ORD-003',
-      date: '2024-01-05',
-      status: 'Processing',
-      total: 89.99,
-      items: [
-        {
-          id: '4',
-          name: 'Sony WH-1000XM5',
-          price: 349.99,
-          quantity: 1,
-          image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100'
-        }
-      ],
-      trackingNumber: null,
-      estimatedDelivery: '2024-01-12',
-      actualDelivery: null,
-      shippingAddress: '123 Main St, New York, NY 10001',
-      paymentMethod: 'PayPal'
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshOrders();
+    } finally {
+      setIsRefreshing(false);
     }
-  ];
+  };
+
+  const handleViewOrderDetails = (orderId: string) => {
+    navigate(`/orders/${orderId}`);
+  };
+
+  const handleUpdateOrderStatus = (orderId: string, status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded') => {
+    // This will be handled by the OrderCard component
+    // The OrdersContext will automatically refresh the data
+  };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Delivered':
-        return 'success';
-      case 'Shipped':
-        return 'primary';
-      case 'Processing':
+    switch (status.toLowerCase()) {
+      case 'pending':
         return 'warning';
-      case 'Cancelled':
+      case 'processing':
+        return 'info';
+      case 'shipped':
+        return 'primary';
+      case 'delivered':
+        return 'success';
+      case 'cancelled':
         return 'error';
       default:
         return 'default';
@@ -149,210 +112,328 @@ const OrdersPage: React.FC = () => {
   };
 
   const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'Delivered':
-        return <CheckCircle />;
-      case 'Shipped':
-        return <LocalShipping />;
-      case 'Processing':
-        return <Schedule />;
-      case 'Cancelled':
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return <Pending />;
+      case 'processing':
         return <Refresh />;
+      case 'shipped':
+        return <LocalShipping />;
+      case 'delivered':
+        return <CheckCircle />;
+      case 'cancelled':
+        return <Cancel />;
       default:
-        return <ShoppingCart />;
+        return <ShoppingBag />;
     }
   };
 
-  const getOrderSteps = (order: any) => {
-    const steps = [
-      { label: 'Order Placed', completed: true },
-      { label: 'Processing', completed: order.status !== 'Cancelled' },
-      { label: 'Shipped', completed: ['Shipped', 'Delivered'].includes(order.status) },
-      { label: 'Delivered', completed: order.status === 'Delivered' }
-    ];
-    return steps;
-  };
+  // Filter orders based on search term and selected tab
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         order.status.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    if (selectedTab === 0) return matchesSearch; // All orders
+    if (selectedTab === 1) return matchesSearch && order.status === 'pending';
+    if (selectedTab === 2) return matchesSearch && (order.status === 'processing' || order.status === 'shipped');
+    if (selectedTab === 3) return matchesSearch && order.status === 'delivered';
+    if (selectedTab === 4) return matchesSearch && order.status === 'cancelled';
+    
+    return matchesSearch;
+  });
+
+  if (!isAuthenticated) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Box textAlign="center" py={8}>
+          <ShoppingBag sx={{ fontSize: 80, color: '#3b82f6', mb: 2 }} />
+          <Typography variant="h4" gutterBottom>
+            Your Orders
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+            Please login to view your orders
+          </Typography>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate('/login')}
+            sx={{ px: 4 }}
+          >
+            Login
+          </Button>
+        </Box>
+      </Container>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+          <CircularProgress size={60} />
+        </Box>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+        <Button
+          variant="outlined"
+          onClick={handleRefresh}
+          startIcon={<Refresh />}
+        >
+          Try Again
+        </Button>
+      </Container>
+    );
+  }
 
   return (
-    <Box sx={{ backgroundColor: '#f3f3f3', minHeight: '100vh' }}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Header */}
-      <Box sx={{ 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white',
-        py: 4
-      }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <Receipt sx={{ fontSize: 40 }} />
-            <Typography variant="h3" component="h1" sx={{ fontWeight: 'bold' }}>
-              My Orders
-            </Typography>
-          </Box>
-          <Typography variant="h6" sx={{ opacity: 0.9 }}>
-            Track your orders and view order history
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+          <Typography variant="h4" component="h1">
+            My Orders
           </Typography>
-        </Container>
+          <Tooltip title="Refresh Orders">
+            <IconButton
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              color="primary"
+            >
+              <Refresh />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        {/* Statistics */}
+        {orderStatistics && (
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={3}>
+                <Box textAlign="center">
+                  <Typography variant="h4" color="primary">
+                    {orderStatistics.totalOrders}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Total Orders
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Box textAlign="center">
+                  <Typography variant="h4" color="warning.main">
+                    {orderStatistics.pendingOrders}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Pending
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Box textAlign="center">
+                  <Typography variant="h4" color="success.main">
+                    {orderStatistics.completedOrders}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Completed
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Box textAlign="center">
+                  <Typography variant="h4" color="primary">
+                    ${orderStatistics.totalRevenue.toFixed(2)}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Total Spent
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
+        )}
+
+        {/* Search and Filter */}
+        <Box sx={{ mb: 3 }}>
+          <TextField
+            fullWidth
+            placeholder="Search orders by ID or status..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ maxWidth: 400 }}
+          />
+        </Box>
       </Box>
 
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        {/* Tabs */}
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-          <Tabs value={tabValue} onChange={handleTabChange} aria-label="orders tabs">
-            <Tab label="All Orders" />
-            <Tab label="Not Yet Shipped" />
-            <Tab label="Cancelled Orders" />
+      {/* Tabs */}
+      <Card>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs value={selectedTab} onChange={handleTabChange} aria-label="orders tabs">
+            <Tab label={`All (${orders.length})`} />
+            <Tab 
+              label={`Pending (${orders.filter(o => o.status === 'pending').length})`} 
+              icon={<Pending />}
+              iconPosition="start"
+            />
+            <Tab 
+              label={`Processing (${orders.filter(o => o.status === 'processing' || o.status === 'shipped').length})`} 
+              icon={<LocalShipping />}
+              iconPosition="start"
+            />
+            <Tab 
+              label={`Delivered (${orders.filter(o => o.status === 'delivered').length})`} 
+              icon={<CheckCircle />}
+              iconPosition="start"
+            />
+            <Tab 
+              label={`Cancelled (${orders.filter(o => o.status === 'cancelled').length})`} 
+              icon={<Cancel />}
+              iconPosition="start"
+            />
           </Tabs>
         </Box>
 
-        {/* Orders List */}
-        <TabPanel value={tabValue} index={0}>
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 3 }}>
-            {mockOrders.map((order) => (
-              <Card key={order.id}>
-                <CardContent>
-                  {/* Order Header */}
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Box>
-                      <Typography variant="h6" gutterBottom>
-                        Order #{order.id}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Placed on {new Date(order.date).toLocaleDateString()}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ textAlign: 'right' }}>
-                      <Chip
-                        icon={getStatusIcon(order.status)}
-                        label={order.status}
-                        color={getStatusColor(order.status) as any}
-                        sx={{ mb: 1 }}
-                      />
-                      <Typography variant="h6" sx={{ color: '#B12704', fontWeight: 'bold' }}>
-                        ${order.total}
-                      </Typography>
-                    </Box>
-                  </Box>
-
-                  <Divider sx={{ my: 2 }} />
-
-                  {/* Order Items */}
-                  <List>
-                    {order.items.map((item) => (
-                      <ListItem key={item.id} sx={{ px: 0 }}>
-                        <ListItemAvatar>
-                          <Avatar src={item.image} sx={{ width: 60, height: 60 }} />
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={item.name}
-                          secondary={`Qty: ${item.quantity} • $${item.price}`}
-                        />
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            startIcon={<Star />}
-                          >
-                            Review
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            startIcon={<Visibility />}
-                          >
-                            View
-                          </Button>
-                        </Box>
-                      </ListItem>
-                    ))}
-                  </List>
-
-                  <Divider sx={{ my: 2 }} />
-
-                  {/* Order Details */}
-                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2 }}>
-                    <Box>
-                      <Typography variant="subtitle2" gutterBottom>
-                        Shipping Address
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {order.shippingAddress}
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="subtitle2" gutterBottom>
-                        Payment Method
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {order.paymentMethod}
-                      </Typography>
-                    </Box>
-                  </Box>
-
-                  {/* Order Progress */}
-                  <Box sx={{ mt: 3 }}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Order Progress
-                    </Typography>
-                    <Stepper orientation="vertical">
-                      {getOrderSteps(order).map((step, index) => (
-                        <Step key={index} active={step.completed} completed={step.completed}>
-                          <StepLabel>{step.label}</StepLabel>
-                          <StepContent>
-                            <Typography variant="body2" color="text.secondary">
-                              {step.completed ? 'Completed' : 'Pending'}
-                            </Typography>
-                          </StepContent>
-                        </Step>
-                      ))}
-                    </Stepper>
-                  </Box>
-
-                  {/* Action Buttons */}
-                  <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-                    {order.trackingNumber && (
-                      <Button variant="outlined" startIcon={<LocalShipping />}>
-                        Track Package
-                      </Button>
-                    )}
-                    <Button variant="outlined" startIcon={<Receipt />}>
-                      Download Invoice
-                    </Button>
-                    <Button variant="outlined">
-                      Buy Again
-                    </Button>
-                    {order.status === 'Delivered' && (
-                      <Button variant="contained" startIcon={<Star />}>
-                        Write Review
-                      </Button>
-                    )}
-                  </Box>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
+        {/* Tab Panels */}
+        <TabPanel value={selectedTab} index={0}>
+          {filteredOrders.length === 0 ? (
+            <Box textAlign="center" py={8}>
+              <ShoppingBag sx={{ fontSize: 80, color: '#ccc', mb: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                No orders found
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {searchTerm ? 'Try adjusting your search terms' : 'You haven\'t placed any orders yet'}
+              </Typography>
+            </Box>
+          ) : (
+            <Stack spacing={2}>
+              {filteredOrders.map((order) => (
+                <OrderCard
+                  key={order.id}
+                  order={order}
+                  onViewDetails={handleViewOrderDetails}
+                  onUpdateStatus={handleUpdateOrderStatus}
+                />
+              ))}
+            </Stack>
+          )}
         </TabPanel>
 
-        <TabPanel value={tabValue} index={1}>
-          <Typography variant="h6" gutterBottom>
-            Orders Not Yet Shipped
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Orders that are being processed and prepared for shipping
-          </Typography>
-          {/* Filter orders for "Processing" status */}
+        <TabPanel value={selectedTab} index={1}>
+          {filteredOrders.length === 0 ? (
+            <Box textAlign="center" py={8}>
+              <Pending sx={{ fontSize: 80, color: '#ccc', mb: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                No pending orders
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                All your orders are being processed or completed
+              </Typography>
+            </Box>
+          ) : (
+            <Stack spacing={2}>
+              {filteredOrders.map((order) => (
+                <OrderCard
+                  key={order.id}
+                  order={order}
+                  onViewDetails={handleViewOrderDetails}
+                  onUpdateStatus={handleUpdateOrderStatus}
+                />
+              ))}
+            </Stack>
+          )}
         </TabPanel>
 
-        <TabPanel value={tabValue} index={2}>
-          <Typography variant="h6" gutterBottom>
-            Cancelled Orders
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Orders that have been cancelled
-          </Typography>
-          {/* Filter orders for "Cancelled" status */}
+        <TabPanel value={selectedTab} index={2}>
+          {filteredOrders.length === 0 ? (
+            <Box textAlign="center" py={8}>
+              <LocalShipping sx={{ fontSize: 80, color: '#ccc', mb: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                No orders in progress
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Your orders are either pending or completed
+              </Typography>
+            </Box>
+          ) : (
+            <Stack spacing={2}>
+              {filteredOrders.map((order) => (
+                <OrderCard
+                  key={order.id}
+                  order={order}
+                  onViewDetails={handleViewOrderDetails}
+                  onUpdateStatus={handleUpdateOrderStatus}
+                />
+              ))}
+            </Stack>
+          )}
         </TabPanel>
-      </Container>
-    </Box>
+
+        <TabPanel value={selectedTab} index={3}>
+          {filteredOrders.length === 0 ? (
+            <Box textAlign="center" py={8}>
+              <CheckCircle sx={{ fontSize: 80, color: '#ccc', mb: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                No delivered orders
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Your completed orders will appear here
+              </Typography>
+            </Box>
+          ) : (
+            <Stack spacing={2}>
+              {filteredOrders.map((order) => (
+                <OrderCard
+                  key={order.id}
+                  order={order}
+                  onViewDetails={handleViewOrderDetails}
+                  onUpdateStatus={handleUpdateOrderStatus}
+                />
+              ))}
+            </Stack>
+          )}
+        </TabPanel>
+
+        <TabPanel value={selectedTab} index={4}>
+          {filteredOrders.length === 0 ? (
+            <Box textAlign="center" py={8}>
+              <Cancel sx={{ fontSize: 80, color: '#ccc', mb: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                No cancelled orders
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Cancelled orders will appear here
+              </Typography>
+            </Box>
+          ) : (
+            <Stack spacing={2}>
+              {filteredOrders.map((order) => (
+                <OrderCard
+                  key={order.id}
+                  order={order}
+                  onViewDetails={handleViewOrderDetails}
+                  onUpdateStatus={handleUpdateOrderStatus}
+                />
+              ))}
+            </Stack>
+          )}
+        </TabPanel>
+      </Card>
+    </Container>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Container,
@@ -8,11 +8,36 @@ import {
   CardMedia,
   CardContent,
   Rating,
-  CircularProgress
+  CircularProgress,
+  Grid,
+  Chip,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Slider,
+  FormControlLabel,
+  Checkbox,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Stack,
+  Divider,
+  Alert
 } from '@mui/material';
 import {
   Search,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  ExpandMore,
+  FilterList,
+  Clear,
+  Sort,
+  Category,
+  Store,
+  Star,
+  LocalOffer,
+  Inventory
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -22,6 +47,16 @@ import Logo from '../components/Logo';
 import { Product } from '../types';
 import { useProducts } from '../contexts/ProductContext';
 
+interface FilterState {
+  category: string;
+  brands: string[];
+  priceRange: [number, number];
+  rating: number;
+  inStockOnly: boolean;
+  onSaleOnly: boolean;
+  sortBy: string;
+}
+
 const SearchPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
@@ -30,6 +65,18 @@ const SearchPage: React.FC = () => {
   const { products } = useProducts();
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Filter state
+  const [filters, setFilters] = useState<FilterState>({
+    category: '',
+    brands: [],
+    priceRange: [0, 5000],
+    rating: 0,
+    inStockOnly: false,
+    onSaleOnly: false,
+    sortBy: 'relevance'
+  });
 
   // Recent searches from localStorage
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
@@ -42,6 +89,70 @@ const SearchPage: React.FC = () => {
     'iPhone', 'Samsung', 'Laptop', 'Headphones', 
     'Gaming', 'Fitness', 'Home Decor', 'Books'
   ];
+
+  // Get unique categories and brands from products
+  const categories = useMemo(() => {
+    const uniqueCategories = Array.from(new Set(products.map(p => p.category)));
+    return uniqueCategories.sort();
+  }, [products]);
+
+  const brands = useMemo(() => {
+    const uniqueBrands = Array.from(new Set(products.map(p => p.brand)));
+    return uniqueBrands.sort();
+  }, [products]);
+
+  // Filter and sort products
+  const filteredAndSortedResults = useMemo(() => {
+    let filtered = searchResults;
+
+    // Apply filters
+    if (filters.category) {
+      filtered = filtered.filter(p => p.category === filters.category);
+    }
+
+    if (filters.brands.length > 0) {
+      filtered = filtered.filter(p => filters.brands.includes(p.brand));
+    }
+
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 5000) {
+      filtered = filtered.filter(p => 
+        p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]
+      );
+    }
+
+    if (filters.rating > 0) {
+      filtered = filtered.filter(p => p.rating >= filters.rating);
+    }
+
+    if (filters.inStockOnly) {
+      filtered = filtered.filter(p => p.inStock);
+    }
+
+    if (filters.onSaleOnly) {
+      filtered = filtered.filter(p => p.originalPrice && p.originalPrice > p.price);
+    }
+
+    // Sort results
+    switch (filters.sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'rating':
+        filtered.sort((a, b) => b.rating - a.rating);
+        break;
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime());
+        break;
+      default: // relevance
+        // Keep original order for relevance
+        break;
+    }
+
+    return filtered;
+  }, [searchResults, filters]);
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
@@ -56,6 +167,25 @@ const SearchPage: React.FC = () => {
       // Navigate to search results
       navigate(`/search?q=${encodeURIComponent(query.trim())}`);
     }
+  };
+
+  const handleFilterChange = (filterType: keyof FilterState, value: any) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const clearAllFilters = () => {
+    setFilters({
+      category: '',
+      brands: [],
+      priceRange: [0, 5000],
+      rating: 0,
+      inStockOnly: false,
+      onSaleOnly: false,
+      sortBy: 'relevance'
+    });
   };
 
   // Search logic
@@ -147,17 +277,165 @@ const SearchPage: React.FC = () => {
           }}>
             {searchTerm ? (
               <>
-                <Typography variant="h6" sx={{ mb: 2, color: '#333' }}>
-                  Search results for "{searchTerm}"
-                  {isSearching && (
-                    <CircularProgress size={16} sx={{ ml: 2 }} />
-                  )}
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="h6" sx={{ color: '#333' }}>
+                    Search results for "{searchTerm}" ({filteredAndSortedResults.length} found)
+                    {isSearching && (
+                      <CircularProgress size={16} sx={{ ml: 2 }} />
+                    )}
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<FilterList />}
+                      onClick={() => setShowFilters(!showFilters)}
+                      size="small"
+                    >
+                      Filters
+                    </Button>
+                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                      <InputLabel>Sort by</InputLabel>
+                      <Select
+                        value={filters.sortBy}
+                        label="Sort by"
+                        onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+                      >
+                        <MenuItem value="relevance">Relevance</MenuItem>
+                        <MenuItem value="price-low">Price: Low to High</MenuItem>
+                        <MenuItem value="price-high">Price: High to Low</MenuItem>
+                        <MenuItem value="rating">Rating</MenuItem>
+                        <MenuItem value="newest">Newest</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+                </Box>
+
+                {/* Filters Panel */}
+                {showFilters && (
+                  <Card sx={{ mb: 3, p: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                      <Typography variant="h6">Filters</Typography>
+                      <Button
+                        variant="outlined"
+                        startIcon={<Clear />}
+                        onClick={clearAllFilters}
+                        size="small"
+                      >
+                        Clear All
+                      </Button>
+                    </Box>
+                    
+                    <Grid container spacing={2}>
+                      {/* Category Filter */}
+                      <Grid item xs={12} sm={6} md={3}>
+                        <FormControl fullWidth size="small">
+                          <InputLabel>Category</InputLabel>
+                          <Select
+                            value={filters.category}
+                            label="Category"
+                            onChange={(e) => handleFilterChange('category', e.target.value)}
+                          >
+                            <MenuItem value="">All Categories</MenuItem>
+                            {categories.map(category => (
+                              <MenuItem key={category} value={category}>
+                                {category}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+
+                      {/* Brand Filter */}
+                      <Grid item xs={12} sm={6} md={3}>
+                        <FormControl fullWidth size="small">
+                          <InputLabel>Brand</InputLabel>
+                          <Select
+                            multiple
+                            value={filters.brands}
+                            label="Brand"
+                            onChange={(e) => handleFilterChange('brands', e.target.value)}
+                            renderValue={(selected) => (
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                {selected.map((value) => (
+                                  <Chip key={value} label={value} size="small" />
+                                ))}
+                              </Box>
+                            )}
+                          >
+                            {brands.map(brand => (
+                              <MenuItem key={brand} value={brand}>
+                                {brand}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+
+                      {/* Price Range */}
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Typography variant="body2" gutterBottom>
+                          Price Range: ${filters.priceRange[0]} - ${filters.priceRange[1]}
+                        </Typography>
+                        <Slider
+                          value={filters.priceRange}
+                          onChange={(_, newValue) => handleFilterChange('priceRange', newValue)}
+                          valueLabelDisplay="auto"
+                          min={0}
+                          max={5000}
+                          step={50}
+                        />
+                      </Grid>
+
+                      {/* Rating Filter */}
+                      <Grid item xs={12} sm={6} md={3}>
+                        <FormControl fullWidth size="small">
+                          <InputLabel>Minimum Rating</InputLabel>
+                          <Select
+                            value={filters.rating}
+                            label="Minimum Rating"
+                            onChange={(e) => handleFilterChange('rating', e.target.value)}
+                          >
+                            <MenuItem value={0}>Any Rating</MenuItem>
+                            <MenuItem value={1}>1+ Stars</MenuItem>
+                            <MenuItem value={2}>2+ Stars</MenuItem>
+                            <MenuItem value={3}>3+ Stars</MenuItem>
+                            <MenuItem value={4}>4+ Stars</MenuItem>
+                            <MenuItem value={5}>5 Stars</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+
+                      {/* Checkboxes */}
+                      <Grid item xs={12}>
+                        <Stack direction="row" spacing={2}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={filters.inStockOnly}
+                                onChange={(e) => handleFilterChange('inStockOnly', e.target.checked)}
+                              />
+                            }
+                            label="In Stock Only"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={filters.onSaleOnly}
+                                onChange={(e) => handleFilterChange('onSaleOnly', e.target.checked)}
+                              />
+                            }
+                            label="On Sale Only"
+                          />
+                        </Stack>
+                      </Grid>
+                    </Grid>
+                  </Card>
+                )}
                 {isSearching ? (
                   <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
                     <CircularProgress />
                   </Box>
-                ) : searchResults.length > 0 ? (
+                ) : filteredAndSortedResults.length > 0 ? (
                   <Box sx={{ 
                     display: 'grid', 
                     gridTemplateColumns: { 
@@ -168,7 +446,7 @@ const SearchPage: React.FC = () => {
                     }, 
                     gap: { xs: 1.5, md: 2 }
                   }}>
-                    {searchResults.map((product) => (
+                    {filteredAndSortedResults.map((product) => (
                       <SmartLink 
                         key={product.id}
                         to={`/product/${product.id}`}

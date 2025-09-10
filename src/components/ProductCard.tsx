@@ -19,6 +19,8 @@ import {
 } from '@mui/icons-material';
 import SmartLink from './SmartLink';
 import OptimizedImage from './OptimizedImage';
+import AddToCartButton from './AddToCartButton';
+import AddToWishlistButton from './AddToWishlistButton';
 import analytics from '../services/analyticsService';
 
 interface ProductCardProps {
@@ -707,35 +709,54 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
         
 
 
-        {/* Buy Button with Retailer */}
-        <SmartLink
-          to={product.affiliateLink || product.externalUrl || '#'}
-          external={true}
-          productId={product.id}
-          productName={product.name}
-          productPrice={product.price}
-          retailer={product.retailer}
-        >
-          <Button
-            variant="contained"
-            size="small"
-            fullWidth
-            sx={{
-              mb: 1.5,
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              fontWeight: 600,
-              textTransform: 'none',
-              fontSize: { xs: '0.8rem', sm: '0.9rem' },
-              py: { xs: 0.75, sm: 1 },
-              '&:hover': {
-                backgroundColor: '#2563eb'
-              }
-            }}
+        {/* Action Buttons */}
+        <Box sx={{ display: 'flex', gap: 1, mb: 1.5 }}>
+          <SmartLink
+            to={product.affiliateLink || product.externalUrl || '#'}
+            external={true}
+            productId={product.id}
+            productName={product.name}
+            productPrice={product.price}
+            retailer={product.retailer}
           >
-            Get Deal at {product.retailer || 'BestFinds'}
-          </Button>
-        </SmartLink>
+            <Button
+              variant="contained"
+              size="small"
+              sx={{
+                flex: 1,
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                fontWeight: 600,
+                textTransform: 'none',
+                fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                py: { xs: 0.75, sm: 1 },
+                '&:hover': {
+                  backgroundColor: '#2563eb'
+                }
+              }}
+            >
+              Get Deal
+            </Button>
+          </SmartLink>
+          
+          <AddToCartButton
+            productId={product.id}
+            productName={product.name}
+            variant="outlined"
+            size="small"
+            quantity={1}
+          />
+        </Box>
+
+        {/* Wishlist Button */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+          <AddToWishlistButton
+            productId={product.id}
+            productName={product.name}
+            variant="icon"
+            size="small"
+          />
+        </Box>
 
         {/* Interaction Buttons */}
         <Box sx={{ 

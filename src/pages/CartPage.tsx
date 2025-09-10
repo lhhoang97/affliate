@@ -28,15 +28,15 @@ const CartPage: React.FC = () => {
     
     // Find the first product with affiliate link
     const firstItem = items[0];
-    if (firstItem && firstItem.product.affiliateLink) {
+    if (firstItem && firstItem.product?.affiliateLink) {
       // Redirect to affiliate link
       window.open(firstItem.product.affiliateLink, '_blank', 'noopener,noreferrer');
-    } else if (firstItem && (firstItem.product as any).externalUrl) {
+    } else if (firstItem && (firstItem.product as any)?.externalUrl) {
       // Fallback to external URL
       window.open((firstItem.product as any).externalUrl, '_blank', 'noopener,noreferrer');
     } else {
       // Default affiliate link
-      const defaultAffiliateLink = `https://bestfinds.com/checkout?ref=cart&items=${items.map(item => item.productId).join(',')}`;
+      const defaultAffiliateLink = `https://bestfinds.com/checkout?ref=cart&items=${items.map(item => item.product_id).join(',')}`;
       window.open(defaultAffiliateLink, '_blank', 'noopener,noreferrer');
     }
     
@@ -92,21 +92,21 @@ const CartPage: React.FC = () => {
                   <CardMedia
                     component="img"
                     sx={{ width: 100, height: 100, objectFit: 'cover' }}
-                    image={item.product.image}
-                    alt={item.product.name}
+                    image={item.product?.image}
+                    alt={item.product?.name}
                   />
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" gutterBottom>
-                      {item.product.name}
+                      {item.product?.name}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      ${item.product.price}
+                      ${item.product?.price}
                     </Typography>
 
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                       <IconButton
                         size="small"
-                        onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
+                        onClick={() => handleQuantityChange(item.product_id, item.quantity - 1)}
                         disabled={item.quantity <= 1}
                       >
                         <Remove />
@@ -117,7 +117,7 @@ const CartPage: React.FC = () => {
                         onChange={(e) => {
                           const value = parseInt(e.target.value);
                           if (!isNaN(value) && value > 0) {
-                            handleQuantityChange(item.productId, value);
+                            handleQuantityChange(item.product_id, value);
                           }
                         }}
                         sx={{ width: 60 }}
@@ -125,14 +125,14 @@ const CartPage: React.FC = () => {
                       />
                       <IconButton
                         size="small"
-                        onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
+                        onClick={() => handleQuantityChange(item.product_id, item.quantity + 1)}
                       >
                         <Add />
                       </IconButton>
                       <IconButton
                         size="small"
                         color="error"
-                        onClick={() => removeFromCart(item.productId)}
+                        onClick={() => removeFromCart(item.id)}
                       >
                         <Delete />
                       </IconButton>
@@ -152,7 +152,7 @@ const CartPage: React.FC = () => {
                   </Box>
                   <Box sx={{ textAlign: 'right' }}>
                     <Typography variant="h6" color="primary">
-                      ${(item.product.price * item.quantity).toFixed(2)}
+                      ${((item.product?.price || 0) * item.quantity).toFixed(2)}
                     </Typography>
                   </Box>
                 </Box>

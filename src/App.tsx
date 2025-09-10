@@ -15,12 +15,14 @@ import CategoriesPage from './pages/CategoriesPage';
 import CategoryDetailPage from './pages/CategoryDetailPage';
 
 import CartPage from './pages/CartPage';
+import WishlistPage from './pages/WishlistPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
 import DealsPage from './pages/DealsPage';
 import ReviewsPage from './pages/ReviewsPage';
 import OrdersPage from './pages/OrdersPage';
+import OrderDetailPage from './pages/OrderDetailPage';
 import AboutUsPage from './pages/AboutUsPage';
 import ContactPage from './pages/ContactPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
@@ -29,6 +31,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminProductsPage from './pages/AdminProductsPage';
 import AdminCategoriesPage from './pages/AdminCategoriesPage';
 import AdminUsersPage from './pages/AdminUsersPage';
+import AdminOrdersPage from './pages/AdminOrdersPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminPriceUpdatePage from './pages/AdminPriceUpdatePage';
 import AdminSectionManagementPage from './pages/AdminSectionManagementPage';
@@ -46,6 +49,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
+import { WishlistProvider } from './contexts/WishlistContext';
+import { OrdersProvider } from './contexts/OrdersContext';
+import { ProfileProvider } from './contexts/ProfileContext';
 import { ProductProvider } from './contexts/ProductContext';
 import SupabaseTest from './components/SupabaseTest';
 
@@ -251,7 +257,10 @@ function App() {
       <CssBaseline />
               <AuthProvider>
           <CartProvider>
-            <ProductProvider>
+            <WishlistProvider>
+              <OrdersProvider>
+                <ProfileProvider>
+                  <ProductProvider>
               <Router>
                 <PageTracker />
             <Routes>
@@ -280,12 +289,17 @@ function App() {
                       <Route path="/product-card-demo" element={<ProductCardDemo />} />
                       
                       {/* Protected Routes */}
-                      <Route path="/cart" element={
-                        <ProtectedRoute>
-                          <CartPage />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/profile" element={
+                                <Route path="/cart" element={
+                                  <ProtectedRoute>
+                                    <CartPage />
+                                  </ProtectedRoute>
+                                } />
+                                <Route path="/wishlist" element={
+                                  <ProtectedRoute>
+                                    <WishlistPage />
+                                  </ProtectedRoute>
+                                } />
+                                <Route path="/profile" element={
                         <ProtectedRoute>
                           <ProfilePage />
                         </ProtectedRoute>
@@ -293,6 +307,11 @@ function App() {
                       <Route path="/orders" element={
                         <ProtectedRoute>
                           <OrdersPage />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="/orders/:orderId" element={
+                        <ProtectedRoute>
+                          <OrderDetailPage />
                         </ProtectedRoute>
                       } />
                       
@@ -320,6 +339,7 @@ function App() {
                           </Suspense>
                         } />
                         <Route path="users" element={<AdminUsersPage />} />
+                        <Route path="orders" element={<AdminOrdersPage />} />
                         <Route path="settings" element={<AdminSettingsPage />} />
                       </Route>
                       
@@ -333,7 +353,10 @@ function App() {
               } />
             </Routes>
                         </Router>
-            </ProductProvider>
+                  </ProductProvider>
+                </ProfileProvider>
+              </OrdersProvider>
+            </WishlistProvider>
           </CartProvider>
         </AuthProvider>
     </ThemeProvider>

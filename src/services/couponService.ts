@@ -70,9 +70,9 @@ class CouponService {
       if (categoriesError) throw categoriesError;
 
       // Gộp retailers với categories
-      const retailersWithCategories = retailers?.map(retailer => ({
+      const retailersWithCategories = retailers?.map((retailer: any) => ({
         ...retailer,
-        categories: categories?.filter(cat => cat.retailer_id === retailer.id) || []
+        categories: categories?.filter((cat: any) => cat.retailer_id === retailer.id) || []
       })) || [];
 
       return retailersWithCategories;

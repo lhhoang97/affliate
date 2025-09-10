@@ -518,7 +518,7 @@ export const searchProducts = async (query: string): Promise<Product[]> => {
     
     if (!data) return [];
     
-    return data.filter(p => 
+    return data.filter((p: any) => 
       p.name.toLowerCase().includes(lowercaseQuery) ||
       p.description.toLowerCase().includes(lowercaseQuery) ||
       p.brand.toLowerCase().includes(lowercaseQuery) ||

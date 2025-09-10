@@ -148,6 +148,62 @@ export interface CartState {
   isLoading: boolean;
 }
 
+// Order types
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  product_id: string;
+  product_name: string;
+  product_image?: string;
+  quantity: number;
+  unit_price: number;
+  total_price: number;
+  created_at: string;
+}
+
+export interface Order {
+  id: string;
+  user_id: string;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+  total_amount: number;
+  shipping_amount?: number;
+  tax_amount?: number;
+  payment_status?: 'pending' | 'paid' | 'failed' | 'refunded';
+  shipping_address?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zip_code?: string;
+    country?: string;
+  };
+  billing_address?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zip_code?: string;
+    country?: string;
+  };
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+  order_items?: OrderItem[];
+}
+
+// Wishlist types
+export interface WishlistItem {
+  id: string;
+  user_id: string;
+  product_id: string;
+  product?: Product;
+  created_at: string;
+}
+
 // Form validation types
 export interface FormErrors {
   [key: string]: string;

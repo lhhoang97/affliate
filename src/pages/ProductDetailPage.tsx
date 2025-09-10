@@ -271,7 +271,9 @@ const ProductDetailPage: React.FC = () => {
               }}>
                 <CardMedia
                   component="img"
-                  image={`${product.images[selectedImage]}?t=${imageKey}`}
+                  image={product.images[selectedImage].startsWith('data:') 
+                    ? product.images[selectedImage] 
+                    : `${product.images[selectedImage]}?t=${imageKey}`}
                   alt={product.name}
                   sx={{ 
                     objectFit: 'contain',
@@ -365,7 +367,7 @@ const ProductDetailPage: React.FC = () => {
                     <Box
                       key={index}
                       component="img"
-                      src={`${image}?t=${imageKey}`}
+                      src={image.startsWith('data:') ? image : `${image}?t=${imageKey}`}
                       alt={`${product.name} ${index + 1}`}
                       sx={{
                         width: 100,

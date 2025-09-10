@@ -70,9 +70,9 @@ class DealService {
       if (subcategoriesError) throw subcategoriesError;
 
       // Gộp categories với subcategories
-      const categoriesWithSubcategories = categories?.map(category => ({
+      const categoriesWithSubcategories = categories?.map((category: any) => ({
         ...category,
-        subcategories: subcategories?.filter(sub => sub.category_id === category.id) || []
+        subcategories: subcategories?.filter((sub: any) => sub.category_id === category.id) || []
       })) || [];
 
       return categoriesWithSubcategories;

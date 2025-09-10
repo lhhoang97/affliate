@@ -13,7 +13,9 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
-  Divider
+  Divider,
+  Grid,
+  Stack
 } from '@mui/material';
 import {
   Inventory,
@@ -21,26 +23,46 @@ import {
   People,
   ShoppingCart,
   Star,
-  Add
+  Add,
+  TrendingUp,
+  Receipt,
+  Favorite,
+  CheckCircle,
+  Warning
 } from '@mui/icons-material';
 import { fetchProducts, fetchCategories } from '../services/productService';
+import { getAllProfiles, getUserStats } from '../services/profileService';
+import { getOrderStats } from '../services/orderService';
+import { getWishlistStats } from '../services/wishlistService';
 import { Product, Category as CategoryType } from '../types';
 
 const AdminDashboard: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [userStats, setUserStats] = useState<any>(null);
+  const [orderStats, setOrderStats] = useState<any>(null);
+  const [wishlistStats, setWishlistStats] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        const [prods, cats] = await Promise.all([fetchProducts(), fetchCategories()]);
+        const [prods, cats, userStatsData, orderStatsData, wishlistStatsData] = await Promise.all([
+          fetchProducts(),
+          fetchCategories(),
+          getUserStats(),
+          getOrderStats(),
+          getWishlistStats()
+        ]);
         if (!mounted) return;
         setProducts(prods);
         setCategories(cats);
+        setUserStats(userStatsData);
+        setOrderStats(orderStatsData);
+        setWishlistStats(wishlistStatsData);
       } catch (e) {
-        // Handle error
+        console.error('Error loading admin dashboard data:', e);
       } finally {
         if (mounted) setIsLoading(false);
       }
@@ -51,8 +73,16 @@ const AdminDashboard: React.FC = () => {
   const stats = {
     totalProducts: products.length,
     totalCategories: categories.length,
-    totalUsers: 1250, // Mock data
-    totalOrders: 89, // Mock data
+    totalUsers: userStats?.totalUsers || 0,
+    activeUsers: userStats?.activeUsers || 0,
+    adminUsers: userStats?.adminUsers || 0,
+    newUsersThisMonth: userStats?.newUsersThisMonth || 0,
+    totalOrders: orderStats?.totalOrders || 0,
+    pendingOrders: orderStats?.pendingOrders || 0,
+    completedOrders: orderStats?.completedOrders || 0,
+    totalRevenue: orderStats?.totalRevenue || 0,
+    averageOrderValue: orderStats?.averageOrderValue || 0,
+    totalWishlistItems: wishlistStats?.totalItems || 0,
     averageRating: products.length > 0 
       ? (products.reduce((sum, p) => sum + p.rating, 0) / products.length).toFixed(1)
       : '0.0',
@@ -85,79 +115,206 @@ const AdminDashboard: React.FC = () => {
       </Typography>
 
       {/* Stats Cards */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 3, mb: 4 }}>
-        <Card>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography color="text.secondary" gutterBottom>
-                  Total Products
-                </Typography>
-                <Typography variant="h4" component="div">
-                  {stats.totalProducts}
-                </Typography>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {/* Products & Categories */}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="text.secondary" gutterBottom>
+                    Total Products
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                    {stats.totalProducts}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {stats.outOfStock} out of stock
+                  </Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: 'primary.main' }}>
+                  <Inventory />
+                </Avatar>
               </Box>
-              <Avatar sx={{ bgcolor: 'primary.main' }}>
-                <Inventory />
-              </Avatar>
-            </Box>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </Grid>
 
-        <Card>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography color="text.secondary" gutterBottom>
-                  Categories
-                </Typography>
-                <Typography variant="h4" component="div">
-                  {stats.totalCategories}
-                </Typography>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="text.secondary" gutterBottom>
+                    Categories
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                    {stats.totalCategories}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Active categories
+                  </Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                  <Category />
+                </Avatar>
               </Box>
-              <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                <Category />
-              </Avatar>
-            </Box>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </Grid>
 
-        <Card>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography color="text.secondary" gutterBottom>
-                  Users
-                </Typography>
-                <Typography variant="h4" component="div">
-                  {stats.totalUsers}
-                </Typography>
+        {/* Users */}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="text.secondary" gutterBottom>
+                    Total Users
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                    {stats.totalUsers}
+                  </Typography>
+                  <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+                    <Chip 
+                      icon={<CheckCircle />} 
+                      label={`${stats.activeUsers} active`} 
+                      color="success" 
+                      size="small" 
+                    />
+                    <Chip 
+                      icon={<Warning />} 
+                      label={`${stats.adminUsers} admin`} 
+                      color="warning" 
+                      size="small" 
+                    />
+                  </Stack>
+                </Box>
+                <Avatar sx={{ bgcolor: 'success.main' }}>
+                  <People />
+                </Avatar>
               </Box>
-              <Avatar sx={{ bgcolor: 'success.main' }}>
-                <People />
-              </Avatar>
-            </Box>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </Grid>
 
-        <Card>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography color="text.secondary" gutterBottom>
-                  Orders
-                </Typography>
-                <Typography variant="h4" component="div">
-                  {stats.totalOrders}
-                </Typography>
+        {/* Orders */}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="text.secondary" gutterBottom>
+                    Total Orders
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                    {stats.totalOrders}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    ${stats.totalRevenue.toFixed(2)} revenue
+                  </Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: 'warning.main' }}>
+                  <ShoppingCart />
+                </Avatar>
               </Box>
-              <Avatar sx={{ bgcolor: 'warning.main' }}>
-                <ShoppingCart />
-              </Avatar>
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Additional Stats Row */}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="text.secondary" gutterBottom>
+                    Wishlist Items
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                    {stats.totalWishlistItems}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    User favorites
+                  </Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: 'error.main' }}>
+                  <Favorite />
+                </Avatar>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="text.secondary" gutterBottom>
+                    Avg Order Value
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                    ${stats.averageOrderValue.toFixed(2)}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Per order
+                  </Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: 'info.main' }}>
+                  <TrendingUp />
+                </Avatar>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="text.secondary" gutterBottom>
+                    New Users
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                    {stats.newUsersThisMonth}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    This month
+                  </Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: 'primary.main' }}>
+                  <People />
+                </Avatar>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="text.secondary" gutterBottom>
+                    Avg Rating
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                    {stats.averageRating}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Product rating
+                  </Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: 'warning.main' }}>
+                  <Star />
+                </Avatar>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Quick Actions */}
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mb: 4 }}>

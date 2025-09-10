@@ -26,7 +26,13 @@ import {
   FormControlLabel,
   Alert,
   Snackbar,
-  Tooltip
+  Tooltip,
+  Grid,
+  CardContent,
+  Stack,
+  LinearProgress,
+  Avatar,
+  Divider
 } from '@mui/material';
 import {
   Add,
@@ -35,12 +41,20 @@ import {
   Visibility,
   Save,
   Search,
-  CloudUpload
+  CloudUpload,
+  Inventory,
+  Category,
+  TrendingUp,
+  Star,
+  Refresh,
+  CheckCircle,
+  Warning,
+  LocalShipping,
+  AttachMoney
 } from '@mui/icons-material';
 import { Product } from '../types';
-// import { fetchCategories } from '../services/productService'; // TODO: Implement categories
 import { useProducts } from '../contexts/ProductContext';
-import { getAllProducts } from '../services/productService';
+import { getAllProducts, fetchCategories } from '../services/productService';
 import VideoPlayer from '../components/VideoPlayer';
 
 interface ProductFormData {
@@ -527,6 +541,95 @@ const AdminProductsPage: React.FC = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         Product Management
       </Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+        Manage products, inventory, and pricing
+      </Typography>
+
+      {/* Statistics Cards */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="textSecondary" gutterBottom>
+                    Total Products
+                  </Typography>
+                  <Typography variant="h4">
+                    {products.length}
+                  </Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: 'primary.main' }}>
+                  <Inventory />
+                </Avatar>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="textSecondary" gutterBottom>
+                    In Stock
+                  </Typography>
+                  <Typography variant="h4">
+                    {products.filter(p => p.inStock).length}
+                  </Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: 'success.main' }}>
+                  <CheckCircle />
+                </Avatar>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="textSecondary" gutterBottom>
+                    Out of Stock
+                  </Typography>
+                  <Typography variant="h4">
+                    {products.filter(p => !p.inStock).length}
+                  </Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: 'warning.main' }}>
+                  <Warning />
+                </Avatar>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="textSecondary" gutterBottom>
+                    Avg Rating
+                  </Typography>
+                  <Typography variant="h4">
+                    {products.length > 0 
+                      ? (products.reduce((sum, p) => sum + p.rating, 0) / products.length).toFixed(1)
+                      : '0.0'
+                    }
+                  </Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: 'info.main' }}>
+                  <Star />
+                </Avatar>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Quick Add Product Button */}
       <Card sx={{ mb: 4, p: 3 }}>
@@ -552,7 +655,7 @@ const AdminProductsPage: React.FC = () => {
 
       {/* Search and Filter */}
       <Card sx={{ mb: 4, p: 3 }}>
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr 1fr 1fr' }, gap: 2, alignItems: 'center' }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr 1fr 1fr auto' }, gap: 2, alignItems: 'center' }}>
           <TextField
             fullWidth
             placeholder="Search products..."
@@ -598,9 +701,17 @@ const AdminProductsPage: React.FC = () => {
                 ))}
             </Select>
           </FormControl>
-          <Typography variant="body2" color="text.secondary">
-            Total: {filteredProducts.length} products
-          </Typography>
+          <Button
+            variant="outlined"
+            startIcon={<Refresh />}
+            onClick={() => {
+              setSearchTerm('');
+              setSelectedCategory('');
+              setSelectedSubcategory('');
+            }}
+          >
+            Reset
+          </Button>
         </Box>
       </Card>
 

@@ -22,6 +22,7 @@ import {
   ShoppingCart,
   Menu as MenuIcon,
   AccountCircle,
+  Favorite,
   Login,
   PersonAdd,
   ExpandLess,
@@ -37,6 +38,7 @@ import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import analytics from '../services/analyticsService';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
+import { useWishlist } from '../contexts/WishlistContext';
 import { useProducts } from '../contexts/ProductContext';
 import SearchBarSimple from './SearchBarSimple';
 import Logo from './Logo';
@@ -49,6 +51,7 @@ import { dealService, DealCategory } from '../services/dealService';
 const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { items } = useCart();
+  const { wishlistItemCount } = useWishlist();
   const { products } = useProducts();
   const navigate = useNavigate();
   const location = useLocation();
@@ -938,6 +941,16 @@ const Header: React.FC = () => {
             >
               <Badge badgeContent={cartItemCount} color="primary">
                 <ShoppingCart />
+              </Badge>
+            </IconButton>
+            
+            <IconButton
+              color="inherit"
+              onClick={() => navigate('/wishlist')}
+              sx={{ ml: 1 }}
+            >
+              <Badge badgeContent={wishlistItemCount} color="error">
+                <Favorite />
               </Badge>
             </IconButton>
 

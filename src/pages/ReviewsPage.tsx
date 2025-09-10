@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -22,7 +22,12 @@ import {
   Select,
   MenuItem,
   Tabs,
-  Tab
+  Tab,
+  Alert,
+  Snackbar,
+  Stack,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import {
   Star,
@@ -34,9 +39,18 @@ import {
   VolumeUp,
   VolumeOff,
   PlayArrow,
-  Pause
+  Pause,
+  Refresh,
+  Image as ImageIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { 
+  getAllReviews, 
+  createReview, 
+  markReviewHelpful,
+  Review,
+  CreateReviewData 
+} from '../services/reviewService';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -67,22 +81,83 @@ const ReviewsPage: React.FC = () => {
   const [selectedRating, setSelectedRating] = useState(5);
   const [reviewText, setReviewText] = useState('');
   const [reviewTitle, setReviewTitle] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState('');
   const [isReading, setIsReading] = useState(false);
   const [currentReadingId, setCurrentReadingId] = useState<number | null>(null);
   const [speechRate, setSpeechRate] = useState(1);
   const [speechEnabled, setSpeechEnabled] = useState(true);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as any });
+
+  useEffect(() => {
+    loadReviews();
+  }, []);
+
+  const loadReviews = async () => {
+    try {
+      setLoading(true);
+      const reviewsData = await getAllReviews();
+      setReviews(reviewsData);
+    } catch (error) {
+      console.error('Error loading reviews:', error);
+      setSnackbar({ open: true, message: 'Failed to load reviews', severity: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
-  const handleSubmitReview = () => {
-    // Here you would submit the review to your backend
-    console.log('Submitting review:', { selectedRating, reviewText, reviewTitle });
-    setReviewDialogOpen(false);
-    setSelectedRating(5);
-    setReviewText('');
-    setReviewTitle('');
+  const handleSubmitReview = async () => {
+    if (!user || !reviewTitle || !reviewText || !selectedProduct) {
+      setSnackbar({ open: true, message: 'Please fill in all required fields', severity: 'error' });
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const reviewData: CreateReviewData = {
+        product_id: selectedProduct,
+        user_id: user.id,
+        rating: selectedRating,
+        title: reviewTitle,
+        content: reviewText,
+        is_verified_purchase: false // This would be determined by checking if user has purchased the product
+      };
+
+      await createReview(reviewData);
+      setSnackbar({ open: true, message: 'Review submitted successfully! It will be reviewed before publishing.', severity: 'success' });
+      
+      // Reset form
+      setReviewDialogOpen(false);
+      setSelectedRating(5);
+      setReviewText('');
+      setReviewTitle('');
+      setSelectedProduct('');
+      
+      // Reload reviews
+      await loadReviews();
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      setSnackbar({ open: true, message: 'Failed to submit review', severity: 'error' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleMarkHelpful = async (reviewId: string) => {
+    try {
+      await markReviewHelpful(reviewId);
+      setSnackbar({ open: true, message: 'Thank you for your feedback!', severity: 'success' });
+      await loadReviews(); // Reload to update helpful count
+    } catch (error) {
+      console.error('Error marking review helpful:', error);
+      setSnackbar({ open: true, message: 'Failed to mark review as helpful', severity: 'error' });
+    }
   };
 
   // Text-to-Speech functions
@@ -209,11 +284,30 @@ const ReviewsPage: React.FC = () => {
         py: 4
       }}>
         <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <Star sx={{ fontSize: 40 }} />
-            <Typography variant="h3" component="h1" sx={{ fontWeight: 'bold' }}>
-              Product Reviews
-            </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Star sx={{ fontSize: 40 }} />
+              <Typography variant="h3" component="h1" sx={{ fontWeight: 'bold' }}>
+                Product Reviews
+              </Typography>
+            </Box>
+            <Button
+              variant="outlined"
+              startIcon={<Refresh />}
+              onClick={loadReviews}
+              disabled={loading}
+              sx={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                borderColor: 'rgba(255, 255, 255, 0.3)',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  borderColor: 'rgba(255, 255, 255, 0.5)'
+                }
+              }}
+            >
+              Refresh
+            </Button>
           </Box>
           <Typography variant="h6" sx={{ opacity: 0.9 }}>
             Honest reviews from real customers
@@ -358,22 +452,41 @@ const ReviewsPage: React.FC = () => {
 
         {/* Reviews List */}
         <TabPanel value={tabValue} index={0}>
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 3 }}>
-            {mockReviews.map((review) => (
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <Typography>Loading reviews...</Typography>
+            </Box>
+          ) : reviews.length === 0 ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography variant="h6" color="text.secondary">
+                No reviews yet
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Be the first to write a review!
+              </Typography>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 3 }}>
+              {reviews.map((review) => (
               <Card key={review.id}>
                 <CardContent>
                   <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                    <Avatar src={review.productImage} sx={{ width: 60, height: 60 }} />
+                    <Avatar 
+                      src={review.user_avatar} 
+                      sx={{ width: 60, height: 60 }}
+                    >
+                      {review.user_name.charAt(0).toUpperCase()}
+                    </Avatar>
                     <Box sx={{ flexGrow: 1 }}>
                       <Typography variant="h6" gutterBottom>
-                        {review.productName}
+                        {review.title}
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                         <Rating value={review.rating} size="small" readOnly />
                         <Typography variant="body2" color="text.secondary">
-                          by {review.author}
+                          by {review.user_name}
                         </Typography>
-                        {review.verified && (
+                        {review.is_verified_purchase && (
                           <Chip
                             icon={<Verified />}
                             label="Verified Purchase"
@@ -383,7 +496,7 @@ const ReviewsPage: React.FC = () => {
                         )}
                       </Box>
                       <Typography variant="body2" color="text.secondary">
-                        {new Date(review.date).toLocaleDateString()}
+                        {new Date(review.created_at).toLocaleDateString()}
                       </Typography>
                     </Box>
                   </Box>
@@ -402,9 +515,9 @@ const ReviewsPage: React.FC = () => {
                     <Button
                       variant="outlined"
                       size="small"
-                      startIcon={currentReadingId === review.id ? <Pause /> : <PlayArrow />}
+                      startIcon={currentReadingId === parseInt(review.id) ? <Pause /> : <PlayArrow />}
                       onClick={() => {
-                        if (currentReadingId === review.id) {
+                        if (currentReadingId === parseInt(review.id)) {
                           stopSpeaking();
                         } else {
                           handleReadReview(review);
@@ -412,11 +525,11 @@ const ReviewsPage: React.FC = () => {
                       }}
                       sx={{ ml: 2, minWidth: 'auto' }}
                     >
-                      {currentReadingId === review.id ? 'Stop' : 'Read'}
+                      {currentReadingId === parseInt(review.id) ? 'Stop' : 'Read'}
                     </Button>
                   </Box>
 
-                  {review.images.length > 0 && (
+                  {review.images && review.images.length > 0 && (
                     <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
                       {review.images.map((image, index) => (
                         <img
@@ -434,15 +547,16 @@ const ReviewsPage: React.FC = () => {
                       startIcon={<ThumbUp />}
                       size="small"
                       sx={{ color: 'text.secondary' }}
+                      onClick={() => handleMarkHelpful(review.id)}
                     >
-                      Helpful ({review.helpful})
+                      Helpful ({review.helpful_count})
                     </Button>
                     <Button
                       startIcon={<ThumbDown />}
                       size="small"
                       sx={{ color: 'text.secondary' }}
                     >
-                      Not Helpful ({review.notHelpful})
+                      Not Helpful
                     </Button>
                     <Button size="small" sx={{ color: 'text.secondary' }}>
                       Report
@@ -452,6 +566,7 @@ const ReviewsPage: React.FC = () => {
               </Card>
             ))}
           </Box>
+          )}
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
@@ -527,15 +642,17 @@ const ReviewsPage: React.FC = () => {
             />
 
             <FormControl fullWidth>
-              <InputLabel>Product Category</InputLabel>
+              <InputLabel>Product</InputLabel>
               <Select
-                value="electronics"
-                label="Product Category"
+                value={selectedProduct}
+                label="Product"
+                onChange={(e) => setSelectedProduct(e.target.value)}
               >
-                <MenuItem value="electronics">Electronics</MenuItem>
-                <MenuItem value="clothing">Clothing</MenuItem>
-                <MenuItem value="home">Home & Garden</MenuItem>
-                <MenuItem value="sports">Sports & Outdoors</MenuItem>
+                <MenuItem value="1">Samsung Galaxy S21</MenuItem>
+                <MenuItem value="2">iPhone 13 Pro</MenuItem>
+                <MenuItem value="3">MacBook Pro M2</MenuItem>
+                <MenuItem value="4">Sony WH-1000XM4</MenuItem>
+                <MenuItem value="5">Nintendo Switch</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -558,6 +675,20 @@ const ReviewsPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

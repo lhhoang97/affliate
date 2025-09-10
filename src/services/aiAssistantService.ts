@@ -245,7 +245,7 @@ export class AIAssistantService {
         return { error: selectError.message };
       }
 
-      const updatePromises = products?.map(async (product) => {
+      const updatePromises = products?.map(async (product: any) => {
         const newPrice = product.price * updates.priceMultiplier;
         return supabase
           .from(table)
