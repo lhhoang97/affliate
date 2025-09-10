@@ -42,7 +42,8 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
       onClose={onClose}
       sx={{
         '& .MuiDrawer-paper': {
-          width: 400,
+          width: { xs: '100%', sm: 350, md: 400 },
+          maxWidth: '100vw',
           backgroundColor: '#ffffff'
         }
       }}
@@ -51,7 +52,7 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
         height: '100%', 
         display: 'flex', 
         flexDirection: 'column',
-        p: 3
+        p: { xs: 2, sm: 2.5, md: 3 }
       }}>
         {/* Header */}
         <Box sx={{ 
@@ -60,7 +61,11 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
           mb: 2 
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: '#000000' }}>
+            <Typography variant="h5" sx={{ 
+              fontWeight: 700, 
+              color: '#000000',
+              fontSize: { xs: '1.25rem', sm: '1.375rem', md: '1.5rem' }
+            }}>
               Your Shopping Cart
             </Typography>
             <IconButton onClick={onClose} sx={{ color: '#666666' }}>
@@ -105,11 +110,11 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
                     backgroundColor: '#ffffff'
                   }}
                 >
-                  <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Box sx={{ display: 'flex', gap: { xs: 1.5, sm: 1.75, md: 2 } }}>
                     {/* Product Image */}
                     <Box sx={{ 
-                      width: 80, 
-                      height: 80, 
+                      width: { xs: 60, sm: 70, md: 80 }, 
+                      height: { xs: 60, sm: 70, md: 80 }, 
                       backgroundColor: '#f5f5f5',
                       borderRadius: 1,
                       display: 'flex',
@@ -147,7 +152,8 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
                             textOverflow: 'ellipsis',
                             display: '-webkit-box',
                             WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical'
+                            WebkitBoxOrient: 'vertical',
+                            fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' }
                           }}
                         >
                           {item.product?.name || 'Product'}
@@ -162,14 +168,15 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
                       </Box>
 
                       {/* Option Display - Always show */}
-              <Box sx={{ mb: 1, p: 1, backgroundColor: item.quantity > 1 ? '#fff3e0' : '#f5f5f5', borderRadius: 1, border: `1px solid ${item.quantity > 1 ? '#ff6b35' : '#ddd'}` }}>
+              <Box sx={{ mb: 1, p: { xs: 0.75, sm: 0.875, md: 1 }, backgroundColor: item.quantity > 1 ? '#fff3e0' : '#f5f5f5', borderRadius: 1, border: `1px solid ${item.quantity > 1 ? '#ff6b35' : '#ddd'}` }}>
                 <Typography variant="body2" sx={{
                   color: item.quantity > 1 ? '#ff6b35' : '#666',
                   fontWeight: 600,
                   display: 'flex',
                   alignItems: 'center',
                   gap: 0.5,
-                  textAlign: 'center'
+                  textAlign: 'center',
+                  fontSize: { xs: '0.75rem', sm: '0.8125rem', md: '0.875rem' }
                 }}>
                   {item.quantity === 1 
                     ? `Option: Get 1 ${item.product?.name || 'Product'}`
@@ -180,15 +187,15 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
                       
 
                       {/* Quantity Selector */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 0.75, md: 1 }, mb: 1 }}>
                         <IconButton
                           size="small"
                           onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                           sx={{ 
                             border: '1px solid #e0e0e0',
                             borderRadius: 1,
-                            width: 32,
-                            height: 32
+                            width: { xs: 28, sm: 30, md: 32 },
+                            height: { xs: 28, sm: 30, md: 32 }
                           }}
                         >
                           <Remove fontSize="small" />
@@ -212,8 +219,8 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
                           }}
                           sx={{
                             '& .MuiOutlinedInput-root': {
-                              width: 60,
-                              height: 32
+                              width: { xs: 50, sm: 55, md: 60 },
+                              height: { xs: 28, sm: 30, md: 32 }
                             }
                           }}
                         />
@@ -224,8 +231,8 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
                           sx={{ 
                             border: '1px solid #e0e0e0',
                             borderRadius: 1,
-                            width: 32,
-                            height: 32
+                            width: { xs: 28, sm: 30, md: 32 },
+                            height: { xs: 28, sm: 30, md: 32 }
                           }}
                         >
                           <Add fontSize="small" />
@@ -238,7 +245,8 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
                           variant="h6" 
                           sx={{ 
                             fontWeight: 700,
-                            color: '#000000'
+                            color: '#000000',
+                            fontSize: { xs: '1rem', sm: '1.125rem', md: '1.25rem' }
                           }}
                         >
                           ${((item.product?.price || 0) * item.quantity).toFixed(2)}
@@ -301,8 +309,9 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
               sx={{
                 backgroundColor: '#000000',
                 color: '#ffffff',
-                py: 1.5,
+                py: { xs: 1.25, sm: 1.375, md: 1.5 },
                 mb: 1,
+                fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
                 '&:hover': {
                   backgroundColor: '#333333'
                 }
@@ -321,8 +330,9 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
               sx={{
                 backgroundColor: '#ffc439',
                 color: '#000000',
-                py: 1.5,
+                py: { xs: 1.25, sm: 1.375, md: 1.5 },
                 mb: 2,
+                fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
                 '&:hover': {
                   backgroundColor: '#ffb300'
                 }

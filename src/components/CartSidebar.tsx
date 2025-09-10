@@ -70,7 +70,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ open, onClose }) => {
       onClose={onClose}
       sx={{
         '& .MuiDrawer-paper': {
-          width: { xs: '100%', sm: 400 },
+          width: { xs: '100%', sm: 350, md: 400 },
           backgroundColor: '#ffffff',
           boxShadow: '-4px 0 20px rgba(0,0,0,0.15)'
         }

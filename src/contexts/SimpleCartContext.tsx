@@ -53,12 +53,15 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
     );
     
     setItems(itemsWithProducts);
-    setTotalItems(itemsWithProducts.reduce((sum, item) => sum + item.quantity, 0));
-    setTotalPrice(itemsWithProducts.reduce((sum, item) => sum + (item.product?.price || 0) * item.quantity, 0));
+    const newTotalItems = itemsWithProducts.reduce((sum, item) => sum + item.quantity, 0);
+    const newTotalPrice = itemsWithProducts.reduce((sum, item) => sum + (item.product?.price || 0) * item.quantity, 0);
+    setTotalItems(newTotalItems);
+    setTotalPrice(newTotalPrice);
   };
 
   // Add to cart
   const addToCart = async (productId: string, quantity: number = 1) => {
+    console.log('SimpleCartContext - addToCart called:', { productId, quantity });
     // Optimistic update - add to cart immediately
     const existingItem = items.find(item => item.productId === productId);
     if (existingItem) {
@@ -92,8 +95,10 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
     
     // Update localStorage
     addToGuestCart(productId, quantity);
+    console.log('SimpleCartContext - addToGuestCart called, localStorage updated');
     
     // Load full product data in background
+    console.log('SimpleCartContext - calling loadCart...');
     loadCart();
   };
 
@@ -139,6 +144,19 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
   useEffect(() => {
     loadCart();
   }, []);
+
+  // Sync totalItems with items when items change
+  useEffect(() => {
+    const newTotalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+    const newTotalPrice = items.reduce((sum, item) => sum + (item.product?.price || 0) * item.quantity, 0);
+    
+    if (newTotalItems !== totalItems) {
+      setTotalItems(newTotalItems);
+    }
+    if (newTotalPrice !== totalPrice) {
+      setTotalPrice(newTotalPrice);
+    }
+  }, [items, totalItems, totalPrice]);
 
   const value: SimpleCartContextType = {
     items,
