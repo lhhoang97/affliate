@@ -17,8 +17,28 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Supabase credentials are missing. Please check your .env file.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create Supabase client with better configuration
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'supabase-js-web'
+    }
+  },
+  db: {
+    schema: 'public'
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10
+    }
+  }
+});
 
-console.log('✅ Supabase client created successfully');
+console.log('✅ Supabase client created successfully with enhanced config');
 console.log('URL:', supabaseUrl ? 'Set' : 'Not set');
 console.log('Key:', supabaseAnonKey ? 'Set' : 'Not set');

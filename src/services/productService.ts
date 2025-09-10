@@ -417,39 +417,27 @@ export const getAllProducts = async (): Promise<Product[]> => {
   ];
 
   try {
-    console.log('Executing Direct API call...');
+    console.log('Executing Supabase query...');
     
-    // Use direct fetch instead of Supabase client
-    const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-    const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+    // Try to fix Supabase client configuration
+    console.log('Supabase client config check:');
+    console.log('- URL:', process.env.REACT_APP_SUPABASE_URL);
+    console.log('- Key length:', process.env.REACT_APP_SUPABASE_ANON_KEY?.length);
     
-    console.log('Supabase URL:', supabaseUrl);
-    console.log('Supabase Key length:', supabaseKey?.length);
+    // Test with a simple query first
+    console.log('Testing simple Supabase query...');
+    const { data, error } = await supabase.from('products').select('*').limit(5);
     
-    const response = await fetch(`${supabaseUrl}/rest/v1/products?select=*`, {
-      method: 'GET',
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
-    });
+    console.log('Supabase query result:', { data: data?.length || 0, error });
     
-    console.log('Direct API response status:', response.status);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Direct API error:', response.status, errorText);
+    if (error) {
+      console.error('Supabase error:', error);
       console.log('Using fallback products instead');
       return fallbackProducts;
     }
-    
-    const data = await response.json();
-    console.log('Direct API result:', { data: data?.length || 0 });
-    
+
     if (data && data.length > 0) {
-      console.log('getAllProducts - Found', data.length, 'products from database via direct API');
+      console.log('getAllProducts - Found', data.length, 'products from database');
       const mappedProducts = data.map(mapDbProduct);
       return mappedProducts;
     } else {
