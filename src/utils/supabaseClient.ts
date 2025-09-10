@@ -17,11 +17,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Supabase credentials are missing. Please check your .env file.');
 }
 
-// Create Supabase client with better configuration
+// Create Supabase client with minimal configuration
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    autoRefreshToken: true,
-    persistSession: true,
+    autoRefreshToken: false,
+    persistSession: false,
     detectSessionInUrl: false
   },
   global: {
@@ -31,11 +31,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
   db: {
     schema: 'public'
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10
-    }
   }
 });
 

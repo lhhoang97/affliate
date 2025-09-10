@@ -424,9 +424,15 @@ export const getAllProducts = async (): Promise<Product[]> => {
     console.log('- URL:', process.env.REACT_APP_SUPABASE_URL);
     console.log('- Key length:', process.env.REACT_APP_SUPABASE_ANON_KEY?.length);
     
-    // Test with a simple query first
-    console.log('Testing simple Supabase query...');
-    const { data, error } = await supabase.from('products').select('*').limit(5);
+    // Test with a simple query first with timeout
+    console.log('Testing simple Supabase query with timeout...');
+    
+    const queryPromise = supabase.from('products').select('*').limit(5);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Supabase query timeout after 10 seconds')), 10000)
+    );
+    
+    const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
     
     console.log('Supabase query result:', { data: data?.length || 0, error });
     
