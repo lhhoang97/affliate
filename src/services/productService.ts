@@ -422,7 +422,7 @@ export const getAllProducts = async (): Promise<Product[]> => {
     // Add timeout to prevent hanging
     const queryPromise = supabase.from('products').select('*');
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Query timeout after 5 seconds')), 5000)
+      setTimeout(() => reject(new Error('Query timeout after 15 seconds')), 15000)
     );
     
     console.log('Starting query with timeout...');
