@@ -54,7 +54,7 @@ export async function signUpWithSupabase(credentials: RegisterCredentials): Prom
         data: {
           name: credentials.name,
         },
-        emailRedirectTo: undefined, // Disable email confirmation for development
+        emailRedirectTo: undefined, // Disable email confirmation for affiliate model
       },
     });
 

@@ -3,184 +3,250 @@ import {
   Box,
   Container,
   Typography,
-  Link
+  Link,
+  Button,
+  Grid,
+  Divider
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import Logo from './Logo';
+import {
+  Email,
+  LocationOn,
+  Phone,
+  KeyboardArrowUp
+} from '@mui/icons-material';
 
 const Footer: React.FC = () => {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <Box sx={{ 
-      backgroundColor: '#ffffff', 
-      borderTop: '1px solid #e9ecef',
+      backgroundColor: '#2c2c2c', 
+      color: '#ffffff',
       mt: 'auto'
     }}>
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        {/* Logo */}
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Logo variant="footer" />
-        </Box>
-
-        {/* Footer Links */}
-        <Box sx={{ 
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          justifyContent: 'center',
-          gap: { xs: 3, md: 6 },
-          mb: 4
-        }}>
-          {/* Information */}
-          <Box sx={{ textAlign: { xs: 'left', md: 'center' } }}>
-            <Typography variant="subtitle2" gutterBottom sx={{ 
-              fontWeight: 'bold', 
-              color: '#333',
-              mb: 2
+      <Container maxWidth="lg" sx={{ py: 3 }}>
+        {/* Main Footer Content - 3 Column Layout */}
+        <Grid container spacing={3} sx={{ mb: 2 }}>
+          {/* Left Column - Order & Help */}
+          <Grid item xs={12} md={4}>
+            <Typography variant="h6" sx={{ 
+              fontWeight: 700, 
+              mb: 2, 
+              color: '#ffffff',
+              fontSize: '1rem'
             }}>
-              Information
+              Order
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2.5 }}>
               <Link
                 component={RouterLink}
-                to="/about"
+                to="/orders"
                 sx={{
-                  color: '#666',
+                  color: '#ffffff',
                   textDecoration: 'none',
-                  fontSize: '14px',
-                  '&:hover': {
-                    color: '#007bff'
-                  }
+                  fontSize: '0.95rem',
+                  '&:hover': { color: '#ffffff', textDecoration: 'underline' }
                 }}
               >
-                About Us
+                Track My Order
               </Link>
               <Link
                 component={RouterLink}
                 to="/contact"
                 sx={{
-                  color: '#666',
+                  color: '#ffffff',
                   textDecoration: 'none',
-                  fontSize: '14px',
-                  '&:hover': {
-                    color: '#007bff'
-                  }
+                  fontSize: '0.95rem',
+                  '&:hover': { color: '#ffffff', textDecoration: 'underline' }
                 }}
               >
-                Contact
+                Return & Refund Policy
               </Link>
               <Link
                 component={RouterLink}
-                to="/help"
+                to="/contact"
                 sx={{
-                  color: '#666',
+                  color: '#ffffff',
                   textDecoration: 'none',
-                  fontSize: '14px',
-                  '&:hover': {
-                    color: '#007bff'
-                  }
+                  fontSize: '0.95rem',
+                  '&:hover': { color: '#ffffff', textDecoration: 'underline' }
                 }}
               >
-                Help Center
+                Shipping Policy
               </Link>
             </Box>
-          </Box>
 
-          {/* Terms & Guidelines */}
-          <Box sx={{ textAlign: { xs: 'left', md: 'center' } }}>
-            <Typography variant="subtitle2" gutterBottom sx={{ 
-              fontWeight: 'bold', 
-              color: '#333',
-              mb: 2
+            <Typography variant="h6" sx={{ 
+              fontWeight: 600, 
+              mb: 1.5, 
+              color: '#ffffff',
+              fontSize: '0.95rem'
             }}>
-              Terms & Guidelines
+              How can we help you?
             </Typography>
+            
+            <Button
+              component={RouterLink}
+              to="/contact"
+              variant="contained"
+              sx={{
+                backgroundColor: '#dc2626',
+                color: '#ffffff',
+                fontWeight: 600,
+                px: 2.5,
+                py: 1,
+                borderRadius: 1.5,
+                textTransform: 'none',
+                fontSize: '0.9rem',
+                '&:hover': {
+                  backgroundColor: '#b91c1c'
+                }
+              }}
+            >
+              Contact Us
+            </Button>
+          </Grid>
+
+          {/* Middle Column - Resources */}
+          <Grid item xs={12} md={4}>
+            <Typography variant="h6" sx={{ 
+              fontWeight: 700, 
+              mb: 2, 
+              color: '#ffffff',
+              fontSize: '1rem'
+            }}>
+              Resources
+            </Typography>
+            
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Link
                 component={RouterLink}
-                to="/terms"
+                to="/faq"
                 sx={{
-                  color: '#666',
+                  color: '#ffffff',
                   textDecoration: 'none',
-                  fontSize: '14px',
-                  '&:hover': {
-                    color: '#007bff'
-                  }
+                  fontSize: '0.95rem',
+                  '&:hover': { color: '#ffffff', textDecoration: 'underline' }
                 }}
               >
-                Terms & Conditions
+                FAQs
               </Link>
               <Link
                 component={RouterLink}
-                to="/terms"
+                to="/payment"
                 sx={{
-                  color: '#666',
+                  color: '#ffffff',
                   textDecoration: 'none',
-                  fontSize: '14px',
-                  '&:hover': {
-                    color: '#007bff'
-                  }
+                  fontSize: '0.95rem',
+                  '&:hover': { color: '#ffffff', textDecoration: 'underline' }
                 }}
               >
-                Terms of Service
+                Payment Methods
               </Link>
               <Link
                 component={RouterLink}
                 to="/privacy"
                 sx={{
-                  color: '#666',
+                  color: '#ffffff',
                   textDecoration: 'none',
-                  fontSize: '14px',
-                  '&:hover': {
-                    color: '#007bff'
-                  }
+                  fontSize: '0.95rem',
+                  '&:hover': { color: '#ffffff', textDecoration: 'underline' }
                 }}
               >
                 Privacy Policy
               </Link>
               <Link
                 component={RouterLink}
-                to="/cookies"
+                to="/terms"
                 sx={{
-                  color: '#666',
+                  color: '#ffffff',
                   textDecoration: 'none',
-                  fontSize: '14px',
-                  '&:hover': {
-                    color: '#007bff'
-                  }
+                  fontSize: '0.95rem',
+                  '&:hover': { color: '#ffffff', textDecoration: 'underline' }
                 }}
               >
-                Cookie Policy
-              </Link>
-              <Link
-                component={RouterLink}
-                to="/security"
-                sx={{
-                  color: '#666',
-                  textDecoration: 'none',
-                  fontSize: '14px',
-                  '&:hover': {
-                    color: '#007bff'
-                  }
-                }}
-              >
-                Security Settings
+                Terms of Service
               </Link>
             </Box>
-          </Box>
-        </Box>
+          </Grid>
 
-        {/* Bottom */}
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="h6" sx={{ 
-            fontWeight: 'bold', 
-            color: '#007bff',
-            mb: 1,
-            textTransform: 'lowercase'
-          }}>
-            BestFinds
+          {/* Right Column - Company Info */}
+          <Grid item xs={12} md={4}>
+            <Typography variant="h6" sx={{ 
+              fontWeight: 700, 
+              mb: 2, 
+              color: '#ffffff',
+              fontSize: '1.1rem'
+            }}>
+              Your Company Store
+            </Typography>
+            
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Email sx={{ color: '#ffffff', fontSize: '1rem' }} />
+                <Typography variant="body2" sx={{ color: '#ffffff', fontSize: '0.9rem' }}>
+                  support@yourcompany.com
+                </Typography>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <LocationOn sx={{ color: '#ffffff', fontSize: '1rem' }} />
+                <Typography variant="body2" sx={{ color: '#ffffff', fontSize: '0.9rem' }}>
+                  123 Your Street, Your City, Your Country
+                </Typography>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Phone sx={{ color: '#ffffff', fontSize: '1rem' }} />
+                <Typography variant="body2" sx={{ color: '#ffffff', fontSize: '0.9rem' }}>
+                  +84 123 456 789
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+
+        {/* Bottom Section */}
+        <Divider sx={{ backgroundColor: '#555555', mb: 2 }} />
+        
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 1.5
+        }}>
+          {/* Copyright */}
+          <Typography variant="body2" sx={{ color: '#cccccc', fontSize: '0.85rem' }}>
+            © 2025 Your Company Store. All rights reserved.
           </Typography>
-          <Typography variant="body2" sx={{ color: '#666' }}>
-            ©2025 BestFinds
-          </Typography>
+          
+          {/* Go to top */}
+          <Button
+            onClick={scrollToTop}
+            sx={{
+              color: '#ffffff',
+              textDecoration: 'none',
+              fontSize: '0.85rem',
+              textTransform: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              minWidth: 'auto',
+              px: 1,
+              py: 0.5,
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)'
+              }
+            }}
+          >
+            Go to top
+            <KeyboardArrowUp sx={{ fontSize: '1rem' }} />
+          </Button>
         </Box>
       </Container>
     </Box>

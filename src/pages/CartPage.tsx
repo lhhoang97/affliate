@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Container,
   Typography,
@@ -16,35 +16,16 @@ import { Add, Remove, Delete, ShoppingCart } from '@mui/icons-material';
 import { useCart } from '../contexts/CartContext';
 
 const CartPage: React.FC = () => {
-  const { items, totalItems, totalPrice, updateQuantity, removeFromCart, clearCart } = useCart();
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const { items, totalItems, totalPrice, updateQuantity, removeFromCart, clearCart, reloadCart } = useCart();
+  // const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
     updateQuantity(productId, newQuantity);
   };
 
   const handleCheckout = () => {
-    setIsCheckingOut(true);
-    
-    // Find the first product with affiliate link
-    const firstItem = items[0];
-    if (firstItem && firstItem.product?.affiliateLink) {
-      // Redirect to affiliate link
-      window.open(firstItem.product.affiliateLink, '_blank', 'noopener,noreferrer');
-    } else if (firstItem && (firstItem.product as any)?.externalUrl) {
-      // Fallback to external URL
-      window.open((firstItem.product as any).externalUrl, '_blank', 'noopener,noreferrer');
-    } else {
-      // Default affiliate link
-      const defaultAffiliateLink = `https://bestfinds.com/checkout?ref=cart&items=${items.map(item => item.product_id).join(',')}`;
-      window.open(defaultAffiliateLink, '_blank', 'noopener,noreferrer');
-    }
-    
-    // Clear cart after checkout
-    setTimeout(() => {
-      clearCart();
-      setIsCheckingOut(false);
-    }, 1000);
+    // Redirect to smart checkout page
+    window.location.href = '/checkout';
   };
 
   const handleIndividualCheckout = (product: any) => {
@@ -77,9 +58,24 @@ const CartPage: React.FC = () => {
         <Typography variant="h4" component="h1">
           Shopping Cart ({totalItems} items)
         </Typography>
-        <Button variant="outlined" color="error" onClick={clearCart}>
-          Clear Cart
-        </Button>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button variant="outlined" color="primary" onClick={reloadCart}>
+            Reload Cart
+          </Button>
+          <Button 
+            variant="outlined" 
+            color="secondary" 
+            onClick={() => {
+              localStorage.clear();
+              window.location.reload();
+            }}
+          >
+            Clear Storage & Reload
+          </Button>
+          <Button variant="outlined" color="error" onClick={clearCart}>
+            Clear Cart
+          </Button>
+        </Box>
       </Box>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
@@ -106,7 +102,7 @@ const CartPage: React.FC = () => {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                       <IconButton
                         size="small"
-                        onClick={() => handleQuantityChange(item.product_id, item.quantity - 1)}
+                        onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                         disabled={item.quantity <= 1}
                       >
                         <Remove />
@@ -117,7 +113,7 @@ const CartPage: React.FC = () => {
                         onChange={(e) => {
                           const value = parseInt(e.target.value);
                           if (!isNaN(value) && value > 0) {
-                            handleQuantityChange(item.product_id, value);
+                            handleQuantityChange(item.id, value);
                           }
                         }}
                         sx={{ width: 60 }}
@@ -125,7 +121,7 @@ const CartPage: React.FC = () => {
                       />
                       <IconButton
                         size="small"
-                        onClick={() => handleQuantityChange(item.product_id, item.quantity + 1)}
+                        onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                       >
                         <Add />
                       </IconButton>
@@ -198,10 +194,9 @@ const CartPage: React.FC = () => {
               fullWidth 
               size="large"
               onClick={handleCheckout}
-              disabled={isCheckingOut}
               startIcon={<ShoppingCart />}
             >
-              {isCheckingOut ? 'Redirecting...' : 'Proceed to Checkout'}
+              Proceed to Checkout
             </Button>
             
             <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block', textAlign: 'center' }}>

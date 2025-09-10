@@ -89,6 +89,7 @@ const AdminLayout: React.FC = () => {
     { text: 'Section Products', icon: <Slideshow />, path: '/admin/section-products' },
     { text: 'Slider Products', icon: <Slideshow />, path: '/admin/slider-products' },
     { text: 'User Management', icon: <People />, path: '/admin/users' },
+    { text: 'Business Mode', icon: <Tune />, path: '/admin/business-mode' },
     { text: 'Settings', icon: <Settings />, path: '/admin/settings' },
   ];
 

@@ -1,38 +1,5 @@
 import { supabase } from '../utils/supabaseClient';
-import { Product } from '../types';
-
-export interface Order {
-  id: string;
-  user_id: string;
-  order_number: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
-  total_amount: number;
-  shipping_amount: number;
-  tax_amount: number;
-  discount_amount: number;
-  payment_method?: string;
-  payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
-  shipping_address: any;
-  billing_address?: any;
-  tracking_number?: string;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-  // Joined order items data
-  order_items?: OrderItem[];
-}
-
-export interface OrderItem {
-  id: string;
-  order_id: string;
-  product_id: string;
-  product_name: string;
-  product_image?: string;
-  quantity: number;
-  unit_price: number;
-  total_price: number;
-  created_at: string;
-}
+import { Order, OrderItem } from '../types';
 
 export interface CreateOrderData {
   items: Array<{
@@ -181,7 +148,7 @@ export async function getOrderItems(orderId: string): Promise<OrderItem[]> {
     }
 
     // Verify user owns the order
-    const { data: order, error: orderError } = await supabase
+    const { data: orderData, error: orderError } = await supabase
       .from('orders')
       .select('id')
       .eq('id', orderId)

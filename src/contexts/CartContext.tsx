@@ -1,16 +1,20 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { 
   CartItem, 
   CartSummary, 
   getCartItems, 
   addToCart, 
-  updateCartItemQuantity, 
-  removeFromCart, 
+  updateCartItemQuantity,
+  updateGuestCartItemQuantity, 
+  removeFromCart,
+  removeGuestCartItem,
+  loadGuestCartWithProducts, 
   clearCart, 
-  getCartSummary, 
+  getCartSummary,
   getCartItemCount 
 } from '../services/cartService';
 import { useAuth } from './AuthContext';
+// import { useCartSidebar } from './CartSidebarContext';
 
 interface CartContextType {
   cartItems: CartItem[];
@@ -23,6 +27,7 @@ interface CartContextType {
   removeItem: (cartItemId: string) => Promise<void>;
   clearAll: () => Promise<void>;
   refreshCart: () => Promise<void>;
+  reloadCart: () => Promise<void>;
   // Alias properties for backward compatibility
   items: CartItem[];
   totalItems: number;
@@ -48,43 +53,78 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const isAuthenticated = auth?.isAuthenticated || false;
 
   // Load cart data
-  const loadCart = async () => {
-    if (!isAuthenticated) {
-      setCartItems([]);
-      setCartSummary(null);
-      setCartItemCount(0);
-      return;
-    }
-
+  const loadCart = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const [items, summary, count] = await Promise.all([
-        getCartItems(),
-        getCartSummary(),
-        getCartItemCount()
-      ]);
+      if (isAuthenticated) {
+        // Authenticated user - load from database
+        const [items, summary, count] = await Promise.all([
+          getCartItems(),
+          getCartSummary(),
+          getCartItemCount()
+        ]);
 
-      setCartItems(items);
-      setCartSummary(summary);
-      setCartItemCount(count);
+        setCartItems(items);
+        setCartSummary(summary);
+        setCartItemCount(count);
+      } else {
+        // Guest user - load from localStorage with product data
+        const guestCartWithProducts = await loadGuestCartWithProducts();
+        setCartItems(guestCartWithProducts);
+        setCartItemCount(guestCartWithProducts.reduce((sum: number, item: any) => sum + item.quantity, 0));
+        setCartSummary(null); // No summary for guest cart
+      }
     } catch (err) {
       console.error('Error loading cart:', err);
       setError(err instanceof Error ? err.message : 'Failed to load cart');
     } finally {
       setIsLoading(false);
     }
+  }, [isAuthenticated]);
+
+  // Force reload cart with fresh data
+  const reloadCart = async () => {
+    // Clear current state first
+    setCartItems([]);
+    setCartItemCount(0);
+    setCartSummary(null);
+    // Then reload
+    await loadCart();
   };
 
   // Add item to cart
   const addItem = async (productId: string, quantity: number = 1) => {
     try {
       setError(null);
-      const newItem = await addToCart(productId, quantity);
       
-      // Refresh cart data
-      await loadCart();
+      if (isAuthenticated) {
+        // Authenticated user - use database
+        await addToCart(productId, quantity);
+        await loadCart();
+      } else {
+        // Guest user - use localStorage
+        const guestCart = JSON.parse(localStorage.getItem('guest_cart') || '[]');
+        const existingItem = guestCart.find((item: any) => item.productId === productId);
+        
+        if (existingItem) {
+          existingItem.quantity += quantity;
+        } else {
+          guestCart.push({
+            id: `guest_${Date.now()}`,
+            productId,
+            quantity,
+            addedAt: new Date().toISOString()
+          });
+        }
+        
+        localStorage.setItem('guest_cart', JSON.stringify(guestCart));
+        
+        // Update local state
+        setCartItems(guestCart);
+        setCartItemCount(guestCart.reduce((sum: number, item: any) => sum + item.quantity, 0));
+      }
     } catch (err) {
       console.error('Error adding to cart:', err);
       setError(err instanceof Error ? err.message : 'Failed to add item to cart');
@@ -102,10 +142,30 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         return;
       }
 
-      await updateCartItemQuantity(cartItemId, quantity);
-      
-      // Refresh cart data
-      await loadCart();
+      if (isAuthenticated) {
+        // Authenticated user - update in database
+        await updateCartItemQuantity(cartItemId, quantity);
+        // Refresh cart data
+        await loadCart();
+      } else {
+        // Guest user - update in localStorage
+        const updatedItem = updateGuestCartItemQuantity(cartItemId, quantity);
+        if (updatedItem) {
+          // Update local state
+          setCartItems(prevItems => {
+            const newItems = prevItems.map(item => 
+              item.id === cartItemId ? updatedItem : item
+            );
+            // Recalculate total count
+            const newTotal = newItems.reduce((sum, item) => sum + item.quantity, 0);
+            setCartItemCount(newTotal);
+            return newItems;
+          });
+        } else {
+          // Item was removed, refresh cart
+          await loadCart();
+        }
+      }
     } catch (err) {
       console.error('Error updating cart item:', err);
       setError(err instanceof Error ? err.message : 'Failed to update cart item');
@@ -117,10 +177,23 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const removeItem = async (cartItemId: string) => {
     try {
       setError(null);
-      await removeFromCart(cartItemId);
       
-      // Refresh cart data
-      await loadCart();
+      if (isAuthenticated) {
+        // Authenticated user - remove from database
+        await removeFromCart(cartItemId);
+        // Refresh cart data
+        await loadCart();
+      } else {
+        // Guest user - remove from localStorage
+        removeGuestCartItem(cartItemId);
+        // Update local state
+        setCartItems(prevItems => {
+          const newItems = prevItems.filter(item => item.id !== cartItemId);
+          const newTotal = newItems.reduce((sum, item) => sum + item.quantity, 0);
+          setCartItemCount(newTotal);
+          return newItems;
+        });
+      }
     } catch (err) {
       console.error('Error removing from cart:', err);
       setError(err instanceof Error ? err.message : 'Failed to remove item from cart');
@@ -132,7 +205,13 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const clearAll = async () => {
     try {
       setError(null);
-      await clearCart();
+      
+      if (isAuthenticated) {
+        await clearCart();
+      } else {
+        // Clear guest cart
+        localStorage.removeItem('guest_cart');
+      }
       
       // Refresh cart data
       await loadCart();
@@ -148,10 +227,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     await loadCart();
   };
 
-  // Load cart when authentication state changes
+  // Load cart when component mounts and when authentication state changes
   useEffect(() => {
     loadCart();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, loadCart]);
 
   const value: CartContextType = {
     cartItems,
@@ -164,6 +243,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     removeItem,
     clearAll,
     refreshCart,
+    reloadCart,
     // Alias properties for backward compatibility
     items: cartItems,
     totalItems: cartItemCount,

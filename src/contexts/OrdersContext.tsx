@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { 
-  Order, 
-  OrderItem, 
+  Order
+} from '../types';
+import { 
   getUserOrders, 
   getOrderById, 
   updateOrderStatus,

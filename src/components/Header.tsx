@@ -38,8 +38,12 @@ import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import analytics from '../services/analyticsService';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
+import { useSimpleCart } from '../contexts/SimpleCartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useProducts } from '../contexts/ProductContext';
+import { useCartSidebar } from '../contexts/CartSidebarContext';
+import CartSidebar from './CartSidebar';
+import SimpleCartSidebar from './SimpleCartSidebar';
 import SearchBarSimple from './SearchBarSimple';
 import Logo from './Logo';
 import CategoryNavigation from './CategoryNavigation';
@@ -50,9 +54,10 @@ import { dealService, DealCategory } from '../services/dealService';
 
 const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
-  const { items } = useCart();
+  const { items } = useSimpleCart();
   const { wishlistItemCount } = useWishlist();
   const { products } = useProducts();
+  const { isOpen: isCartOpen, openCart, closeCart } = useCartSidebar();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
@@ -925,37 +930,21 @@ const Header: React.FC = () => {
             flexShrink: 0,
             order: { xs: 3, md: 3 }
           }}>
-            {/* Cart Icon */}
-            <IconButton
-              component={RouterLink}
-              to="/cart"
-              sx={{
-                color: '#333',
-                ml: 1,
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': {
-                  backgroundColor: '#f8f9fa',
-                  transform: 'scale(1.1)'
-                }
-              }}
-            >
-              <Badge badgeContent={cartItemCount} color="primary">
-                <ShoppingCart />
-              </Badge>
-            </IconButton>
-            
-            <IconButton
-              color="inherit"
-              onClick={() => navigate('/wishlist')}
-              sx={{ ml: 1 }}
-            >
-              <Badge badgeContent={wishlistItemCount} color="error">
-                <Favorite />
-              </Badge>
-            </IconButton>
+            {/* Wishlist - Only show for authenticated users */}
+            {isAuthenticated && (
+              <IconButton
+                color="inherit"
+                onClick={() => navigate('/wishlist')}
+                sx={{ ml: 1 }}
+              >
+                <Badge badgeContent={wishlistItemCount} color="error">
+                  <Favorite />
+                </Badge>
+              </IconButton>
+            )}
 
-            {/* Account Menu */}
-            {isAuthenticated ? (
+            {/* Account Menu - Only show for authenticated users (admin/collaborators) */}
+            {isAuthenticated && (
               <IconButton
                 onClick={handleProfileMenuOpen}
                 sx={{
@@ -971,21 +960,6 @@ const Header: React.FC = () => {
                 <Avatar sx={{ width: 32, height: 32, bgcolor: '#007bff' }}>
                   {user?.name?.charAt(0) || 'U'}
                 </Avatar>
-              </IconButton>
-            ) : (
-              <IconButton
-                onClick={handleAccountMenuOpen}
-                sx={{
-                  color: '#333',
-                  ml: 1,
-                  transition: 'all 0.2s ease-in-out',
-                  '&:hover': {
-                    backgroundColor: '#f8f9fa',
-                    transform: 'scale(1.1)'
-                  }
-                }}
-              >
-                <AccountCircle />
               </IconButton>
             )}
           </Box>
@@ -1077,51 +1051,57 @@ const Header: React.FC = () => {
         </MenuItem>
       </Menu>
 
-      {/* Account Menu for non-authenticated users */}
-      <Menu
-        anchorEl={accountMenuAnchor}
-        open={Boolean(accountMenuAnchor)}
-        onClose={handleAccountMenuClose}
-        sx={{
-          '& .MuiPaper-root': {
-            borderRadius: 2,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-            minWidth: 200
-          }
-        }}
-      >
-        <MenuItem 
-          onClick={() => { 
-            navigate('/login'); 
-            handleAccountMenuClose(); 
-          }}
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 1,
-            py: 1.5
+      {/* Account Menu for non-authenticated users - Hidden for affiliate model */}
+      {/* Only show for potential collaborators in the future */}
+      {false && (
+        <Menu
+          anchorEl={accountMenuAnchor}
+          open={Boolean(accountMenuAnchor)}
+          onClose={handleAccountMenuClose}
+          sx={{
+            '& .MuiPaper-root': {
+              borderRadius: 2,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+              minWidth: 200
+            }
           }}
         >
-          <Login sx={{ fontSize: 20 }} />
-          Login
-        </MenuItem>
-        <Divider />
-        <MenuItem 
-          onClick={() => { 
-            navigate('/register'); 
-            handleAccountMenuClose(); 
-          }}
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 1,
-            py: 1.5
-          }}
-        >
-          <PersonAdd sx={{ fontSize: 20 }} />
-          Register
-        </MenuItem>
-      </Menu>
+          <MenuItem 
+            onClick={() => { 
+              navigate('/login'); 
+              handleAccountMenuClose(); 
+            }}
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 1,
+              py: 1.5
+            }}
+          >
+            <Login sx={{ fontSize: 20 }} />
+            Login
+          </MenuItem>
+          <Divider />
+          <MenuItem 
+            onClick={() => { 
+              navigate('/register'); 
+              handleAccountMenuClose(); 
+            }}
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 1,
+              py: 1.5
+            }}
+          >
+            <PersonAdd sx={{ fontSize: 20 }} />
+            Register
+          </MenuItem>
+        </Menu>
+      )}
+
+      {/* Cart Sidebar */}
+      <SimpleCartSidebar open={isCartOpen} onClose={closeCart} />
     </>
   );
 };

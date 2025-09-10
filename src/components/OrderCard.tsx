@@ -22,7 +22,7 @@ import {
   Refresh
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { Order } from '../services/orderService';
+import { Order } from '../types';
 
 interface OrderCardProps {
   order: Order;

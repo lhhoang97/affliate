@@ -94,13 +94,8 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       await loadProducts(false); // Don't show loading for update refresh
     } catch (err) {
       console.error('ProductContext - Error updating product:', err);
-      setError('Failed to update product in database, updating local state only');
-      // Fallback: update local state only
-      setProducts(prev => {
-        const newProducts = prev.map(p => p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p);
-        console.log('ProductContext - Fallback update, new products state:', newProducts);
-        return newProducts;
-      });
+      setError('Failed to update product in database');
+      throw err;
     }
   };
 
@@ -112,15 +107,8 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       setProducts(prev => [...prev, newProduct]);
     } catch (err) {
       console.error('Error creating product:', err);
-      setError('Failed to create product in database, adding to local state only');
-      // Fallback: add to local state only
-      const newProduct: Product = {
-        ...product,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      setProducts(prev => [...prev, newProduct]);
+      setError('Failed to create product in database');
+      throw err;
     }
   };
 

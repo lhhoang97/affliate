@@ -135,10 +135,13 @@ export interface AuthState {
 // Cart types
 export interface CartItem {
   id: string;
-  productId: string;
-  product: Product;
+  product_id: string;
+  user_id: string;
   quantity: number;
-  addedAt: string;
+  created_at: string;
+  updated_at: string;
+  // Joined product data
+  product?: Product;
 }
 
 export interface CartState {
@@ -149,6 +152,28 @@ export interface CartState {
 }
 
 // Order types
+export interface Order {
+  id: string;
+  user_id: string;
+  order_number: string;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+  total_amount: number;
+  shipping_amount: number;
+  tax_amount: number;
+  discount_amount: number;
+  payment_method?: string;
+  payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
+  shipping_address: any;
+  billing_address?: any;
+  tracking_number?: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+  // Joined order items data
+  order_items?: OrderItem[];
+  user?: any; // User profile data
+}
+
 export interface OrderItem {
   id: string;
   order_id: string;
@@ -159,49 +184,8 @@ export interface OrderItem {
   unit_price: number;
   total_price: number;
   created_at: string;
-}
-
-export interface Order {
-  id: string;
-  user_id: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
-  total_amount: number;
-  shipping_amount?: number;
-  tax_amount?: number;
-  payment_status?: 'pending' | 'paid' | 'failed' | 'refunded';
-  shipping_address?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-    city?: string;
-    state?: string;
-    zip_code?: string;
-    country?: string;
-  };
-  billing_address?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-    city?: string;
-    state?: string;
-    zip_code?: string;
-    country?: string;
-  };
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-  order_items?: OrderItem[];
-}
-
-// Wishlist types
-export interface WishlistItem {
-  id: string;
-  user_id: string;
-  product_id: string;
+  // Joined data
   product?: Product;
-  created_at: string;
 }
 
 // Form validation types

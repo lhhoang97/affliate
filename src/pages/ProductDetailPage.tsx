@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   Container,
@@ -6,33 +6,21 @@ import {
   Box,
   Card,
   CardContent,
-  CardMedia,
   Button,
-  Rating,
   Chip,
-  Tabs,
-  Tab,
-  TextField,
-  Avatar,
-  Alert,
   IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Avatar,
   Divider,
-  Breadcrumbs
+  Grid,
+  Paper,
+  Stack,
+  Alert,
+  LinearProgress,
+  Badge,
+  AppBar,
+  Toolbar
 } from '@mui/material';
 import {
-  Add,
-  Remove,
   ShoppingCart,
   Favorite,
   FavoriteBorder,
@@ -40,159 +28,275 @@ import {
   LocalShipping,
   Verified,
   CheckCircle,
-  ChevronLeft,
-  ChevronRight,
+  Security,
+  Star,
+  StarBorder,
+  Timer,
+  Visibility,
+  People,
+  TrendingUp,
+  FlashOn,
+  LocalOffer,
+  AttachMoney,
+  Add,
+  Remove,
   ThumbUp,
   ThumbUpOutlined,
-  ChatBubbleOutline,
-  Visibility,
-  BookmarkBorder,
-  NavigateNext,
-  Star
+  Home,
+  TrackChanges,
+  ContactMail
 } from '@mui/icons-material';
 
 import { useCart } from '../contexts/CartContext';
+import { useSimpleCart } from '../contexts/SimpleCartContext';
+import AddToCartButtonWithSidebar from '../components/AddToCartButtonWithSidebar';
+// import BundleOffers from '../components/BundleOffers';
 import { useProducts } from '../contexts/ProductContext';
-import { Product, Review } from '../types';
-import VideoPlayer from '../components/VideoPlayer';
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`product-tabpanel-${index}`}
-      aria-labelledby={`product-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-    </div>
-  );
-}
+import { Product } from '../types';
+import { getProductById } from '../services/productService';
 
 const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { addToCart } = useCart();
-  const { products, loading, refreshProducts } = useProducts();
-  const [selectedTab, setSelectedTab] = useState(0);
-  const [selectedImage, setSelectedImage] = useState(0);
+  const { addToCart } = useSimpleCart();
+  const { products, loading } = useProducts();
+  
+  // State for hybrid model
+  const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [likes, setLikes] = useState(27);
-  const [comments, setComments] = useState(15);
-  const [views, setViews] = useState(9995);
-  const [hoveredImage, setHoveredImage] = useState<number | null>(null);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
-  const [imageKey, setImageKey] = useState(Date.now());
-  const autoPlayIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [likes, setLikes] = useState(1247);
+  const [viewers, setViewers] = useState(5412);
+  const [purchasers, setPurchasers] = useState(2346);
+  const [timeLeft, setTimeLeft] = useState(783); // Total seconds (13:03)
+  const [selectedBundle, setSelectedBundle] = useState(2); // Default to bundle 2 for testing
+  const [isInStock, setIsInStock] = useState(true);
+  const [hasAffiliateLink, setHasAffiliateLink] = useState(true);
+  
+  // Loading states for buttons
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isBuyingNow, setIsBuyingNow] = useState(false);
+  const [isPayPalLoading, setIsPayPalLoading] = useState(false);
 
-  // Get product from context
-  const product = products.find(p => p.id === id) || null;
+  // Get product from service (with fallback)
+  const [product, setProduct] = useState<Product | null>(null);
+  const [productLoading, setProductLoading] = useState(true);
 
-  // Debug logging
   useEffect(() => {
-    console.log('ProductDetailPage - ID:', id);
-    console.log('ProductDetailPage - Products:', products);
-    console.log('ProductDetailPage - Found Product:', product);
-    console.log('ProductDetailPage - Product Images:', product?.images);
-    console.log('ProductDetailPage - Number of Images:', product?.images?.length || 0);
-    console.log('ProductDetailPage - Selected Image Index:', selectedImage);
-  }, [id, products, product, selectedImage]);
-
-  // Reset selected image when product changes
-  useEffect(() => {
-    setSelectedImage(0);
-    setImageKey(Date.now());
-    // Force re-render by updating a timestamp
-    console.log('ProductDetailPage - Product changed, resetting image selection and updating image key');
-  }, [id, product?.updatedAt, product?.images]);
-
-  // Validate selected image index
-  useEffect(() => {
-    if (product && product.images && selectedImage >= product.images.length) {
-      console.log('ProductDetailPage - Selected image index out of bounds, resetting to 0');
-      setSelectedImage(0);
-    }
-  }, [product, selectedImage]);
-
-  // Auto-play functionality
-  useEffect(() => {
-    if (isAutoPlaying && product && product.images.length > 1) {
-      autoPlayIntervalRef.current = setInterval(() => {
-        setSelectedImage((prev) => (prev + 1) % product.images.length);
-      }, 3000); // Change image every 3 seconds
-    } else {
-      if (autoPlayIntervalRef.current) {
-        clearInterval(autoPlayIntervalRef.current);
-        autoPlayIntervalRef.current = null;
-      }
-    }
-
-    return () => {
-      if (autoPlayIntervalRef.current) {
-        clearInterval(autoPlayIntervalRef.current);
+    const loadProduct = async () => {
+      if (id) {
+        try {
+          setProductLoading(true);
+          const productData = await getProductById(id);
+          setProduct(productData);
+        } catch (error) {
+          console.error('Error loading product:', error);
+          setProduct(null);
+        } finally {
+          setProductLoading(false);
+        }
       }
     };
-  }, [isAutoPlaying, product]);
+
+    loadProduct();
+  }, [id]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Format time for display
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+  // Handle bundle selection
+  const handleBundleSelect = (bundle: any) => {
+    setSelectedBundle(bundle.id);
+  };
+
+  // Get current bundle info
+  const getCurrentBundle = () => {
+    const basePrice = product?.price || 0;
+    switch (selectedBundle) {
+      case 2:
+        return { quantity: 2, price: basePrice * 2 - 15, savings: 15 };
+      case 3:
+        return { quantity: 3, price: basePrice * 3 - 30, savings: 30 };
+      default:
+        return { quantity: 1, price: basePrice, savings: 0 };
+    }
+  };
+
+  const customerReviews = [
+    {
+      id: 1,
+      name: "Jim Newman",
+      rating: 5,
+      title: "Finally have energy & lost 60 pounds",
+      content: "Before I started using the AirFlow Jaw Strap I was tired all the time, sleeping 10 hours a day and drinking 4 cups of coffee a day. I was 240 pounds and had breathing issues. After AirFlow, I had WAY MORE ENERGY. I stopped drinking caffeine and started working out everyday. I ran my first half marathon this year and lost 60 pounds. I'm still recovering but this jaw strap saved my life. I'm overall way happier",
+      avatar: "JN",
+      verified: true
+    },
+    {
+      id: 2,
+      name: "Jeanette Stewart",
+      rating: 5,
+      title: "I feel a MILLION times better!",
+      content: "My brain fog went away, I no longer fall asleep while driving to work after 14 hours of sleep, and my husband sleeps better because I rarely snore now. My relationship with my husband has also never been better. I have a sex drive again after two years without. I can't imagine living without the AirFlow Jaw Strap!",
+      avatar: "JS",
+      verified: true
+    },
+    {
+      id: 3,
+      name: "Michael Perez",
+      rating: 5,
+      title: "Only thing that worked...",
+      content: "I struggled for years with CPAP, waking up frequently and feeling worse than without it. Since using the Airflow Jaw Strap, my sleep has dramatically improved. I now wake up refreshed, and I feel a lot happier. The combination of CPAP and the Airflow Jaw Strap has truly transformed my sleep quality.",
+      avatar: "MP",
+      verified: true
+    },
+    {
+      id: 4,
+      name: "Ada Dodson",
+      rating: 5,
+      title: "Perfect fit and quality",
+      content: "I tried another flimsy one first and it didn't stay on my head 2 seconds before slipping off. I'm petite and have a small head so I ordered the pink one. I just now took it out of the package and found it is fully adjustable and fits like a dream! I can already tell there's no way it will slip off in the night.",
+      avatar: "AD",
+      verified: true
+    },
+    {
+      id: 5,
+      name: "John Maisano",
+      rating: 5,
+      title: "It works well",
+      content: "With this product, not only do I sleep a lot better, but the people around me no longer need to endure annoying snoring.",
+      avatar: "JM",
+      verified: true
+    }
+  ];
 
   const handleLike = () => {
     setIsLiked(!isLiked);
     setLikes(isLiked ? likes - 1 : likes + 1);
   };
 
-  const handleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: product?.name,
-        text: product?.description,
-        url: window.location.href
-      });
+  const handleAddToCart = async () => {
+    if (isInStock && product) {
+      setIsAddingToCart(true);
+      
+      try {
+        // Add to cart with selected bundle quantity
+        const bundle = getCurrentBundle();
+        const totalQuantity = quantity * bundle.quantity;
+        
+        addToCart(product.id, totalQuantity);
+        
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Show success message
+        alert(`✅ Added ${totalQuantity} ${product.name} to cart!`);
+        
+        // Update purchasers count
+        setPurchasers(prev => prev + 1);
+        
+      } catch (error) {
+        alert('❌ Failed to add to cart. Please try again.');
+      } finally {
+        setIsAddingToCart(false);
+      }
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      alert('❌ Product is out of stock!');
     }
   };
 
-  const handleGetDeal = () => {
-    // Open affiliate link or external URL
-    if (product?.externalUrl) {
-      window.open(product.externalUrl, '_blank', 'noopener,noreferrer');
-    } else if (product?.affiliateLink) {
-      window.open(product.affiliateLink, '_blank', 'noopener,noreferrer');
+  const handleBuyNow = async () => {
+    if (product) {
+      setIsBuyingNow(true);
+      
+      try {
+        if (hasAffiliateLink) {
+          // Open affiliate link in new tab
+          const affiliateUrl = product.affiliateLink || product.externalUrl || `https://amazon.com/dp/${product.id}`;
+          window.open(affiliateUrl, '_blank', 'noopener,noreferrer');
+          
+          // Track affiliate click
+          console.log('Affiliate link clicked:', affiliateUrl);
+          
+          // Update purchasers count
+          setPurchasers(prev => prev + 1);
+          
     } else {
-      // Fallback to a generic affiliate link
-      const affiliateLink = `https://${product?.retailer?.toLowerCase().replace(/\s+/g, '')}.com/product/${product?.id}?ref=bestfinds`;
-      window.open(affiliateLink, '_blank', 'noopener,noreferrer');
+          // Direct purchase - redirect to checkout
+          const bundle = getCurrentBundle();
+          const totalQuantity = quantity * bundle.quantity;
+          
+          addToCart(product.id, totalQuantity);
+          
+          // Simulate processing
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // Redirect to cart page
+          window.location.href = '/cart';
+        }
+      } catch (error) {
+        alert('❌ Purchase failed. Please try again.');
+      } finally {
+        setIsBuyingNow(false);
+      }
     }
   };
 
-  const handleGalleryMouseEnter = () => {
-    if (product && product.images.length > 1) {
-      setIsAutoPlaying(true);
+  const handlePayPal = async () => {
+    if (product) {
+      setIsPayPalLoading(true);
+      
+      try {
+        // PayPal Express Checkout
+        const bundle = getCurrentBundle();
+        const totalQuantity = quantity * bundle.quantity;
+        const totalPrice = (bundle.price * quantity).toFixed(2);
+        
+        // Simulate PayPal processing
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Create PayPal payment URL
+        const paypalUrl = `https://www.paypal.com/checkoutnow?token=${product.id}&amount=${totalPrice}&quantity=${totalQuantity}`;
+        
+        // Open PayPal in new tab
+        window.open(paypalUrl, '_blank', 'noopener,noreferrer');
+        
+        // Track PayPal click
+        console.log('PayPal checkout initiated:', { product: product.name, quantity: totalQuantity, price: totalPrice });
+        
+        // Update purchasers count
+        setPurchasers(prev => prev + 1);
+        
+      } catch (error) {
+        alert('❌ PayPal checkout failed. Please try again.');
+      } finally {
+        setIsPayPalLoading(false);
+      }
     }
   };
 
-  const handleGalleryMouseLeave = () => {
-    setIsAutoPlaying(false);
-  };
-
-  const discountPercentage = product && product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
-
-  if (loading) {
+  if (loading || productLoading) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Alert severity="info">Loading product...</Alert>
+        <LinearProgress />
+        <Typography variant="h6" sx={{ mt: 2, textAlign: 'center' }}>
+          Loading product details...
+        </Typography>
       </Container>
     );
   }
@@ -205,500 +309,432 @@ const ProductDetailPage: React.FC = () => {
     );
   }
 
-  return (
-    <Container 
-      key={`product-${id}-${product?.updatedAt || Date.now()}`}
-      maxWidth="lg" 
-      sx={{ 
-        py: 2,
-        '@keyframes pulse': {
-          '0%': {
-            opacity: 1,
-          },
-          '50%': {
-            opacity: 0.5,
-          },
-          '100%': {
-            opacity: 1,
-          },
-        },
-      }}
-    >
-      {/* Breadcrumbs */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Breadcrumbs 
-          separator={<NavigateNext fontSize="small" />} 
-          sx={{ color: '#6b7280' }}
-        >
-          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Typography variant="body2">BestFinds</Typography>
-          </Link>
-          <Link to="/deals" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Typography variant="body2">Forums</Typography>
-          </Link>
-          <Typography variant="body2" color="primary">Hot Deals</Typography>
-        </Breadcrumbs>
-        
+  const discountPercentage = product.originalPrice ? 
+    Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
 
+  const selectedBundleOption = getCurrentBundle();
+
+  return (
+    <Box sx={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
+      {/* Header - Exactly like Louistores */}
+      <AppBar 
+        position="static" 
+      sx={{ 
+          backgroundColor: '#ffffff', 
+          color: '#000000',
+          boxShadow: 'none',
+          borderBottom: '1px solid #e5e7eb'
+        }}
+      >
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          {/* Logo */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ display: 'flex', gap: 0.5 }}>
+              <Box sx={{ width: 20, height: 20, backgroundColor: '#ff69b4', borderRadius: '50%' }} />
+              <Box sx={{ width: 20, height: 20, backgroundColor: '#00bfff', borderRadius: '50%' }} />
+            </Box>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#000000' }}>
+              Louistores ONLINE STORE
+            </Typography>
+          </Box>
+
+          {/* Navigation Links */}
+          <Box sx={{ display: 'flex', gap: 3 }}>
+            <Link to="/" style={{ textDecoration: 'none', color: '#000000' }}>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>Home</Typography>
+            </Link>
+            <Link to="/orders" style={{ textDecoration: 'none', color: '#000000' }}>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>Track My Order</Typography>
+          </Link>
+            <Link to="/contact" style={{ textDecoration: 'none', color: '#000000' }}>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>Contact Us</Typography>
+          </Link>
       </Box>
 
-      {/* Main Deal Card */}
-      <Card sx={{ mb: 3, border: '1px solid #e5e7eb' }}>
-        <CardContent sx={{ p: 0 }}>
-          {/* Product Content - Images Left, Deal Info Right */}
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, 
-            gap: 4,
-            p: 3
-          }}>
-            {/* Left Side - Product Images Gallery */}
-            <Box
-              onMouseEnter={handleGalleryMouseEnter}
-              onMouseLeave={handleGalleryMouseLeave}
-            >
-              {/* Main Image */}
-              <Box sx={{ 
-                position: 'relative', 
-                mb: 3,
-                backgroundColor: '#f8f9fa',
-                borderRadius: 2,
-                overflow: 'hidden',
-                minHeight: 500,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <CardMedia
+          {/* Cart Icon */}
+          <IconButton sx={{ color: '#000000' }}>
+            <ShoppingCart />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth="lg" sx={{ py: 2 }}>
+        <Grid container spacing={4}>
+          {/* Left Side - Product Images */}
+          <Grid item xs={12} md={6}>
+            <Box sx={{ position: 'relative' }}>
+              {/* Main Product Image */}
+              <Card sx={{ mb: 2, overflow: 'hidden', boxShadow: 'none', border: '1px solid #e5e7eb' }}>
+                <Box
                   component="img"
-                  image={product.images[selectedImage].startsWith('data:') 
-                    ? product.images[selectedImage] 
-                    : `${product.images[selectedImage]}?t=${imageKey}`}
+                  src={product.image}
                   alt={product.name}
                   sx={{ 
-                    objectFit: 'contain',
-                    maxHeight: 500,
-                    maxWidth: '100%',
-                    width: 'auto',
-                    height: 'auto',
-                    transition: 'all 0.3s ease-in-out'
+                    width: '100%',
+                    height: 500,
+                    objectFit: 'cover',
+                    display: 'block'
                   }}
                 />
-                
-                {/* Image Navigation Arrows */}
-                {product.images.length > 1 && (
-                  <>
-                    <IconButton
-                      onClick={() => setSelectedImage((prev) => (prev - 1 + product.images.length) % product.images.length)}
-                      sx={{
-                        position: 'absolute',
-                        left: 16,
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        '&:hover': { backgroundColor: 'rgba(255, 255, 255, 1)' },
-                        zIndex: 2
-                      }}
-                    >
-                      <ChevronLeft />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => setSelectedImage((prev) => (prev + 1) % product.images.length)}
-                      sx={{
-                        position: 'absolute',
-                        right: 16,
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        '&:hover': { backgroundColor: 'rgba(255, 255, 255, 1)' },
-                        zIndex: 2
-                      }}
-                    >
-                      <ChevronRight />
-                    </IconButton>
-                  </>
-                )}
-                
-                {/* Image Counter */}
-                {product.images.length > 1 && (
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: 16,
-                      right: 16,
-                      backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                      color: 'white',
-                      px: 2,
-                      py: 0.5,
-                      borderRadius: 2,
-                      fontSize: '0.875rem',
-                      fontWeight: 600,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1
-                    }}
-                  >
-                    {selectedImage + 1} / {product.images.length}
-                    {isAutoPlaying && (
-                      <Box
-                        sx={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          backgroundColor: '#10b981',
-                          animation: 'pulse 1s infinite'
-                        }}
-                      />
-                    )}
-                  </Box>
-                )}
-              </Box>
-              
-              {/* Thumbnail Images - Horizontal Row */}
-              {product.images.length > 1 && (
-                <Box sx={{ 
-                  display: 'flex', 
-                  gap: 1, 
-                  justifyContent: 'center',
-                  overflowX: 'auto',
-                  pb: 1
-                }}>
-                  {product.images.map((image, index) => (
+              </Card>
+
+              {/* Thumbnail Images */}
+              <Box sx={{ display: 'flex', gap: 1, overflowX: 'auto' }}>
+                {product.images?.slice(0, 4).map((image, index) => (
                     <Box
                       key={index}
                       component="img"
-                      src={image.startsWith('data:') ? image : `${image}?t=${imageKey}`}
+                    src={image}
                       alt={`${product.name} ${index + 1}`}
                       sx={{
-                        width: 100,
-                        height: 75,
+                      width: 80,
+                      height: 60,
                         objectFit: 'cover',
                         borderRadius: 1,
                         cursor: 'pointer',
-                        border: selectedImage === index ? '3px solid #3b82f6' : hoveredImage === index ? '3px solid #3b82f6' : '2px solid #e5e7eb',
-                        opacity: selectedImage === index ? 1 : hoveredImage === index ? 1 : 0.8,
-                        transition: 'all 0.2s ease-in-out',
-                        flexShrink: 0,
-                        '&:hover': { 
-                          opacity: 1,
-                          borderColor: '#3b82f6',
-                          transform: 'scale(1.05)',
-                          boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
-                        }
-                      }}
-                      onClick={() => setSelectedImage(index)}
-                      onMouseEnter={() => {
-                        setHoveredImage(index);
-                        setSelectedImage(index);
-                      }}
-                      onMouseLeave={() => setHoveredImage(null)}
+                      border: '2px solid #e5e7eb',
+                      '&:hover': { borderColor: '#3b82f6' }
+                    }}
                     />
                   ))}
                 </Box>
-              )}
             </Box>
+          </Grid>
 
-            {/* Right Side - Deal Information */}
-            <Box>
-              {/* Popular Badge */}
+          {/* Right Side - Product Info & Purchase */}
+          <Grid item xs={12} md={6}>
+            {/* Sale Badge - Exact styling */}
               <Chip 
-                label="Popular" 
-                color="error" 
-                size="small"
-                sx={{ fontWeight: 600, mb: 2 }}
-              />
+              icon={<FlashOn />}
+              label="💥Last Day SALE 50% OFF💥"
+              sx={{ 
+                mb: 2, 
+                fontWeight: 700, 
+                fontSize: '0.9rem',
+                backgroundColor: '#ff4444',
+                color: '#ffffff',
+                '& .MuiChip-icon': { color: '#ffffff' }
+              }}
+            />
 
-              {/* Poster and Date */}
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                BestFinds Staff posted {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-              </Typography>
-
-              {/* Deal Title */}
-                          <Typography variant="h5" component="h1" sx={{ fontWeight: 700, mb: 2, lineHeight: 1.3 }}>
-              {product.dealTitle || `${product.name} - $${product.price} + Free Shipping`}
+            {/* Product Title */}
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 2, lineHeight: 1.2, color: '#000000' }}>
+              {product.name}
             </Typography>
 
-              {/* Pricing Section */}
+            {/* Pricing - Exact like Louistores */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                <Typography variant="h3" sx={{ fontWeight: 700, color: '#1f2937' }}>
+              <Typography variant="h3" sx={{ fontWeight: 700, color: '#000000' }}>
                   ${product.price}
                 </Typography>
+              {product.originalPrice && (
                 <Typography 
                   variant="h5" 
                   sx={{ 
                     textDecoration: 'line-through', 
-                    color: '#dc2626',
+                    color: '#666666',
                     fontWeight: 500
                   }}
                 >
                   ${product.originalPrice}
                 </Typography>
-                <Chip 
-                  label={`${discountPercentage}% off`} 
-                  color="success" 
-                  size="small"
-                  sx={{ fontWeight: 600 }}
-                />
+              )}
               </Box>
 
-              {/* Product Video Section */}
-              {product.videoUrl && product.videoType && (
+            {/* Social Proof - Exact like the image */}
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                    Product Video
+              <Typography variant="body1" sx={{ mb: 2, color: '#000000' }}>
+                <Typography component="span" sx={{ fontWeight: 700 }}>{viewers.toLocaleString()}</Typography> people are viewing right now and <Typography component="span" sx={{ fontWeight: 700 }}>{purchasers.toLocaleString()}</Typography> purchased it.
                   </Typography>
-                  <Box sx={{ 
-                    maxWidth: '100%',
-                    borderRadius: 2,
-                    overflow: 'hidden',
-                    boxShadow: 2
-                  }}>
-                    <VideoPlayer
-                      videoUrl={product.videoUrl}
-                      videoType={product.videoType as 'youtube' | 'vimeo' | 'direct'}
-                      width="100%"
-                      height="auto"
-                      controls={true}
-                      poster={product.image}
-                    />
-                  </Box>
-                </Box>
-              )}
-
-              {/* Interaction Stats */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <IconButton 
-                    size="small" 
-                    onClick={handleLike}
-                    sx={{ color: isLiked ? '#3b82f6' : '#6b7280' }}
-                  >
-                    {isLiked ? <ThumbUp fontSize="small" /> : <ThumbUpOutlined fontSize="small" />}
-                  </IconButton>
-                  <Typography variant="body2" color="text.secondary">
-                    {likes}
+              
+              {/* Sale End with Progress Bar */}
+              <Typography variant="body2" sx={{ color: '#666666', mb: 1 }}>
+                Sale end in
                   </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <ChatBubbleOutline sx={{ fontSize: '1.2rem', color: '#6b7280' }} />
-                  <Typography variant="body2" color="text.secondary">
-                    {comments} Comments
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Visibility sx={{ fontSize: '1.2rem', color: '#6b7280' }} />
-                  <Typography variant="body2" color="text.secondary">
-                    {views.toLocaleString()} Views
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* Retailer Information */}
-              {product.retailer && (
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 2, 
-                  mb: 3,
-                  p: 2,
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: 2,
-                  border: '1px solid #e5e7eb'
-                }}>
-                  <LocalShipping sx={{ color: '#3b82f6', fontSize: '1.5rem' }} />
-                  <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#1f2937' }}>
-                      Store: {product.retailer}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Sold and shipped by {product.retailer}
-                    </Typography>
-                  </Box>
-                  <Verified sx={{ color: '#10b981', ml: 'auto' }} />
-                </Box>
-              )}
-
-              {/* Action Buttons */}
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 3 }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={handleGetDeal}
-                  sx={{
-                    backgroundColor: '#3b82f6',
-                    color: 'white',
-                    fontWeight: 600,
-                    px: 4,
-                    py: 1.5,
-                    '&:hover': { backgroundColor: '#2563eb' }
-                  }}
-                >
-                  Buy at {product.retailer || 'Store'}
-                </Button>
-                <IconButton onClick={handleShare} sx={{ color: '#6b7280' }}>
-                  <Share />
-                </IconButton>
-                <IconButton 
-                  onClick={handleBookmark}
-                  sx={{ color: isBookmarked ? '#3b82f6' : '#6b7280' }}
-                >
-                  <BookmarkBorder />
-                </IconButton>
-              </Box>
-
-              {/* Product Description */}
-              <Typography variant="body1" sx={{ mb: 3, color: '#6b7280', lineHeight: 1.6 }}>
-                {product.dealDescription || product.description}
-              </Typography>
-            </Box>
-          </Box>
-        </CardContent>
-      </Card>
-
-      {/* Tabs */}
-      <Card>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs 
-            value={selectedTab} 
-            onChange={(e, newValue) => setSelectedTab(newValue)}
-            sx={{
-              '& .MuiTab-root': {
-                fontWeight: 600,
-                textTransform: 'none',
-                fontSize: '1rem'
-              }
-            }}
-          >
-            <Tab label="Deal Details" />
-            <Tab label="Community Notes" />
-            <Tab label="About the Poster" />
-          </Tabs>
-        </Box>
-
-        {/* Deal Details Tab */}
-        <TabPanel value={selectedTab} index={0}>
-          <Box sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-              Product Details
-            </Typography>
-            
-            {/* Retailer Information Section */}
-            {product.retailer && (
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#3b82f6' }}>
-                  🏪 Store
-                </Typography>
-                <Box sx={{ 
-                  p: 2, 
-                  backgroundColor: '#f0f9ff', 
-                  borderRadius: 2, 
-                  border: '1px solid #bae6fd',
-                  mb: 2
-                }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1f2937' }}>
-                    {product.retailer}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Trusted retailer, ensuring product quality and shipping service
-                  </Typography>
-                </Box>
-              </Box>
-            )}
-            
-            <Typography variant="body1" sx={{ mb: 3 }}>
-              {product.dealDescription || `${product.retailer || 'Store'} has ${product.name} for $${product.price} + Free shipping`}
-            </Typography>
-
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-              Product Category:
-            </Typography>
-            <Box sx={{ mb: 3 }}>
-              {(product.dealCategories || [product.category, ...product.tags.slice(0, 2)]).map((category, index) => (
-                <Chip 
-                  key={index} 
-                  label={category} 
-                  sx={{ mr: 1, mb: 1 }} 
+              
+              {/* Progress Bar */}
+              <Box sx={{ mb: 1 }}>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={(timeLeft / 783) * 100} 
+                  sx={{ 
+                    height: 8, 
+                    borderRadius: 4,
+                    backgroundColor: '#f0f0f0',
+                    '& .MuiLinearProgress-bar': {
+                      backgroundColor: '#d0d0d0',
+                      borderRadius: 4
+                    }
+                  }} 
                 />
-              ))}
-            </Box>
+              </Box>
 
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-              Product Information:
-            </Typography>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                • <strong>Product Name:</strong> {product.name}
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                • <strong>Current Price:</strong> ${product.price}
-              </Typography>
-              {product.originalPrice && (
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  • <strong>Original Price:</strong> <span style={{ textDecoration: 'line-through' }}>${product.originalPrice}</span>
-                </Typography>
-              )}
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                • <strong>Brand:</strong> {product.brand}
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                • <strong>Rating:</strong> {product.rating}/5 ({product.reviewCount} reviews)
-              </Typography>
-              {product.retailer && (
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  • <strong>Store:</strong> {product.retailer}
-                </Typography>
-              )}
-            </Box>
+              {/* Countdown Timer - Red color */}
+              <Typography variant="h5" sx={{ fontWeight: 700, color: '#dc2626' }}>
+                {formattedTime}
+                    </Typography>
+                  </Box>
 
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-              Key Features:
+            {/* Bundle Options - Exact like Louistores */}
+            {/* Simple Bundle Options */}
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#000000' }}>
+              Bundle & save
             </Typography>
-            <Box>
-              {(product.keyFeatures || product.features.slice(0, 5)).map((feature, index) => (
-                <Typography key={index} variant="body1" sx={{ mb: 1 }}>
-                  • {feature}
+            <Stack spacing={1} sx={{ mb: 3 }}>
+              <Paper
+                sx={{
+                  p: 2,
+                  cursor: 'pointer',
+                  border: selectedBundle === 1 ? '2px solid #3b82f6' : '1px solid #e5e7eb',
+                  backgroundColor: selectedBundle === 1 ? '#f0f9ff' : 'white',
+                  '&:hover': { borderColor: 'primary.main' }
+                }}
+                onClick={() => setSelectedBundle(1)}
+              >
+                <Typography variant="body1" sx={{ fontWeight: 600, color: '#000000' }}>
+                  🔥 Get 1 {product?.name || 'Product'} 🔥
                 </Typography>
-              ))}
-            </Box>
-          </Box>
-        </TabPanel>
+              </Paper>
+              <Paper
+                sx={{
+                  p: 2,
+                  cursor: 'pointer',
+                  border: selectedBundle === 2 ? '2px solid #3b82f6' : '1px solid #e5e7eb',
+                  backgroundColor: selectedBundle === 2 ? '#f0f9ff' : 'white',
+                  '&:hover': { borderColor: 'primary.main' }
+                }}
+                onClick={() => setSelectedBundle(2)}
+              >
+                <Typography variant="body1" sx={{ fontWeight: 600, color: '#000000' }}>
+                  🔥 Get 2 {product?.name || 'Product'} SAVE $15 OFF - ONLY DAY 🔥
+                </Typography>
+              </Paper>
+              <Paper
+                sx={{
+                  p: 2,
+                  cursor: 'pointer',
+                  border: selectedBundle === 3 ? '2px solid #3b82f6' : '1px solid #e5e7eb',
+                  backgroundColor: selectedBundle === 3 ? '#f0f9ff' : 'white',
+                  '&:hover': { borderColor: 'primary.main' }
+                }}
+                onClick={() => setSelectedBundle(3)}
+              >
+                <Typography variant="body1" sx={{ fontWeight: 600, color: '#000000' }}>
+                  🔥 Get 3 {product?.name || 'Product'} SAVE $30 OFF - ONLY DAY 🔥
+                </Typography>
+              </Paper>
+            </Stack>
 
-        {/* Community Notes Tab */}
-        <TabPanel value={selectedTab} index={1}>
-          <Box sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-              Community Notes
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              No community notes yet. Be the first to add a note!
-            </Typography>
-          </Box>
-        </TabPanel>
-
-        {/* About the Poster Tab */}
-        <TabPanel value={selectedTab} index={2}>
-          <Box sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-              About the Poster
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <Avatar sx={{ bgcolor: '#3b82f6' }}>SW</Avatar>
-              <Box>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  BestFinds Staff
+            {/* Quantity Selector */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid #e5e7eb', borderRadius: 1 }}>
+                <IconButton onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                  <Remove />
+                </IconButton>
+                <Typography variant="h6" sx={{ px: 2, minWidth: 50, textAlign: 'center' }}>
+                  {quantity}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Deal Curator
-                </Typography>
+                <IconButton onClick={() => setQuantity(quantity + 1)}>
+                  <Add />
+                </IconButton>
               </Box>
             </Box>
-            <Typography variant="body1" color="text.secondary">
-              Our team of deal curators finds and verifies the best deals from trusted retailers to help you save money on quality products.
+
+            {/* Action Buttons - Exact colors like Louistores */}
+            <Stack spacing={2} sx={{ mb: 3 }}>
+              {/* Add to Cart Button - Black */}
+              <AddToCartButtonWithSidebar
+                productId={product?.id || ''}
+                productName={product?.name || ''}
+                quantity={quantity}
+                fullWidth
+                sx={{
+                  py: 2,
+                  fontSize: '1.1rem'
+                }}
+              />
+
+              {/* Buy Now Button - Red */}
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={handleBuyNow}
+                disabled={isBuyingNow}
+                sx={{
+                  backgroundColor: '#dc2626',
+                  color: 'white',
+                  fontWeight: 700,
+                  py: 2,
+                  fontSize: '1.1rem',
+                  '&:hover': { backgroundColor: '#b91c1c' },
+                  '&:disabled': { backgroundColor: '#f87171' }
+                }}
+              >
+                {isBuyingNow ? 'PROCESSING...' : 'BUY IT NOW'}
+              </Button>
+
+              {/* PayPal Button - Blue */}
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={handlePayPal}
+                disabled={isPayPalLoading}
+                sx={{
+                  backgroundColor: '#0070ba',
+                  color: 'white',
+                  fontWeight: 700,
+                  py: 2,
+                  fontSize: '1.1rem',
+                  '&:hover': { backgroundColor: '#005ea6' },
+                  '&:disabled': { backgroundColor: '#60a5fa' }
+                }}
+              >
+                {isPayPalLoading ? 'LOADING...' : 'PayPal'}
+              </Button>
+            </Stack>
+
+            {/* Trust Badge - Exact text */}
+            <Box sx={{ textAlign: 'center', mb: 3 }}>
+              <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
+                ✅ Guaranteed Safe Checkout
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+
+        {/* Product Description Section - Exact content */}
+        <Card sx={{ mt: 4, mb: 3, boxShadow: 'none', border: '1px solid #e5e7eb' }}>
+          <CardContent sx={{ p: 4 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 3, textAlign: 'center', color: '#000000' }}>
+              Eliminate Sleep Apnea & Wake Up Refreshed Overnight!
             </Typography>
+            
+            <Typography variant="body1" sx={{ mb: 3, fontSize: '1.1rem', lineHeight: 1.8, color: '#000000' }}>
+              If you're reading this, chances are you are suffering from interrupted sleep and chronic fatigue.
+              The result? You fall asleep everywhere, your work and relationship suffer, and have no energy for anything.
+              Long term, this can lead to severe depression, strokes, heart failure, and even premature death.
+                </Typography>
+
+            <Typography variant="body1" sx={{ mb: 3, fontSize: '1.1rem', lineHeight: 1.8, color: '#000000' }}>
+              Using the power of jaw alignment, the AirFlow Jaw Strap gently holds your mouth closed while you sleep, 
+              effectively preventing your tongue from obstructing your airway by shifting backward.
+              Eliminating your sleep apnea, daytime sleepiness, snoring, & brain fog.
+                  </Typography>
+            
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, color: '#000000' }}>
+              Breakthrough Discovery
+            </Typography>
+
+            <Typography variant="body1" sx={{ mb: 3, fontSize: '1.1rem', lineHeight: 1.8, color: '#000000' }}>
+              You've probably tried several other sleep apnea remedies that promise the world and fail to deliver. 
+              And, I'm here to tell you it is not your fault that you're still in pain.
+              Those other remedies don't target the root cause of sleep apnea.
+            </Typography>
+
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#000000' }}>
+                ✅ Optimal jaw position
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#000000' }}>
+                ✅ Preventing tongue slippage
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#000000' }}>
+                ✅ Enhanced airway expansion
+              </Typography>
+            </Box>
+
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, color: '#000000' }}>
+              Dramatically Improve Your Quality of Life
+            </Typography>
+
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#000000' }}>
+                ✅ Rejuvenating deep sleep
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#000000' }}>
+                ✅ Increased energy & alertness at work
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#000000' }}>
+                ✅ Boosts libido & weight loss
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#000000' }}>
+                ✅ Improved mental health & mood
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#000000' }}>
+                ✅ Lower risk of heart disease, stroke, & hypertension
+                </Typography>
+            </Box>
+
+            <Alert severity="info" sx={{ mb: 3, backgroundColor: '#e3f2fd' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#000000' }}>
+                *Limited Items Available In Stock! Not Sold In Stores*
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#000000' }}>
+                The Checkout Process is Guaranteed to be 100% Safe and Secure with Visa, Mastercard, AMex, Discover, Apple Pay or PayPal.
+              </Typography>
+            </Alert>
+
+            <Alert severity="success" sx={{ mb: 3, backgroundColor: '#e8f5e8' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#000000' }}>
+                100% Satisfaction Guaranteed With Every Order
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#000000' }}>
+                MONEY BACK GUARANTEE
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#000000' }}>
+                We want you to be 100% satisfied with the products you buy from us. If for ANY reason you are not satisfied with your purchase, we offer iron-clad money back guarantee.
+              </Typography>
+            </Alert>
+
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, textAlign: 'center', color: '#000000' }}>
+              ⭐I Wish You A Happy Shopping, THANK YOU⭐
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2, textAlign: 'center', color: '#000000' }}>
+              Click the 'Add to Cart' and 'Buy Now' button to GET YOURS!
+            </Typography>
+          </CardContent>
+        </Card>
+
+        {/* Customer Reviews Section - Exact like Louistores */}
+        <Card sx={{ mb: 3, boxShadow: 'none', border: '1px solid #e5e7eb' }}>
+          <CardContent sx={{ p: 4 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 3, textAlign: 'center', color: '#000000' }}>
+              REVIEWS
+            </Typography>
+            
+            <Stack spacing={3}>
+              {customerReviews.map((review) => (
+                <Paper key={review.id} sx={{ p: 3, border: '1px solid #e5e7eb' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                    <Avatar sx={{ bgcolor: '#3b82f6', width: 40, height: 40 }}>{review.avatar}</Avatar>
+            <Box>
+                      <Typography variant="h6" sx={{ fontWeight: 600, color: '#000000' }}>
+                        {review.name}
+                        {review.verified && <Verified sx={{ ml: 1, color: '#10b981', fontSize: '1.2rem' }} />}
+                </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} sx={{ color: i < review.rating ? '#ffc107' : '#e0e0e0', fontSize: '1.2rem' }} />
+              ))}
+            </Box>
           </Box>
-        </TabPanel>
-      </Card>
+                  </Box>
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#000000' }}>
+                    {review.title}
+            </Typography>
+                  <Typography variant="body1" sx={{ lineHeight: 1.6, color: '#000000' }}>
+                    {review.content}
+            </Typography>
+                </Paper>
+              ))}
+            </Stack>
+          </CardContent>
+        </Card>
+
     </Container>
+    </Box>
   );
 };
 

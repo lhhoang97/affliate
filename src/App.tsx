@@ -18,6 +18,11 @@ import CartPage from './pages/CartPage';
 import WishlistPage from './pages/WishlistPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import EmailConfirmationPage from './pages/EmailConfirmationPage';
+import EmailSentPage from './pages/EmailSentPage';
+import ResendEmailPage from './pages/ResendEmailPage';
+import SmartCheckoutPage from './pages/SmartCheckoutPage';
+import AdminBusinessModePage from './pages/AdminBusinessModePage';
 import ProfilePage from './pages/ProfilePage';
 import DealsPage from './pages/DealsPage';
 import ReviewsPage from './pages/ReviewsPage';
@@ -48,12 +53,14 @@ import ServerErrorPage from './pages/ServerErrorPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
-import { CartProvider } from './contexts/CartContext';
+import CartProviderWrapper from './components/CartProviderWrapper';
 import { WishlistProvider } from './contexts/WishlistContext';
 import { OrdersProvider } from './contexts/OrdersContext';
 import { ProfileProvider } from './contexts/ProfileContext';
 import { ProductProvider } from './contexts/ProductContext';
+import { BusinessModeProvider } from './contexts/BusinessModeContext';
 import SupabaseTest from './components/SupabaseTest';
+import FloatingCartIcon from './components/FloatingCartIcon';
 
 const AdminAmazonPage = React.lazy(() => import('./pages/AdminAmazonPage'));
 
@@ -255,13 +262,14 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-              <AuthProvider>
-          <CartProvider>
+      <BusinessModeProvider>
+        <AuthProvider>
+          <CartProviderWrapper>
             <WishlistProvider>
               <OrdersProvider>
                 <ProfileProvider>
                   <ProductProvider>
-              <Router>
+                    <Router>
                 <PageTracker />
             <Routes>
               {/* Regular layout with header/footer */}
@@ -285,6 +293,10 @@ function App() {
                       <Route path="/privacy" element={<PrivacyPolicyPage />} />
                       <Route path="/login" element={<LoginPage />} />
                       <Route path="/register" element={<RegisterPage />} />
+                      <Route path="/verify-email" element={<EmailConfirmationPage />} />
+                      <Route path="/email-sent" element={<EmailSentPage />} />
+                      <Route path="/resend-email" element={<ResendEmailPage />} />
+                      <Route path="/checkout" element={<SmartCheckoutPage />} />
                       <Route path="/test-supabase" element={<SupabaseTest />} />
                       <Route path="/product-card-demo" element={<ProductCardDemo />} />
                       
@@ -340,6 +352,7 @@ function App() {
                         } />
                         <Route path="users" element={<AdminUsersPage />} />
                         <Route path="orders" element={<AdminOrdersPage />} />
+                        <Route path="business-mode" element={<AdminBusinessModePage />} />
                         <Route path="settings" element={<AdminSettingsPage />} />
                       </Route>
                       
@@ -349,16 +362,20 @@ function App() {
                     </Routes>
                   </main>
                   <Footer />
+                  
+                  {/* Floating Cart Icon */}
+                  <FloatingCartIcon />
                 </div>
               } />
             </Routes>
-                        </Router>
+                    </Router>
                   </ProductProvider>
                 </ProfileProvider>
               </OrdersProvider>
             </WishlistProvider>
-          </CartProvider>
+          </CartProviderWrapper>
         </AuthProvider>
+      </BusinessModeProvider>
     </ThemeProvider>
   );
 }

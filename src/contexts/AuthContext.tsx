@@ -120,8 +120,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Use Supabase registration
       const authUser = await signUpWithSupabase(credentials);
+      
+      // Set user as authenticated immediately for affiliate model
       setUser(authUser);
       setIsAuthenticated(true);
+      console.log('Registration successful');
+      
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
       throw err;
