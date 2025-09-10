@@ -17,13 +17,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Supabase credentials are missing. Please check your .env file.');
 }
 
-// Create Supabase client with basic configuration
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-});
+// Create Supabase client with NO configuration (default settings)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 console.log('✅ Supabase client created successfully with enhanced config');
 console.log('URL:', supabaseUrl ? 'Set' : 'Not set');
