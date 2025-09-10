@@ -252,7 +252,6 @@ export const getAllProducts = async (): Promise<Product[]> => {
       description: 'Flagship smartphone with amazing camera and performance',
       price: 699.99,
       originalPrice: 799.99,
-      discount: 12,
       image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400',
       category: 'Smartphones',
       brand: 'Samsung',
@@ -268,8 +267,10 @@ export const getAllProducts = async (): Promise<Product[]> => {
         'Camera': '64MP + 12MP + 12MP',
         'Battery': '4000mAh'
       },
+      images: ['https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400'],
+      tags: ['smartphone', 'samsung', '5g', 'camera'],
       retailer: 'Amazon',
-      retailerUrl: 'https://amazon.com',
+      externalUrl: 'https://amazon.com',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -279,7 +280,6 @@ export const getAllProducts = async (): Promise<Product[]> => {
       description: 'Latest iPhone with A15 Bionic chip and improved cameras',
       price: 799.99,
       originalPrice: 899.99,
-      discount: 11,
       image: 'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=400',
       category: 'Smartphones',
       brand: 'Apple',
@@ -295,8 +295,10 @@ export const getAllProducts = async (): Promise<Product[]> => {
         'Camera': '12MP + 12MP',
         'Battery': '3240mAh'
       },
+      images: ['https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=400'],
+      tags: ['smartphone', 'apple', 'iphone', '5g'],
       retailer: 'Apple Store',
-      retailerUrl: 'https://apple.com',
+      externalUrl: 'https://apple.com',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -306,7 +308,6 @@ export const getAllProducts = async (): Promise<Product[]> => {
       description: 'Ultra-thin laptop with M2 chip for incredible performance',
       price: 1199.99,
       originalPrice: 1299.99,
-      discount: 8,
       image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400',
       category: 'Laptops',
       brand: 'Apple',
@@ -322,8 +323,10 @@ export const getAllProducts = async (): Promise<Product[]> => {
         'Graphics': '8-core GPU',
         'Battery': 'Up to 18 hours'
       },
+      images: ['https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400'],
+      tags: ['laptop', 'apple', 'macbook', 'm2'],
       retailer: 'Apple Store',
-      retailerUrl: 'https://apple.com',
+      externalUrl: 'https://apple.com',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -333,7 +336,6 @@ export const getAllProducts = async (): Promise<Product[]> => {
       description: 'Industry-leading noise canceling wireless headphones',
       price: 279.99,
       originalPrice: 349.99,
-      discount: 20,
       image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400',
       category: 'Audio',
       brand: 'Sony',
@@ -349,8 +351,10 @@ export const getAllProducts = async (): Promise<Product[]> => {
         'Connectivity': 'Bluetooth 5.0',
         'Weight': '254g'
       },
+      images: ['https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400'],
+      tags: ['headphones', 'sony', 'noise-canceling', 'wireless'],
       retailer: 'Best Buy',
-      retailerUrl: 'https://bestbuy.com',
+      externalUrl: 'https://bestbuy.com',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -360,7 +364,6 @@ export const getAllProducts = async (): Promise<Product[]> => {
       description: 'Gaming console with vibrant OLED display',
       price: 349.99,
       originalPrice: 399.99,
-      discount: 12,
       image: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400',
       category: 'Gaming',
       brand: 'Nintendo',
@@ -376,8 +379,10 @@ export const getAllProducts = async (): Promise<Product[]> => {
         'Resolution': '1280x720',
         'Weight': '420g'
       },
+      images: ['https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400'],
+      tags: ['gaming', 'nintendo', 'switch', 'console'],
       retailer: 'GameStop',
-      retailerUrl: 'https://gamestop.com',
+      externalUrl: 'https://gamestop.com',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -387,7 +392,6 @@ export const getAllProducts = async (): Promise<Product[]> => {
       description: 'Powerful tablet with M1 chip and all-day battery',
       price: 599.99,
       originalPrice: 649.99,
-      discount: 8,
       image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400',
       category: 'Tablets',
       brand: 'Apple',
@@ -403,8 +407,10 @@ export const getAllProducts = async (): Promise<Product[]> => {
         'Camera': '12MP',
         'Battery': 'Up to 10 hours'
       },
+      images: ['https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400'],
+      tags: ['tablet', 'apple', 'ipad', 'm1'],
       retailer: 'Apple Store',
-      retailerUrl: 'https://apple.com',
+      externalUrl: 'https://apple.com',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
