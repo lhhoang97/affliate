@@ -429,7 +429,7 @@ export const getAllProducts = async (): Promise<Product[]> => {
     
     const queryPromise = supabase.from('products').select('*').limit(5);
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Supabase query timeout after 10 seconds')), 10000)
+      setTimeout(() => reject(new Error('Supabase query timeout after 3 seconds')), 3000)
     );
     
     const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
