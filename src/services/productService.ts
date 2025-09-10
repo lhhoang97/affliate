@@ -424,15 +424,27 @@ export const getAllProducts = async (): Promise<Product[]> => {
     console.log('- URL:', process.env.REACT_APP_SUPABASE_URL);
     console.log('- Key length:', process.env.REACT_APP_SUPABASE_ANON_KEY?.length);
     
-    // Test with a simple query first with timeout
-    console.log('Testing simple Supabase query with timeout...');
+    // Use direct fetch as Supabase client keeps timing out
+    console.log('Using direct fetch API (Supabase client has issues)...');
     
-    const queryPromise = supabase.from('products').select('*').limit(5);
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Supabase query timeout after 3 seconds')), 3000)
-    );
+    const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+    const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
     
-    const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
+    const response = await fetch(`${supabaseUrl}/rest/v1/products?select=*`, {
+      method: 'GET',
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    const error = null; // No error if we got here
     
     console.log('Supabase query result:', { data: data?.length || 0, error });
     
