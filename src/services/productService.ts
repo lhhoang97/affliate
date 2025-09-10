@@ -424,27 +424,14 @@ export const getAllProducts = async (): Promise<Product[]> => {
     console.log('- URL:', process.env.REACT_APP_SUPABASE_URL);
     console.log('- Key length:', process.env.REACT_APP_SUPABASE_ANON_KEY?.length);
     
-    // Use direct fetch as Supabase client keeps timing out
-    console.log('Using direct fetch API (Supabase client has issues)...');
+    // Fix Supabase client - try different approach
+    console.log('Testing Supabase client with different configuration...');
     
-    const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-    const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-    
-    const response = await fetch(`${supabaseUrl}/rest/v1/products?select=*`, {
-      method: 'GET',
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    const error = null; // No error if we got here
+    // Try with minimal query and proper error handling
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .limit(10);
     
     console.log('Supabase query result:', { data: data?.length || 0, error });
     
