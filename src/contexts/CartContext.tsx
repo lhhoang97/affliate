@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { CartItem, CartSummary } from '../types';
 import { 
-  CartItem, 
-  CartSummary, 
   getCartItems, 
   addToCart, 
   updateCartItemQuantity,

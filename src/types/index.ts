@@ -133,11 +133,21 @@ export interface AuthState {
 }
 
 // Cart types
+export interface BundleOption {
+  type: 'single' | 'double' | 'triple';
+  quantity: number;
+  originalPrice: number;
+  discountedPrice: number;
+  discount: number;
+  discountText: string;
+}
+
 export interface CartItem {
   id: string;
   product_id: string;
   user_id: string;
   quantity: number;
+  bundleOption?: BundleOption;
   created_at: string;
   updated_at: string;
   // Joined product data
@@ -149,6 +159,12 @@ export interface CartState {
   totalItems: number;
   totalPrice: number;
   isLoading: boolean;
+}
+
+export interface CartSummary {
+  totalItems: number;
+  totalPrice: number;
+  itemCount: number;
 }
 
 // Order types

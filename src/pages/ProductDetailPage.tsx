@@ -49,7 +49,8 @@ import {
 
 import { useCart } from '../contexts/CartContext';
 import { useSimpleCart } from '../contexts/SimpleCartContext';
-import AddToCartButtonWithSidebar from '../components/AddToCartButtonWithSidebar';
+import { useCartSidebar } from '../contexts/CartSidebarContext';
+// import AddToCartButtonWithSidebar from '../components/AddToCartButtonWithSidebar';
 // import BundleOffers from '../components/BundleOffers';
 import { useProducts } from '../contexts/ProductContext';
 import { Product } from '../types';
@@ -58,6 +59,7 @@ import { getProductById } from '../services/productService';
 const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { addToCart } = useSimpleCart();
+  const { openCart } = useCartSidebar();
   const { products, loading } = useProducts();
   
   // State for hybrid model
@@ -195,22 +197,23 @@ const ProductDetailPage: React.FC = () => {
       setIsAddingToCart(true);
       
       try {
-        // Add to cart with selected bundle quantity
-        const bundle = getCurrentBundle();
-        const totalQuantity = quantity * bundle.quantity;
+        // Determine bundle type based on selected bundle
+        const bundleType = selectedBundle === 1 ? 'single' : selectedBundle === 2 ? 'double' : 'triple';
         
-        addToCart(product.id, totalQuantity);
-        
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Add to cart with bundle type
+        await addToCart(product.id, quantity, bundleType);
         
         // Show success message
-        alert(`✅ Added ${totalQuantity} ${product.name} to cart!`);
+        console.log(`✅ Added ${bundleType} bundle of ${product.name} to cart!`);
+        
+        // Open cart sidebar
+        openCart();
         
         // Update purchasers count
         setPurchasers(prev => prev + 1);
         
       } catch (error) {
+        console.error('Error adding to cart:', error);
         alert('❌ Failed to add to cart. Please try again.');
       } finally {
         setIsAddingToCart(false);
@@ -543,16 +546,29 @@ const ProductDetailPage: React.FC = () => {
             {/* Action Buttons - Exact colors like Louistores */}
             <Stack spacing={2} sx={{ mb: 3 }}>
               {/* Add to Cart Button - Black */}
-              <AddToCartButtonWithSidebar
-                productId={product?.id || ''}
-                productName={product?.name || ''}
-                quantity={quantity}
+              <Button
+                variant="contained"
+                size="large"
                 fullWidth
+                onClick={handleAddToCart}
+                disabled={isAddingToCart}
                 sx={{
+                  backgroundColor: '#333333',
+                  color: 'white',
+                  fontWeight: 700,
                   py: 2,
-                  fontSize: '1.1rem'
+                  fontSize: '1.1rem',
+                  '&:hover': {
+                    backgroundColor: '#000000'
+                  },
+                  '&:disabled': {
+                    backgroundColor: '#cccccc',
+                    color: '#666666'
+                  }
                 }}
-              />
+              >
+                {isAddingToCart ? 'ADDING...' : 'ADD TO CART'}
+              </Button>
 
               {/* Buy Now Button - Red */}
               <Button
