@@ -1,4 +1,4 @@
-// Clear cart script
+// Debug script to clear cart and test
 console.log('Clearing guest cart...');
 localStorage.removeItem('guest_cart');
 console.log('Guest cart cleared!');

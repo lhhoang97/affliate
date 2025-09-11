@@ -82,6 +82,7 @@ const AdminLayout: React.FC = () => {
     { text: 'Coupon Management', icon: <LocalOffer />, path: '/admin/coupon-management' },
     { text: 'Deal Management', icon: <Whatshot />, path: '/admin/deal-management' },
     { text: 'Deal Configuration', icon: <Tune />, path: '/admin/deal-config' },
+    { text: 'Bundle Deals', icon: <LocalOffer />, path: '/admin/bundle-deals' },
     { text: 'AI Assistant', icon: <Psychology />, path: '/admin/ai-assistant' },
     { text: 'Amazon Products', icon: <ShoppingCart />, path: '/admin/amazon' },
     { text: 'Price Updates', icon: <Update />, path: '/admin/price-updates' },

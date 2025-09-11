@@ -12,7 +12,8 @@ import {
   Alert
 } from '@mui/material';
 import { Add, Remove, ShoppingCart, FlashOn, Payment } from '@mui/icons-material';
-import { useCart } from '../contexts/CartContext';
+import { useSimpleCart } from '../contexts/SimpleCartContext';
+import { useCartSidebar } from '../contexts/CartSidebarContext';
 
 interface AffiliatePurchaseOptionsProps {
   product: any;
@@ -23,7 +24,8 @@ const AffiliatePurchaseOptions: React.FC<AffiliatePurchaseOptionsProps> = ({
   product, 
   hasAffiliateLink 
 }) => {
-  const { addToCart } = useCart();
+  const { addToCart } = useSimpleCart();
+  const { openCart } = useCartSidebar();
   const [quantity, setQuantity] = useState(1);
   const [selectedBundle, setSelectedBundle] = useState('single');
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -40,11 +42,15 @@ const AffiliatePurchaseOptions: React.FC<AffiliatePurchaseOptionsProps> = ({
     if (product) {
       setIsAddingToCart(true);
       try {
-        const bundleQuantity = bundleOptions.find(b => b.id === selectedBundle)?.quantity || 1;
-        const totalQuantity = quantity * bundleQuantity;
-        addToCart(product.id, totalQuantity);
+        // Convert selectedBundle to bundleType
+        const bundleType = selectedBundle === 'single' ? 'single' : 
+                          selectedBundle === 'double' ? 'double' : 'triple';
+        
+        await addToCart(product.id, quantity, bundleType);
+        openCart();
+        
         await new Promise(resolve => setTimeout(resolve, 1000));
-        alert(`✅ Added ${totalQuantity} ${product.name} to cart!`);
+        alert(`✅ Added ${product.name} to cart!`);
       } catch (error) {
         alert('❌ Failed to add to cart. Please try again.');
       } finally {
@@ -64,9 +70,10 @@ const AffiliatePurchaseOptions: React.FC<AffiliatePurchaseOptionsProps> = ({
           console.log('Affiliate link clicked:', affiliateUrl);
         } else {
           // Add to cart and redirect to checkout
-          const bundleQuantity = bundleOptions.find(b => b.id === selectedBundle)?.quantity || 1;
-          const totalQuantity = quantity * bundleQuantity;
-          addToCart(product.id, totalQuantity);
+          const bundleType = selectedBundle === 'single' ? 'single' : 
+                            selectedBundle === 'double' ? 'double' : 'triple';
+          
+          await addToCart(product.id, quantity, bundleType);
           await new Promise(resolve => setTimeout(resolve, 500));
           window.location.href = '/cart';
         }

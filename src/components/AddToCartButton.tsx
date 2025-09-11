@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Button, CircularProgress, Snackbar, Alert } from '@mui/material';
 import { ShoppingCart, Add } from '@mui/icons-material';
-import { useCart } from '../contexts/CartContext';
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useSimpleCart } from '../contexts/SimpleCartContext';
+import { useCartSidebar } from '../contexts/CartSidebarContext';
 
 interface AddToCartButtonProps {
   productId: string;
@@ -24,9 +23,8 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   disabled = false,
   quantity = 1
 }) => {
-  const { addItem, isLoading } = useCart();
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
+  const { addToCart } = useSimpleCart();
+  const { openCart } = useCartSidebar();
   
   const [isAdding, setIsAdding] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -34,14 +32,14 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
   const handleAddToCart = async () => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-
     try {
       setIsAdding(true);
-      await addItem(productId, quantity);
+      
+      // Add to cart with single bundle (default)
+      await addToCart(productId, quantity, 'single');
+      
+      // Open cart sidebar
+      openCart();
       
       setSnackbarMessage(`${productName} added to cart!`);
       setSnackbarSeverity('success');
@@ -66,7 +64,7 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
         variant={variant}
         size={size}
         fullWidth={fullWidth}
-        disabled={disabled || isAdding || isLoading}
+        disabled={disabled || isAdding}
         startIcon={isAdding ? <CircularProgress size={16} /> : <Add />}
         onClick={handleAddToCart}
         sx={{

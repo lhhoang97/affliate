@@ -152,6 +152,14 @@ export interface CartItem {
   updated_at: string;
   // Joined product data
   product?: Product;
+  // Bundle deal calculations
+  bundleSavings?: {
+    originalPrice: number;
+    discountAmount: number;
+    finalPrice: number;
+    savings: number;
+    appliedDeal?: any;
+  };
 }
 
 export interface CartState {
@@ -165,6 +173,7 @@ export interface CartSummary {
   totalItems: number;
   totalPrice: number;
   itemCount: number;
+  totalSavings?: number;
 }
 
 // Order types

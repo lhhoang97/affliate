@@ -1,5 +1,66 @@
 import { supabase } from '../utils/supabaseClient';
 import { CartItem, CartSummary } from '../types';
+import { BundleDeal } from '../types/bundleDeal';
+
+// Get bundle deals for products
+export const getBundleDeals = async (productIds: string[]): Promise<BundleDeal[]> => {
+  try {
+    if (productIds.length === 0) return [];
+
+    const { data, error } = await supabase
+      .from('bundle_deals')
+      .select('*')
+      .in('product_id', productIds)
+      .eq('is_active', true);
+
+    if (error) {
+      console.error('Error fetching bundle deals:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('getBundleDeals error:', error);
+    return [];
+  }
+};
+
+// Calculate bundle deal savings
+export const calculateBundleSavings = (price: number, quantity: number, bundleDeals: BundleDeal[]): {
+  originalPrice: number;
+  discountAmount: number;
+  finalPrice: number;
+  savings: number;
+  appliedDeal?: BundleDeal;
+} => {
+  const originalPrice = price * quantity;
+  
+  // Find applicable bundle deal
+  const applicableDeal = bundleDeals.find(deal => {
+    const requiredQuantity = parseInt(deal.bundle_type.replace('get', ''));
+    return quantity >= requiredQuantity;
+  });
+
+  if (!applicableDeal) {
+    return {
+      originalPrice,
+      discountAmount: 0,
+      finalPrice: originalPrice,
+      savings: 0
+    };
+  }
+
+  const discountAmount = (originalPrice * applicableDeal.discount_percentage) / 100;
+  const finalPrice = originalPrice - discountAmount;
+
+  return {
+    originalPrice,
+    discountAmount,
+    finalPrice,
+    savings: discountAmount,
+    appliedDeal: applicableDeal
+  };
+};
 
 // Get cart items for authenticated user
 export const getCartItems = async (): Promise<CartItem[]> => {
@@ -32,7 +93,26 @@ export const getCartItems = async (): Promise<CartItem[]> => {
       throw new Error(`Failed to fetch cart items: ${error.message}`);
     }
 
-    return data || [];
+    // Get bundle deals for all products in cart
+    const productIds = data?.map((item: any) => item.product_id) || [];
+    const bundleDeals = await getBundleDeals(productIds);
+
+    // Add bundle deal calculations to each cart item
+    const itemsWithBundleDeals = data?.map((item: any) => {
+      const productBundleDeals = bundleDeals.filter(deal => deal.product_id === item.product_id);
+      const bundleSavings = calculateBundleSavings(
+        item.products?.price || 0, 
+        item.quantity, 
+        productBundleDeals
+      );
+
+      return {
+        ...item,
+        bundleSavings
+      };
+    }) || [];
+
+    return itemsWithBundleDeals;
   } catch (error) {
     console.error('getCartItems error:', error);
     throw error;
@@ -184,6 +264,7 @@ export const getCartSummary = async (): Promise<CartSummary> => {
       .from('cart_items')
       .select(`
         quantity,
+        product_id,
         products (
           price,
           original_price
@@ -197,15 +278,32 @@ export const getCartSummary = async (): Promise<CartSummary> => {
     }
 
     const totalItems = data?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
-    const totalPrice = data?.reduce((sum: number, item: any) => {
-      const price = item.products?.price || 0;
-      return sum + (price * item.quantity);
-    }, 0) || 0;
+    
+    // Get bundle deals for all products
+    const productIds = data?.map((item: any) => item.product_id) || [];
+    const bundleDeals = await getBundleDeals(productIds);
+
+    // Calculate total price with bundle deals
+    let totalPrice = 0;
+    let totalSavings = 0;
+
+    data?.forEach((item: any) => {
+      const productBundleDeals = bundleDeals.filter(deal => deal.product_id === item.product_id);
+      const bundleSavings = calculateBundleSavings(
+        item.products?.price || 0, 
+        item.quantity, 
+        productBundleDeals
+      );
+      
+      totalPrice += bundleSavings.finalPrice;
+      totalSavings += bundleSavings.savings;
+    });
 
     return {
       totalItems,
       totalPrice,
-      itemCount: data?.length || 0
+      itemCount: data?.length || 0,
+      totalSavings
     };
   } catch (error) {
     console.error('getCartSummary error:', error);
@@ -253,36 +351,33 @@ export const saveGuestCart = (cart: any[]) => {
 
 export const addToGuestCart = (productId: string, quantity: number = 1, bundleOption?: any) => {
   const cart = getGuestCart();
-  
-  // Check if this exact bundle already exists
   const bundleType = bundleOption?.type || 'single';
-  const existingBundle = cart.find((item: any) => 
+  
+  // Check if item with same product and bundle type already exists
+  const existingItem = cart.find((item: any) => 
     item.productId === productId && 
     item.bundleOption?.type === bundleType
   );
   
-  if (existingBundle) {
-    // Increase quantity of existing bundle
-    const updatedCart = cart.map((item: any) => 
-      item.id === existingBundle.id 
-        ? { ...item, quantity: item.quantity + quantity, updated_at: new Date().toISOString() }
-        : item
-    );
-    saveGuestCart(updatedCart);
-    return updatedCart;
+  if (existingItem) {
+    // Increase quantity of existing item
+    existingItem.quantity += 1;
+    existingItem.updated_at = new Date().toISOString();
+    console.log(`Guest cart: Increased quantity for existing ${bundleType} bundle of ${productId} to ${existingItem.quantity}`);
+  } else {
+    // Create new item for new bundle
+    const uniqueId = `guest_${Date.now()}_${bundleType}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    cart.push({
+      id: uniqueId,
+      productId,
+      quantity: 1,
+      bundleOption,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    });
+    console.log(`Guest cart: Created new ${bundleType} bundle for ${productId}`);
   }
-  
-  // Create new item for new bundle
-  const uniqueId = `guest_${Date.now()}_${bundleType}_${Math.random().toString(36).substr(2, 9)}`;
-  
-  cart.push({
-    id: uniqueId,
-    productId,
-    quantity,
-    bundleOption,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  });
   
   saveGuestCart(cart);
   return cart;

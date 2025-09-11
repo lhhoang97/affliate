@@ -47,6 +47,7 @@ import AdminCouponManagementPage from './pages/AdminCouponManagementPage';
 import AdminDealManagementPage from './pages/AdminDealManagementPage';
 import AdminDealConfigPage from './pages/AdminDealConfigPage';
 import AdminAIAssistantPage from './pages/AdminAIAssistantPage';
+import AdminBundleDealsPage from './pages/AdminBundleDealsPage';
 import ProductCardDemo from './pages/ProductCardDemo';
 import NotFoundPage from './pages/NotFoundPage';
 import ServerErrorPage from './pages/ServerErrorPage';
@@ -344,6 +345,7 @@ function App() {
                         <Route path="coupon-management" element={<AdminCouponManagementPage />} />
                         <Route path="deal-management" element={<AdminDealManagementPage />} />
                         <Route path="deal-config" element={<AdminDealConfigPage />} />
+                        <Route path="bundle-deals" element={<AdminBundleDealsPage />} />
                         <Route path="ai-assistant" element={<AdminAIAssistantPage />} />
                         <Route path="amazon" element={
                           <Suspense fallback={<div>Loading Amazon Products...</div>}>

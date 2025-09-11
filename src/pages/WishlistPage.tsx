@@ -26,7 +26,8 @@ import {
 } from '@mui/icons-material';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useAuth } from '../contexts/AuthContext';
-import { useCart } from '../contexts/CartContext';
+import { useSimpleCart } from '../contexts/SimpleCartContext';
+import { useCartSidebar } from '../contexts/CartSidebarContext';
 import { useNavigate } from 'react-router-dom';
 import SmartLink from '../components/SmartLink';
 import OptimizedImage from '../components/OptimizedImage';
@@ -41,7 +42,8 @@ const WishlistPage: React.FC = () => {
     removeFromWishlist, 
     clearWishlist 
   } = useWishlist();
-  const { addToCart } = useCart();
+  const { addToCart } = useSimpleCart();
+  const { openCart } = useCartSidebar();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [isRemoving, setIsRemoving] = useState<string | null>(null);
@@ -69,7 +71,8 @@ const WishlistPage: React.FC = () => {
 
   const handleAddToCart = async (productId: string) => {
     try {
-      await addToCart(productId, 1);
+      await addToCart(productId, 1, 'single');
+      openCart();
       // Optionally remove from wishlist after adding to cart
       // await removeFromWishlist(wishlistItemId);
     } catch (error) {

@@ -6,8 +6,11 @@ import {
   updateGuestCartItemQuantity, 
   removeGuestCartItem, 
   clearGuestCart,
-  loadGuestCartWithProducts
+  loadGuestCartWithProducts,
+  getBundleDeals,
+  calculateBundleSavings
 } from '../services/cartService';
+import { supabase } from '../utils/supabaseClient';
 
 interface GuestCartItem {
   id: string;
@@ -15,6 +18,13 @@ interface GuestCartItem {
   quantity: number;
   bundleOption?: BundleOption;
   product?: any;
+  bundleSavings?: {
+    originalPrice: number;
+    discountAmount: number;
+    finalPrice: number;
+    savings: number;
+    appliedDeal?: any;
+  };
 }
 
 interface SimpleCartContextType {
@@ -40,22 +50,21 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
   // Helper function to create bundle options
   const createBundleOption = useCallback((bundleType: 'single' | 'double' | 'triple', productPrice: number): BundleOption => {
     const bundleConfigs = {
-      single: { quantity: 1, discount: 0, discountText: '' },
-      double: { quantity: 2, discount: 15, discountText: 'SAVE $15 OFF' },
-      triple: { quantity: 3, discount: 30, discountText: 'SAVE $30 OFF' }
+      single: { quantity: 1, discountAmount: 0, discountText: '' },
+      double: { quantity: 2, discountAmount: 15, discountText: 'SAVE $15 OFF' },
+      triple: { quantity: 3, discountAmount: 30, discountText: 'SAVE $30 OFF' }
     };
     
     const config = bundleConfigs[bundleType];
     const originalPrice = productPrice * config.quantity;
-    const discountAmount = (originalPrice * config.discount) / 100;
-    const discountedPrice = originalPrice - discountAmount;
+    const discountedPrice = originalPrice - config.discountAmount;
     
     return {
       type: bundleType,
       quantity: config.quantity,
       originalPrice,
       discountedPrice,
-      discount: config.discount,
+      discount: config.discountAmount,
       discountText: config.discountText
     };
   }, []);
@@ -66,20 +75,50 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
       console.log('SimpleCartContext - Loading cart with optimized service...');
       const itemsWithProducts = await loadGuestCartWithProducts();
       
-      console.log('SimpleCartContext - Items received from service:', itemsWithProducts);
-      console.log('SimpleCartContext - Setting items state...');
-      setItems(itemsWithProducts);
+      // Get bundle deals for all products
+      const productIds = itemsWithProducts.map(item => item.productId);
+      const bundleDeals = await getBundleDeals(productIds);
       
-      const newTotalItems = itemsWithProducts.reduce((sum, item) => sum + item.quantity, 0);
-      const newTotalPrice = itemsWithProducts.reduce((sum, item) => sum + (item.product?.price || 0) * item.quantity, 0);
+      // Calculate bundle savings for each item
+      const itemsWithBundleSavings = itemsWithProducts.map(item => {
+        const productBundleDeals = bundleDeals.filter(deal => deal.product_id === item.productId);
+        const bundleSavings = calculateBundleSavings(
+          item.product?.price || 0, 
+          item.quantity, 
+          productBundleDeals
+        );
+        
+        return {
+          ...item,
+          bundleSavings
+        };
+      });
+      
+      console.log('SimpleCartContext - Items received from service:', itemsWithBundleSavings);
+      console.log('SimpleCartContext - Setting items state...');
+      setItems(itemsWithBundleSavings);
+      
+      const newTotalItems = itemsWithBundleSavings.reduce((sum, item) => sum + item.quantity, 0);
+      const newTotalPrice = itemsWithBundleSavings.reduce((sum, item) => {
+        if (item.bundleSavings && item.bundleSavings.savings > 0) {
+          return sum + item.bundleSavings.finalPrice;
+        }
+        return sum + (item.product?.price || 0) * item.quantity;
+      }, 0);
+      const newTotalSavings = itemsWithBundleSavings.reduce((sum, item) => {
+        return sum + (item.bundleSavings?.savings || 0);
+      }, 0);
+      
       setTotalItems(newTotalItems);
       setTotalPrice(newTotalPrice);
+      setTotalSavings(newTotalSavings);
       
       console.log('SimpleCartContext - Cart loaded successfully:', { 
-        items: itemsWithProducts.length, 
+        items: itemsWithBundleSavings.length, 
         totalItems: newTotalItems, 
         totalPrice: newTotalPrice,
-        itemsData: itemsWithProducts
+        totalSavings: newTotalSavings,
+        itemsData: itemsWithBundleSavings
       });
     } catch (error) {
       console.error('SimpleCartContext - Error loading cart:', error);
@@ -87,6 +126,7 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
       setItems([]);
       setTotalItems(0);
       setTotalPrice(0);
+      setTotalSavings(0);
     }
   }, []);
 
@@ -107,67 +147,60 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
     setPendingBundles(prev => new Set(prev).add(bundleKey));
     
     try {
-      // Get product price from existing items or use default
+      // Get product price from existing items or fetch from database
       const existingItem = items.find(item => item.productId === productId);
-      const productPrice = existingItem?.product?.price || 150; // Default price for demo
+      let productPrice = existingItem?.product?.price;
+      
+      // If no existing item, fetch product data
+      if (!productPrice) {
+        try {
+          const { data: product } = await supabase
+            .from('products')
+            .select('price')
+            .eq('id', productId)
+            .single();
+          productPrice = product?.price || 0;
+        } catch (error) {
+          console.error('Error fetching product price:', error);
+          productPrice = 0;
+        }
+      }
       const bundleOption = createBundleOption(bundleType, productPrice);
       
-      // Check if this exact bundle already exists
-      const existingBundle = items.find(item => 
+      // Check if item with same product and bundle type already exists
+      const existingBundleItem = items.find(item => 
         item.productId === productId && 
         item.bundleOption?.type === bundleType
       );
       
-      if (existingBundle) {
-        console.log(`Bundle ${bundleType} for ${productId} already exists - INCREASING QUANTITY`);
-        // Increase quantity of existing bundle
-        const updatedItems = items.map(item => 
-          item.id === existingBundle.id 
+      let updatedItems: GuestCartItem[];
+      
+      if (existingBundleItem) {
+        // Increase quantity of existing item
+        console.log(`Increasing quantity for existing ${bundleType} bundle of ${productId}`);
+        updatedItems = items.map(item => 
+          item.id === existingBundleItem.id 
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
-        setItems(updatedItems);
-        
-        // Calculate new totals
-        const newTotalItems = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
-        const newTotalPrice = updatedItems.reduce((sum, item) => {
-          if (item.bundleOption) {
-            return sum + (item.bundleOption.discountedPrice * item.quantity);
+      } else {
+        // Create new item with bundle option
+        console.log(`Creating new ${bundleType} bundle for ${productId}`);
+        const newItem: GuestCartItem = {
+          id: `guest_${Date.now()}_${bundleType}`,
+          productId,
+          quantity: 1,
+          bundleOption,
+          product: {
+            id: productId,
+            name: 'Loading...',
+            price: productPrice,
+            image: ''
           }
-          return sum + (item.product?.price || 0) * item.quantity;
-        }, 0);
-        const newTotalSavings = updatedItems.reduce((sum, item) => {
-          if (item.bundleOption) {
-            return sum + ((item.bundleOption.originalPrice - item.bundleOption.discountedPrice) * item.quantity);
-          }
-          return sum;
-        }, 0);
-        
-        setTotalItems(newTotalItems);
-        setTotalPrice(newTotalPrice);
-        setTotalSavings(newTotalSavings);
-        
-        // Update localStorage
-        addToGuestCart(productId, 1, bundleOption);
-        return;
+        };
+        updatedItems = [...items, newItem];
       }
       
-      // Create new item with bundle option
-      const newItem: GuestCartItem = {
-        id: `guest_${Date.now()}_${bundleType}`,
-        productId,
-        quantity: 1, // Always 1 for bundle display
-        bundleOption,
-        product: {
-          id: productId,
-          name: 'Loading...',
-          price: productPrice,
-          image: ''
-        }
-      };
-      
-      // Optimistic update
-      const updatedItems = [...items, newItem];
       setItems(updatedItems);
       
       // Calculate totals with bundle pricing
@@ -190,8 +223,15 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
       setTotalSavings(newTotalSavings);
       
       // Update localStorage immediately
-      addToGuestCart(productId, bundleOption.quantity, bundleOption);
-      console.log('SimpleCartContext - Bundle added to cart:', { bundleType, bundleOption });
+      if (existingBundleItem) {
+        // Update existing item quantity in localStorage
+        updateGuestCartItemQuantity(existingBundleItem.id, existingBundleItem.quantity + 1);
+        console.log('SimpleCartContext - Updated existing bundle quantity:', { bundleType, newQuantity: existingBundleItem.quantity + 1 });
+      } else {
+        // Add new item to localStorage
+        addToGuestCart(productId, bundleOption.quantity, bundleOption);
+        console.log('SimpleCartContext - Bundle added to cart:', { bundleType, bundleOption });
+      }
       
       // Load full product data in background
       setTimeout(() => {

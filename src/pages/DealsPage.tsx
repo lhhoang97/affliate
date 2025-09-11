@@ -23,7 +23,8 @@ import {
   TrendingDown,
   FlashOn
 } from '@mui/icons-material';
-import { useCart } from '../contexts/CartContext';
+import { useSimpleCart } from '../contexts/SimpleCartContext';
+import { useCartSidebar } from '../contexts/CartSidebarContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -48,7 +49,8 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const DealsPage: React.FC = () => {
-  const { addToCart } = useCart();
+  const { addToCart } = useSimpleCart();
+  const { openCart } = useCartSidebar();
   const [tabValue, setTabValue] = useState(0);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -173,7 +175,8 @@ const DealsPage: React.FC = () => {
       updatedAt: new Date().toISOString(),
       description: ''
     };
-    addToCart(productData as any, 1);
+    addToCart(productData.id, 1, 'single');
+    openCart();
     if (productData.externalUrl) {
       window.open(productData.externalUrl, '_blank', 'noopener,noreferrer');
     }

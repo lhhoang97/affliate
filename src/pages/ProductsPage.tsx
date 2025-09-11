@@ -18,14 +18,16 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Product } from '../types';
 import { getAllProducts } from '../services/productService';
-import { useCart } from '../contexts/CartContext';
+import { useSimpleCart } from '../contexts/SimpleCartContext';
+import { useCartSidebar } from '../contexts/CartSidebarContext';
 
 
 
 const ProductsPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { addToCart } = useCart();
+  const { addToCart } = useSimpleCart();
+  const { openCart } = useCartSidebar();
   
   // Get category and search from URL parameters
   const categoryFromUrl = searchParams.get('category');
@@ -83,8 +85,18 @@ const ProductsPage: React.FC = () => {
     currentPage * itemsPerPage
   );
 
-  const handleAddToCart = (product: Product) => {
-    addToCart(product.id, 1);
+  const handleAddToCart = async (product: Product) => {
+    try {
+      // Add to cart with single bundle (default)
+      await addToCart(product.id, 1, 'single');
+      
+      // Open cart sidebar
+      openCart();
+      
+      console.log(`✅ Added ${product.name} to cart!`);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
   };
 
   const handleGuestBuyNow = (product: Product) => {

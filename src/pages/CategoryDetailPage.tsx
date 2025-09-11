@@ -56,7 +56,8 @@ import {
 } from '@mui/icons-material';
 
 import { useProducts } from '../contexts/ProductContext';
-import { useCart } from '../contexts/CartContext';
+import { useSimpleCart } from '../contexts/SimpleCartContext';
+import { useCartSidebar } from '../contexts/CartSidebarContext';
 import ProductCard from '../components/ProductCard';
 import { fetchCategories } from '../services/productService';
 import { 
@@ -92,7 +93,8 @@ const CategoryDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { products, loading } = useProducts();
-  const { addToCart } = useCart();
+  const { addToCart } = useSimpleCart();
+  const { openCart } = useCartSidebar();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   

@@ -271,7 +271,7 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
 
                       {/* Price with Bundle Discount */}
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {item.bundleOption ? (
+                        {item.bundleSavings && item.bundleSavings.savings > 0 ? (
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <Typography 
                               variant="h6" 
@@ -281,7 +281,55 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
                                 fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem', lg: '1.125rem' }
                               }}
                             >
-                              ${(item.bundleOption.discountedPrice * item.quantity).toFixed(2)}
+                              ${item.bundleSavings.finalPrice.toFixed(2)}
+                            </Typography>
+                            <Typography 
+                              variant="body2" 
+                              sx={{ 
+                                textDecoration: 'line-through',
+                                color: '#999',
+                                fontSize: { xs: '0.625rem', sm: '0.6875rem', md: '0.75rem', lg: '0.8125rem' }
+                              }}
+                            >
+                              ${item.bundleSavings.originalPrice.toFixed(2)}
+                            </Typography>
+                            <Typography 
+                              variant="body2" 
+                              sx={{ 
+                                color: '#ff6b35',
+                                fontWeight: 600,
+                                fontSize: { xs: '0.625rem', sm: '0.6875rem', md: '0.75rem', lg: '0.8125rem' }
+                              }}
+                            >
+                              Save ${item.bundleSavings.savings.toFixed(2)}
+                            </Typography>
+                            {item.bundleSavings.appliedDeal && (
+                              <Typography 
+                                variant="body2" 
+                                sx={{ 
+                                  color: '#4caf50',
+                                  fontWeight: 600,
+                                  fontSize: { xs: '0.625rem', sm: '0.6875rem', md: '0.75rem', lg: '0.8125rem' },
+                                  backgroundColor: '#e8f5e8',
+                                  padding: '2px 6px',
+                                  borderRadius: 1
+                                }}
+                              >
+                                {item.bundleSavings.appliedDeal.bundle_type.toUpperCase()} - {item.bundleSavings.appliedDeal.discount_percentage}% OFF
+                              </Typography>
+                            )}
+                          </Box>
+                        ) : item.bundleOption ? (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Typography 
+                              variant="h6" 
+                              sx={{ 
+                                fontWeight: 700,
+                                color: '#000000',
+                                fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem', lg: '1.125rem' }
+                              }}
+                            >
+                              ${item.bundleOption.discountedPrice.toFixed(2)}
                             </Typography>
                             {item.bundleOption.discount > 0 && (
                               <>
@@ -314,7 +362,7 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
                             sx={{ 
                               fontWeight: 700,
                               color: '#000000',
-                                fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem', lg: '1.125rem' }
+                              fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem', lg: '1.125rem' }
                             }}
                           >
                             ${((item.product?.price || 0) * item.quantity).toFixed(2)}
