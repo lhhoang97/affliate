@@ -75,8 +75,8 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
 
 const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subtitle, onProductClick }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('md', 'lg'));
   
   // State to force re-render on window resize
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
@@ -90,12 +90,11 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  // Determine slides based on actual window width to match real device behavior
+  // Determine slides based on breakpoints for consistency
   const getSlidesToShow = () => {
-    if (windowWidth < 600) return 2; // Real mobile - show 2 products
-    if (windowWidth < 900) return 2; // Tablet
-    if (windowWidth < 1200) return 3; // Small desktop
-    return 4; // Large desktop
+    if (isMobile) return 2; // Mobile - show 2 products
+    if (isTablet) return 3; // Tablet - show 3 products
+    return 4; // Desktop - show 4 products
   };
   
   const slidesToShow = getSlidesToShow();

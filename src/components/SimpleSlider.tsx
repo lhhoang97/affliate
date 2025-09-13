@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, IconButton, Typography } from '@mui/material';
+import { Box, IconButton, Typography, useTheme, useMediaQuery } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Product } from '../types';
 
@@ -13,15 +13,15 @@ const SimpleSlider: React.FC<SimpleSliderProps> = ({ products, title, onProductC
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const autoPlayIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('md', 'lg'));
   
   // Responsive items per view - số sản phẩm hiển thị tại một thời điểm
   const getItemsPerView = () => {
-    if (typeof window !== 'undefined') {
-      if (window.innerWidth < 600) return 2; // Mobile: 2 products per slide
-      if (window.innerWidth < 960) return 3; // Tablet: 3 products per slide  
-      return 4; // Desktop: 4 products per slide
-    }
-    return 4; // Default
+    if (isMobile) return 2; // Mobile: 2 products per slide
+    if (isTablet) return 3; // Tablet: 3 products per slide  
+    return 4; // Desktop: 4 products per slide
   };
   
   const [itemsPerView, setItemsPerView] = useState(getItemsPerView());

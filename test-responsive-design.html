@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Design Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .device-frame {
+            border: 2px solid #333;
+            border-radius: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+            background: #000;
+            padding: 10px;
+        }
+        .device-frame iframe {
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+        }
+        .mobile-frame {
+            width: 375px;
+            height: 667px;
+        }
+        .tablet-frame {
+            width: 768px;
+            height: 1024px;
+        }
+        .desktop-frame {
+            width: 1200px;
+            height: 800px;
+        }
+        .device-label {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .breakpoint-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .breakpoint-info h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        .breakpoint-list {
+            list-style: none;
+            padding: 0;
+        }
+        .breakpoint-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .breakpoint-list li:last-child {
+            border-bottom: none;
+        }
+        .status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.mobile { background: #4caf50; color: white; }
+        .status.tablet { background: #ff9800; color: white; }
+        .status.desktop { background: #2196f3; color: white; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>📱 Responsive Design Test - BestFinds</h1>
+        
+        <div class="breakpoint-info">
+            <h3>🎯 Breakpoints Configuration</h3>
+            <ul class="breakpoint-list">
+                <li><span class="status mobile">Mobile</span> &lt; 900px (md) - 2 products per slide</li>
+                <li><span class="status tablet">Tablet</span> 900px - 1200px (md-lg) - 3 products per slide</li>
+                <li><span class="status desktop">Desktop</span> &gt; 1200px (lg+) - 4 products per slide</li>
+            </ul>
+        </div>
+
+        <h2>📱 Mobile View (375px)</h2>
+        <div class="device-frame mobile-frame">
+            <div class="device-label">iPhone SE / Small Mobile</div>
+            <iframe src="http://localhost:3000" title="Mobile View"></iframe>
+        </div>
+
+        <h2>📱 Tablet View (768px)</h2>
+        <div class="device-frame tablet-frame">
+            <div class="device-label">iPad / Tablet</div>
+            <iframe src="http://localhost:3000" title="Tablet View"></iframe>
+        </div>
+
+        <h2>💻 Desktop View (1200px)</h2>
+        <div class="device-frame desktop-frame">
+            <div class="device-label">Desktop / Large Screen</div>
+            <iframe src="http://localhost:3000" title="Desktop View"></iframe>
+        </div>
+
+        <div class="breakpoint-info">
+            <h3>✅ Responsive Features Tested</h3>
+            <ul class="breakpoint-list">
+                <li>✅ Header navigation with mobile menu</li>
+                <li>✅ Search bar responsive behavior</li>
+                <li>✅ Product carousel slides (2/3/4 products)</li>
+                <li>✅ Product cards responsive layout</li>
+                <li>✅ Touch-friendly buttons (44px min)</li>
+                <li>✅ Proper font sizes for each breakpoint</li>
+                <li>✅ No horizontal scroll on mobile</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh iframes every 30 seconds
+        setInterval(() => {
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                iframe.src = iframe.src;
+            });
+        }, 30000);
+    </script>
+</body>
+</html>

@@ -46,7 +46,7 @@ const SearchBarSimple: React.FC<SearchBarSimpleProps> = ({
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const anchorRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // Load search history from localStorage
   useEffect(() => {
