@@ -996,7 +996,7 @@ const Header: React.FC = () => {
             {/* Business Mode Switch - Only show for admin users */}
             {isAuthenticated && user?.role === 'admin' && (
               <Box sx={{ 
-                display: { xs: 'none', sm: 'flex' },
+                display: { xs: 'flex', sm: 'flex' },
                 alignItems: 'center',
                 gap: 0.5,
                 px: 1,
