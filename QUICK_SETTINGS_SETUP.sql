@@ -102,3 +102,4 @@ INSERT INTO public.payment_settings (
   'stripe',
   'USD'
 ) ON CONFLICT DO NOTHING;
+

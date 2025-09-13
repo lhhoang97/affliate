@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Product } from '../types';
-import { getAllProducts } from '../services/productService';
+import { useProducts } from '../contexts/ProductContext';
 import { useSimpleCart } from '../contexts/SimpleCartContext';
 import { useCartSidebar } from '../contexts/CartSidebarContext';
 
@@ -33,18 +33,8 @@ const ProductsPage: React.FC = () => {
   const categoryFromUrl = searchParams.get('category');
   // const searchFromUrl = searchParams.get('search'); // TODO: Implement search from URL
   
-  // Data
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    let isMounted = true;
-    setIsLoading(true);
-    getAllProducts()
-      .then((items) => { if (isMounted) setAllProducts(items); })
-      .finally(() => { if (isMounted) setIsLoading(false); });
-    return () => { isMounted = false; };
-  }, []);
+  // Use ProductContext instead of local state
+  const { products: allProducts, loading: isLoading } = useProducts();
 
   // Update selectedCategory when URL changes
   useEffect(() => {

@@ -417,20 +417,15 @@ export const clearGuestCart = () => {
 // Load guest cart with product data (optimized with better error handling)
 export const loadGuestCartWithProducts = async (): Promise<any[]> => {
   try {
-    console.log('loadGuestCartWithProducts - Starting...');
     const guestCart = getGuestCart();
-    console.log('loadGuestCartWithProducts - Guest cart from localStorage:', guestCart);
     
     if (guestCart.length === 0) {
-      console.log('loadGuestCartWithProducts - No items in guest cart');
       return [];
     }
 
     // Try to fetch real product data from database first
     try {
-      console.log('loadGuestCartWithProducts - Attempting to fetch from database...');
       const productIds = guestCart.map((item: any) => item.productId);
-      console.log('loadGuestCartWithProducts - Product IDs to fetch:', productIds);
       
       const { data: products, error } = await supabase
         .from('products')
@@ -442,12 +437,9 @@ export const loadGuestCartWithProducts = async (): Promise<any[]> => {
         throw error; // Fall through to fallback
       }
 
-      console.log('loadGuestCartWithProducts - Products fetched from database:', products);
-
       // Map guest cart items with real product data
       const itemsWithRealData = guestCart.map((item: any) => {
         const product = products?.find((p: any) => p.id === item.productId);
-        console.log('loadGuestCartWithProducts - Mapping item:', item.productId, 'to product:', product);
         
         return {
           ...item,
@@ -461,7 +453,6 @@ export const loadGuestCartWithProducts = async (): Promise<any[]> => {
         };
       });
 
-      console.log('loadGuestCartWithProducts - Returning items with real data:', itemsWithRealData);
       return itemsWithRealData;
 
     } catch (dbError) {
@@ -469,7 +460,6 @@ export const loadGuestCartWithProducts = async (): Promise<any[]> => {
       
       // Fallback: return items with basic product data
       const itemsWithBasicData = guestCart.map((item: any) => {
-        console.log('loadGuestCartWithProducts - Using fallback for item:', item);
         return {
           ...item,
           product: {
@@ -482,7 +472,6 @@ export const loadGuestCartWithProducts = async (): Promise<any[]> => {
         };
       });
 
-      console.log('loadGuestCartWithProducts - Returning items with fallback data:', itemsWithBasicData);
       return itemsWithBasicData;
     }
 

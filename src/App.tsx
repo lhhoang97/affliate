@@ -34,23 +34,6 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import AdminLayout from './components/AdminLayout';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminProductsPage from './pages/AdminProductsPage';
-import AdminCategoriesPage from './pages/AdminCategoriesPage';
-import AdminUsersPage from './pages/AdminUsersPage';
-import AdminOrdersPage from './pages/AdminOrdersPage';
-import AdminSettingsPage from './pages/AdminSettingsPage';
-import AdminPriceUpdatePage from './pages/AdminPriceUpdatePage';
-import AdminSectionManagementPage from './pages/AdminSectionManagementPage';
-import AdminSliderProductsPage from './pages/AdminSliderProductsPage';
-import AdminSectionProductsPage from './pages/AdminSectionProductsPage';
-import AdminMenuManagementPage from './pages/AdminMenuManagementPage';
-import AdminCouponManagementPage from './pages/AdminCouponManagementPage';
-import AdminDealManagementPage from './pages/AdminDealManagementPage';
-import AdminDealConfigPage from './pages/AdminDealConfigPage';
-import AdminAIAssistantPage from './pages/AdminAIAssistantPage';
-import AdminBundleDealsPage from './pages/AdminBundleDealsPage';
-import ProductCardDemo from './pages/ProductCardDemo';
-import NotFoundPage from './pages/NotFoundPage';
-import ServerErrorPage from './pages/ServerErrorPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
@@ -60,10 +43,47 @@ import { OrdersProvider } from './contexts/OrdersContext';
 import { ProfileProvider } from './contexts/ProfileContext';
 import { ProductProvider } from './contexts/ProductContext';
 import { BusinessModeProvider } from './contexts/BusinessModeContext';
+import { AffiliateProductProvider } from './contexts/AffiliateProductContext';
 import SupabaseTest from './components/SupabaseTest';
 import FloatingCartIcon from './components/FloatingCartIcon';
 
+// Lazy load admin pages for better performance
+const AdminCategoriesPage = React.lazy(() => import('./pages/AdminCategoriesPage'));
+const AdminUsersPage = React.lazy(() => import('./pages/AdminUsersPage'));
+const AdminOrdersPage = React.lazy(() => import('./pages/AdminOrdersPage'));
+const AdminSettingsPage = React.lazy(() => import('./pages/AdminSettingsPage'));
+const AdminPriceUpdatePage = React.lazy(() => import('./pages/AdminPriceUpdatePage'));
+const AdminSectionManagementPage = React.lazy(() => import('./pages/AdminSectionManagementPage'));
+const AdminSliderProductsPage = React.lazy(() => import('./pages/AdminSliderProductsPage'));
+const AdminSectionProductsPage = React.lazy(() => import('./pages/AdminSectionProductsPage'));
+const AdminMenuManagementPage = React.lazy(() => import('./pages/AdminMenuManagementPage'));
+const AdminCouponManagementPage = React.lazy(() => import('./pages/AdminCouponManagementPage'));
+const AdminDealManagementPage = React.lazy(() => import('./pages/AdminDealManagementPage'));
+const AdminDealConfigPage = React.lazy(() => import('./pages/AdminDealConfigPage'));
+const AdminAIAssistantPage = React.lazy(() => import('./pages/AdminAIAssistantPage'));
+const AdminBundleDealsPage = React.lazy(() => import('./pages/AdminBundleDealsPage'));
 const AdminAmazonPage = React.lazy(() => import('./pages/AdminAmazonPage'));
+const ProductCardDemo = React.lazy(() => import('./pages/ProductCardDemo'));
+const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
+const ServerErrorPage = React.lazy(() => import('./pages/ServerErrorPage'));
+
+// Add Suspense wrapper for lazy loaded components
+const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <React.Suspense fallback={
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      height: '200px',
+      fontSize: '16px',
+      color: '#666'
+    }}>
+      Loading...
+    </div>
+  }>
+    {children}
+  </React.Suspense>
+);
 
 // Create a SlickDeals-inspired theme
 const theme = createTheme({
@@ -264,12 +284,13 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BusinessModeProvider>
-        <AuthProvider>
-          <CartProviderWrapper>
-            <WishlistProvider>
-              <OrdersProvider>
-                <ProfileProvider>
-                  <ProductProvider>
+        <AffiliateProductProvider>
+          <AuthProvider>
+            <CartProviderWrapper>
+              <WishlistProvider>
+                <OrdersProvider>
+                  <ProfileProvider>
+                    <ProductProvider>
                     <Router>
                 <PageTracker />
             <Routes>
@@ -336,31 +357,31 @@ function App() {
                       }>
                         <Route index element={<AdminDashboard />} />
                         <Route path="products" element={<AdminProductsPage />} />
-                        <Route path="categories" element={<AdminCategoriesPage />} />
-                        <Route path="price-updates" element={<AdminPriceUpdatePage />} />
-                        <Route path="section-management" element={<AdminSectionManagementPage />} />
-                                                    <Route path="slider-products" element={<AdminSliderProductsPage />} />
-                            <Route path="section-products" element={<AdminSectionProductsPage />} />
-                        <Route path="menu-management" element={<AdminMenuManagementPage />} />
-                        <Route path="coupon-management" element={<AdminCouponManagementPage />} />
-                        <Route path="deal-management" element={<AdminDealManagementPage />} />
-                        <Route path="deal-config" element={<AdminDealConfigPage />} />
-                        <Route path="bundle-deals" element={<AdminBundleDealsPage />} />
-                        <Route path="ai-assistant" element={<AdminAIAssistantPage />} />
+                        <Route path="categories" element={<SuspenseWrapper><AdminCategoriesPage /></SuspenseWrapper>} />
+                        <Route path="price-updates" element={<SuspenseWrapper><AdminPriceUpdatePage /></SuspenseWrapper>} />
+                        <Route path="section-management" element={<SuspenseWrapper><AdminSectionManagementPage /></SuspenseWrapper>} />
+                        <Route path="slider-products" element={<SuspenseWrapper><AdminSliderProductsPage /></SuspenseWrapper>} />
+                        <Route path="section-products" element={<SuspenseWrapper><AdminSectionProductsPage /></SuspenseWrapper>} />
+                        <Route path="menu-management" element={<SuspenseWrapper><AdminMenuManagementPage /></SuspenseWrapper>} />
+                        <Route path="coupon-management" element={<SuspenseWrapper><AdminCouponManagementPage /></SuspenseWrapper>} />
+                        <Route path="deal-management" element={<SuspenseWrapper><AdminDealManagementPage /></SuspenseWrapper>} />
+                        <Route path="deal-config" element={<SuspenseWrapper><AdminDealConfigPage /></SuspenseWrapper>} />
+                        <Route path="bundle-deals" element={<SuspenseWrapper><AdminBundleDealsPage /></SuspenseWrapper>} />
+                        <Route path="ai-assistant" element={<SuspenseWrapper><AdminAIAssistantPage /></SuspenseWrapper>} />
                         <Route path="amazon" element={
                           <Suspense fallback={<div>Loading Amazon Products...</div>}>
                             <AdminAmazonPage />
                           </Suspense>
                         } />
-                        <Route path="users" element={<AdminUsersPage />} />
-                        <Route path="orders" element={<AdminOrdersPage />} />
-                        <Route path="business-mode" element={<AdminBusinessModePage />} />
-                        <Route path="settings" element={<AdminSettingsPage />} />
+                        <Route path="users" element={<SuspenseWrapper><AdminUsersPage /></SuspenseWrapper>} />
+                        <Route path="orders" element={<SuspenseWrapper><AdminOrdersPage /></SuspenseWrapper>} />
+                        <Route path="business-mode" element={<SuspenseWrapper><AdminBusinessModePage /></SuspenseWrapper>} />
+                        <Route path="settings" element={<SuspenseWrapper><AdminSettingsPage /></SuspenseWrapper>} />
                       </Route>
                       
                       {/* Error Pages */}
-                      <Route path="/500" element={<ServerErrorPage />} />
-                      <Route path="*" element={<NotFoundPage />} />
+                      <Route path="/500" element={<SuspenseWrapper><ServerErrorPage /></SuspenseWrapper>} />
+                      <Route path="*" element={<SuspenseWrapper><NotFoundPage /></SuspenseWrapper>} />
                     </Routes>
                   </main>
                   <Footer />
@@ -371,12 +392,13 @@ function App() {
               } />
             </Routes>
                     </Router>
-                  </ProductProvider>
-                </ProfileProvider>
-              </OrdersProvider>
-            </WishlistProvider>
-          </CartProviderWrapper>
-        </AuthProvider>
+                    </ProductProvider>
+                  </ProfileProvider>
+                </OrdersProvider>
+              </WishlistProvider>
+            </CartProviderWrapper>
+          </AuthProvider>
+        </AffiliateProductProvider>
       </BusinessModeProvider>
     </ThemeProvider>
   );

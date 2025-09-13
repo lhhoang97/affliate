@@ -28,6 +28,7 @@ import { useProfile } from '../contexts/ProfileContext';
 import { useAuth } from '../contexts/AuthContext';
 import ProfileStats from '../components/ProfileStats';
 import ProfileEditForm from '../components/ProfileEditForm';
+import EmailPreferences from '../components/EmailPreferences';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -207,31 +208,7 @@ const ProfilePage: React.FC = () => {
         </TabPanel>
 
         <TabPanel value={selectedTab} index={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Notification Preferences
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Choose how you want to be notified about updates and activities
-              </Typography>
-              
-              <Stack spacing={2}>
-                <Button variant="outlined" fullWidth>
-                  Email Notifications
-                </Button>
-                <Button variant="outlined" fullWidth>
-                  Push Notifications
-                </Button>
-                <Button variant="outlined" fullWidth>
-                  SMS Notifications
-                </Button>
-                <Button variant="outlined" fullWidth>
-                  Marketing Communications
-                </Button>
-              </Stack>
-            </CardContent>
-          </Card>
+          <EmailPreferences />
         </TabPanel>
 
         <TabPanel value={selectedTab} index={4}>

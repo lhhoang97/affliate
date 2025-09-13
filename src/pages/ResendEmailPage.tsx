@@ -160,3 +160,4 @@ const ResendEmailPage: React.FC = () => {
 };
 
 export default ResendEmailPage;
+

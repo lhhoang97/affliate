@@ -42,6 +42,7 @@ import { useSimpleCart } from '../contexts/SimpleCartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useProducts } from '../contexts/ProductContext';
 import { useCartSidebar } from '../contexts/CartSidebarContext';
+import { useBusinessMode } from '../contexts/BusinessModeContext';
 import CartSidebar from './CartSidebar';
 import SimpleCartSidebar from './SimpleCartSidebar';
 import SearchBarSimple from './SearchBarSimple';
@@ -58,6 +59,7 @@ const Header: React.FC = () => {
   const { wishlistItemCount } = useWishlist();
   const { products } = useProducts();
   const { isOpen: isCartOpen, openCart, closeCart } = useCartSidebar();
+  const { mode, setMode, isAffiliateMode, isEcommerceMode, isHybridMode } = useBusinessMode();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
@@ -829,6 +831,67 @@ const Header: React.FC = () => {
         </Box>
       )}
 
+      {/* Business Mode Switch for Mobile - Only show for admin users */}
+      {isAuthenticated && user?.role === 'admin' && (
+        <Box sx={{ 
+          p: 2, 
+          borderTop: '1px solid #e9ecef',
+          backgroundColor: '#f8f9fa',
+          flexShrink: 0
+        }}>
+          <Typography sx={{ 
+            fontSize: '14px',
+            fontWeight: 'bold',
+            color: '#333',
+            mb: 1,
+            textAlign: 'center'
+          }}>
+            Business Mode
+          </Typography>
+          <Box sx={{ 
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 1
+          }}>
+            {['affiliate', 'ecommerce', 'hybrid'].map((modeOption) => (
+              <Box
+                key={modeOption}
+                onClick={() => setMode(modeOption as 'affiliate' | 'ecommerce' | 'hybrid')}
+                sx={{
+                  px: 2,
+                  py: 1,
+                  borderRadius: 1,
+                  backgroundColor: mode === modeOption ? 
+                    (modeOption === 'affiliate' ? '#e8f5e8' :
+                     modeOption === 'ecommerce' ? '#e3f2fd' : '#fff3e0') : 'transparent',
+                  border: `1px solid ${
+                    mode === modeOption ? 
+                    (modeOption === 'affiliate' ? '#4caf50' :
+                     modeOption === 'ecommerce' ? '#2196f3' : '#ff9800') : '#ddd'
+                  }`,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    boxShadow: 2
+                  }
+                }}
+              >
+                <Typography sx={{ 
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  color: mode === modeOption ? 
+                    (modeOption === 'affiliate' ? '#2e7d32' :
+                     modeOption === 'ecommerce' ? '#1565c0' : '#e65100') : '#666'
+                }}>
+                  {modeOption.toUpperCase()}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      )}
+
       {/* Footer */}
       <Box sx={{ 
         p: 2, 
@@ -930,6 +993,68 @@ const Header: React.FC = () => {
             flexShrink: 0,
             order: { xs: 3, md: 3 }
           }}>
+            {/* Business Mode Switch - Only show for admin users */}
+            {isAuthenticated && user?.role === 'admin' && (
+              <Box sx={{ 
+                display: { xs: 'none', sm: 'flex' },
+                alignItems: 'center',
+                gap: 0.5,
+                px: 1,
+                py: 0.5,
+                borderRadius: 1,
+                backgroundColor: 
+                  mode === 'affiliate' ? '#e8f5e8' :
+                  mode === 'ecommerce' ? '#e3f2fd' : '#fff3e0',
+                border: `1px solid ${
+                  mode === 'affiliate' ? '#4caf50' :
+                  mode === 'ecommerce' ? '#2196f3' : '#ff9800'
+                }`,
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: 2
+                }
+              }}
+              onClick={() => {
+                // Cycle through modes: affiliate -> ecommerce -> hybrid -> affiliate
+                if (mode === 'affiliate') {
+                  setMode('ecommerce');
+                } else if (mode === 'ecommerce') {
+                  setMode('hybrid');
+                } else {
+                  setMode('affiliate');
+                }
+              }}
+              title={`Current: ${mode.toUpperCase()}. Click to switch mode.`}
+              >
+                <Typography 
+                  variant="caption" 
+                  sx={{ 
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold',
+                    color: 
+                      mode === 'affiliate' ? '#2e7d32' :
+                      mode === 'ecommerce' ? '#1565c0' : '#e65100'
+                  }}
+                >
+                  {mode === 'affiliate' && 'AFFILIATE'}
+                  {mode === 'ecommerce' && 'E-COMMERCE'}
+                  {mode === 'hybrid' && 'HYBRID'}
+                </Typography>
+                <Typography 
+                  variant="caption" 
+                  sx={{ 
+                    fontSize: '0.6rem',
+                    color: 'text.secondary',
+                    ml: 0.5
+                  }}
+                >
+                  ↻
+                </Typography>
+              </Box>
+            )}
+
             {/* Wishlist - Only show for authenticated users */}
             {isAuthenticated && (
               <IconButton

@@ -74,3 +74,4 @@ async function checkProfilesStructure() {
 
 // Run the check
 checkProfilesStructure().catch(console.error);
+

@@ -35,3 +35,4 @@ console.log('- src/types/bundleDeal.ts (Type definitions)');
 console.log('- src/services/cartService.ts (Updated with bundle logic)');
 console.log('- src/contexts/SimpleCartContext.tsx (Updated context)');
 console.log('- src/components/SimpleCartSidebar.tsx (Updated UI)');
+

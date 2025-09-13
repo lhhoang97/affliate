@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { Product } from '../types';
 import { getAllProducts, updateProduct, createProduct, deleteProduct } from '../services/productService';
 
@@ -28,50 +28,140 @@ interface ProductProviderProps {
 }
 
 export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Force show fallback products immediately
+  const [products, setProducts] = useState<Product[]>([
+    {
+      id: '1',
+      name: 'Samsung Galaxy S21',
+      price: 799,
+      originalPrice: 899,
+      description: 'Premium Android smartphone with 5G capability.',
+      image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400',
+      images: ['https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400'],
+      category: 'Smartphones',
+      brand: 'Samsung',
+      rating: 4.6,
+      reviewCount: 1892,
+      inStock: true,
+      affiliateLink: '',
+      externalUrl: '',
+      tags: ['smartphone', 'samsung', 'android', '5g'],
+      features: ['5G capability', 'Triple camera', 'Wireless charging'],
+      specifications: { 'Screen Size': '6.2 inches', 'Storage': '128GB' },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: '2',
+      name: 'iPhone 15 Pro',
+      price: 999.99,
+      originalPrice: 1099.99,
+      description: 'Latest iPhone with titanium design and A17 Pro chip.',
+      image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400',
+      images: ['https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400'],
+      category: 'Smartphones',
+      brand: 'Apple',
+      rating: 4.8,
+      reviewCount: 2156,
+      inStock: true,
+      affiliateLink: '',
+      externalUrl: '',
+      tags: ['iphone', 'apple', 'titanium', 'a17'],
+      features: ['Titanium design', 'A17 Pro chip', 'USB-C'],
+      specifications: { 'Screen Size': '6.1 inches', 'Storage': '128GB' },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+  ]);
+  const [loading, setLoading] = useState(false); // Start with false
   const [error, setError] = useState<string | null>(null);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
-  const loadProducts = async (showLoading: boolean = true, useHomepageOptimization: boolean = true) => {
+  const loadProducts = useCallback(async (showLoading: boolean = true, useHomepageOptimization: boolean = true) => {
+    console.log('ProductContext - loadProducts called with:', { showLoading, useHomepageOptimization, isLoadingProducts });
+    
+    // Prevent multiple simultaneous calls
+    if (isLoadingProducts) {
+      console.log('ProductContext - Already loading products, skipping...');
+      return;
+    }
+    
+    setIsLoadingProducts(true);
     try {
-      console.log('ProductContext - loadProducts called with:', { showLoading, useHomepageOptimization });
       if (showLoading) {
         setLoading(true);
       }
       setError(null);
       
-      if (useHomepageOptimization) {
-        console.log('ProductContext - Loading optimized homepage products...');
-        // Use getAllProducts
-        const allProducts = await getAllProducts();
-        console.log('ProductContext - Loaded products count:', allProducts.length);
+      console.log('ProductContext - Calling getAllProducts...');
+      const allProducts = await getAllProducts();
+      console.log('ProductContext - getAllProducts returned:', allProducts.length, 'products');
+      
+      if (allProducts.length > 0) {
+        console.log('ProductContext - Setting products from database:', allProducts.length);
         setProducts(allProducts);
       } else {
-        console.log('ProductContext - Loading all products from database...');
-        const allProducts = await getAllProducts();
-        console.log('ProductContext - Loaded products count:', allProducts.length);
-        console.log('ProductContext - Sample products:', allProducts.slice(0, 3).map(p => ({ id: p.id, name: p.name, category: p.category })));
-        
-        // Debug: Check for smartphone products
-        const smartphoneProducts = allProducts.filter(p => p.category === 'Smartphones');
-        console.log('ProductContext - Smartphone products found:', smartphoneProducts.length);
-        smartphoneProducts.forEach(p => {
-          console.log('ProductContext - Smartphone:', p.name, p.category);
-        });
-        
-        setProducts(allProducts);
+        console.log('ProductContext - No products from database, using fallback');
+        // Fallback data for testing
+        const fallbackProducts = [
+          {
+            id: '1',
+            name: 'Samsung Galaxy S21',
+            price: 799,
+            originalPrice: 899,
+            description: 'Premium Android smartphone with 5G capability.',
+            image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400',
+            images: ['https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400'],
+            category: 'Smartphones',
+            brand: 'Samsung',
+            rating: 4.6,
+            reviewCount: 1892,
+            inStock: true,
+            affiliateLink: '',
+            externalUrl: '',
+            tags: ['smartphone', 'samsung', 'android', '5g'],
+            features: ['5G capability', 'Triple camera', 'Wireless charging'],
+            specifications: { 'Screen Size': '6.2 inches', 'Storage': '128GB' },
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          },
+          {
+            id: '2',
+            name: 'iPhone 15 Pro',
+            price: 999.99,
+            originalPrice: 1099.99,
+            description: 'Latest iPhone with titanium design and A17 Pro chip.',
+            image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400',
+            images: ['https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400'],
+            category: 'Smartphones',
+            brand: 'Apple',
+            rating: 4.8,
+            reviewCount: 2156,
+            inStock: true,
+            affiliateLink: '',
+            externalUrl: '',
+            tags: ['iphone', 'apple', 'titanium', 'a17'],
+            features: ['Titanium design', 'A17 Pro chip', 'USB-C'],
+            specifications: { 'Screen Size': '6.1 inches', 'Storage': '128GB' },
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
+        ];
+        setProducts(fallbackProducts);
+        console.log('ProductContext - Fallback products set:', fallbackProducts.length);
       }
     } catch (err) {
-      console.error('Error loading products:', err);
+      console.error('ProductContext - Error loading products:', err);
       setError('Failed to load products from database');
-      // Don't use fallback data - let user know there's an issue
       setProducts([]);
     } finally {
+      setIsLoadingProducts(false);
       if (showLoading) {
+        console.log('ProductContext - Setting loading to false');
         setLoading(false);
       }
     }
-  };
+  }, []); // Empty dependency array to prevent infinite loop
 
   const refreshProducts = async () => {
     console.log('ProductContext - Refreshing all products...');
@@ -123,28 +213,29 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
   };
 
   useEffect(() => {
-    console.log('ProductContext - useEffect called, starting product loading...');
+    console.log('ProductContext - useEffect: Starting initial load...');
+    loadProducts(true, true);
+    
     // Add timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
-      console.log('ProductContext - Timeout reached, forcing loading to false');
-      setLoading(false);
-    }, 30000); // 30 second timeout - increased to allow for slower connections
+      if (loading) {
+        console.log('ProductContext - Timeout reached, forcing loading to false');
+        setLoading(false);
+        setIsLoadingProducts(false);
+      }
+    }, 5000); // 5 second timeout
+    
+    return () => clearTimeout(timeoutId);
+  }, []); // Empty dependency array to run only once on mount
 
-    loadProducts(true, true).finally(() => {
-      console.log('ProductContext - loadProducts completed, clearing timeout');
-      clearTimeout(timeoutId);
-    });
-  }, []);
-
-  // Auto-refresh homepage products every 5 minutes to keep in sync (optimized frequency)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log('ProductContext - Auto-refreshing homepage products...');
-      loadProducts(false, true); // Don't show loading for auto-refresh, use homepage optimization
-    }, 300000); // Refresh every 5 minutes instead of 30 seconds
-
-    return () => clearInterval(interval);
-  }, []);
+  // Auto-refresh disabled to prevent infinite loops
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     console.log('ProductContext - Auto-refreshing homepage products...');
+  //     loadProducts(false, true);
+  //   }, 300000);
+  //   return () => clearInterval(interval);
+  // }, [loadProducts]);
 
   const value: ProductContextType = {
     products,

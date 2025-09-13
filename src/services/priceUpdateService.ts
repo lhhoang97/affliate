@@ -16,7 +16,7 @@ export interface PriceUpdateJob {
 export const SUPPORTED_SITES = {
   'shopee.vn': {
     priceSelector: '[data-sqe="link"] ._1w9jLI._1w9jLI',
-    nameSelector: '.ie3A\+n.bM\+7UW.Cve6sh',
+    nameSelector: '.ie3A+n.bM+7UW.Cve6sh',
     imageSelector: '.qJTAj9._1w9jLI._1w9jLI img',
     inStockSelector: '.product-not-available'
   },

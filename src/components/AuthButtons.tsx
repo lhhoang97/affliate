@@ -139,3 +139,4 @@ const AuthButtons: React.FC<AuthButtonsProps> = ({ anchorEl, onClose, onMenuClic
 };
 
 export default AuthButtons;
+

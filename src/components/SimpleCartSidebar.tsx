@@ -11,6 +11,7 @@ import {
 import { Close, Add, Remove, Delete } from '@mui/icons-material';
 import { useSimpleCart } from '../contexts/SimpleCartContext';
 import { useNavigate } from 'react-router-dom';
+import LazyImage from './LazyImage';
 
 interface SimpleCartSidebarProps {
   open: boolean;
@@ -20,11 +21,6 @@ interface SimpleCartSidebarProps {
 const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) => {
   const { items, totalPrice, totalSavings, updateQuantity, removeFromCart } = useSimpleCart();
   const navigate = useNavigate();
-  
-  // Debug logging
-  console.log('SimpleCartSidebar - Rendering with items:', items);
-  console.log('SimpleCartSidebar - Items length:', items.length);
-  console.log('SimpleCartSidebar - Total price:', totalPrice);
   
 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
@@ -128,38 +124,33 @@ const SimpleCartSidebar: React.FC<SimpleCartSidebarProps> = ({ open, onClose }) 
                       flexShrink: 0
                     }}>
                       {item.product?.image ? (
-                        <img
+                        <LazyImage
                           src={item.product.image}
                           alt={item.product.name || 'Product'}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            borderRadius: 4
-                          }}
-                          onError={(e) => {
-                            console.log('Image failed to load:', item.product?.image);
-                            e.currentTarget.style.display = 'none';
-                            const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                            if (nextElement) {
-                              nextElement.style.display = 'flex';
-                            }
+                          width="100%"
+                          height="100%"
+                          loading="lazy"
+                          sizes="75px"
+                          placeholder={item.product?.name ? item.product.name.substring(0, 2).toUpperCase() : 'PR'}
+                          sx={{
+                            borderRadius: 1
                           }}
                         />
-                      ) : null}
-                      <Box sx={{ 
-                        display: item.product?.image ? 'none' : 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '100%',
-                        height: '100%',
-                        backgroundColor: '#f0f0f0',
-                        borderRadius: 1
-                      }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center' }}>
-                          {item.product?.name ? item.product.name.substring(0, 2).toUpperCase() : 'PR'}
-                        </Typography>
-                      </Box>
+                      ) : (
+                        <Box sx={{ 
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: '#f0f0f0',
+                          borderRadius: 1
+                        }}>
+                          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center' }}>
+                            {item.product?.name ? item.product.name.substring(0, 2).toUpperCase() : 'PR'}
+                          </Typography>
+                        </Box>
+                      )}
                     </Box>
 
                     {/* Product Info */}

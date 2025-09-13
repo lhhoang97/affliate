@@ -222,7 +222,7 @@ const ReviewsPage: React.FC = () => {
     {
       id: 1,
       productName: 'iPhone 15 Pro',
-      productImage: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=100',
+      productImage: 'https://picsum.photos/100/100?random=201',
       rating: 5,
       title: 'Excellent phone, amazing camera!',
       content: 'This is by far the best iPhone I\'ve ever owned. The camera quality is outstanding and the performance is lightning fast. Battery life is also impressive.',
@@ -231,12 +231,12 @@ const ReviewsPage: React.FC = () => {
       verified: true,
       helpful: 45,
       notHelpful: 2,
-      images: ['https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=200']
+      images: ['https://picsum.photos/200/200?random=201']
     },
     {
       id: 2,
       productName: 'Samsung Galaxy S24',
-      productImage: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100',
+      productImage: 'https://picsum.photos/100/100?random=202',
       rating: 4,
       title: 'Great phone with some minor issues',
       content: 'Overall a great phone. The display is beautiful and the performance is good. However, the battery life could be better and the camera sometimes struggles in low light.',
@@ -250,7 +250,7 @@ const ReviewsPage: React.FC = () => {
     {
       id: 3,
       productName: 'Sony WH-1000XM5',
-      productImage: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100',
+      productImage: 'https://picsum.photos/100/100?random=203',
       rating: 5,
       title: 'Best noise-canceling headphones ever!',
       content: 'These headphones are absolutely incredible. The noise cancellation is mind-blowing and the sound quality is exceptional. Worth every penny.',
@@ -259,7 +259,7 @@ const ReviewsPage: React.FC = () => {
       verified: true,
       helpful: 67,
       notHelpful: 1,
-      images: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200']
+      images: ['https://picsum.photos/200/200?random=203']
     }
   ];
 

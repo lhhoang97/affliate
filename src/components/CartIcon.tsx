@@ -56,3 +56,4 @@ const CartIcon: React.FC<CartIconProps> = ({ onClick }) => {
 };
 
 export default CartIcon;
+

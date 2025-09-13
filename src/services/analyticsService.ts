@@ -14,6 +14,10 @@ class AnalyticsService {
 
   constructor() {
     this.measurementId = process.env.REACT_APP_GA_MEASUREMENT_ID || '';
+    // Disable analytics if no valid measurement ID is provided
+    if (!this.measurementId || this.measurementId.includes('XXXXXXXXXX')) {
+      this.measurementId = '';
+    }
   }
 
   // Initialize Google Analytics

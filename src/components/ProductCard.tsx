@@ -22,6 +22,7 @@ import OptimizedImage from './OptimizedImage';
 import AddToCartButton from './AddToCartButton';
 import AddToWishlistButton from './AddToWishlistButton';
 import analytics from '../services/analyticsService';
+import { useBusinessMode } from '../contexts/BusinessModeContext';
 
 interface ProductCardProps {
   product: {
@@ -63,6 +64,7 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
   variant = 'default'
 }) => {
   const [isLiked, setIsLiked] = React.useState(false);
+  const { isAffiliateMode, isEcommerceMode, isHybridMode } = useBusinessMode();
   
   // Track product view when component mounts
   useEffect(() => {
@@ -709,43 +711,88 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
         
 
 
-        {/* Action Buttons */}
+        {/* Action Buttons - Different based on business mode */}
         <Box sx={{ display: 'flex', gap: 1, mb: 1.5 }}>
-          <SmartLink
-            to={product.affiliateLink || product.externalUrl || '#'}
-            external={true}
-            productId={product.id}
-            productName={product.name}
-            productPrice={product.price}
-            retailer={product.retailer}
-          >
-            <Button
+          {isAffiliateMode ? (
+            // Affiliate Mode: Only "Buy Now" button
+            <SmartLink
+              to={product.affiliateLink || product.externalUrl || '#'}
+              external={true}
+              productId={product.id}
+              productName={product.name}
+              productPrice={product.price}
+              retailer={product.retailer}
+            >
+              <Button
+                variant="contained"
+                size="small"
+                sx={{
+                  flex: 1,
+                  backgroundColor: '#4caf50',
+                  color: 'white',
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                  py: { xs: 0.75, sm: 1 },
+                  '&:hover': {
+                    backgroundColor: '#45a049'
+                  }
+                }}
+              >
+                Buy Now
+              </Button>
+            </SmartLink>
+          ) : isEcommerceMode ? (
+            // E-commerce Mode: Only "Add to Cart" button
+            <AddToCartButton
+              productId={product.id}
+              productName={product.name}
               variant="contained"
               size="small"
-              sx={{
-                flex: 1,
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                fontWeight: 600,
-                textTransform: 'none',
-                fontSize: { xs: '0.8rem', sm: '0.9rem' },
-                py: { xs: 0.75, sm: 1 },
-                '&:hover': {
-                  backgroundColor: '#2563eb'
-                }
-              }}
-            >
-              Get Deal
-            </Button>
-          </SmartLink>
-          
-          <AddToCartButton
-            productId={product.id}
-            productName={product.name}
-            variant="outlined"
-            size="small"
-            quantity={1}
-          />
+              quantity={1}
+              sx={{ flex: 1 }}
+            />
+          ) : (
+            // Hybrid Mode: Both buttons
+            <>
+              <SmartLink
+                to={product.affiliateLink || product.externalUrl || '#'}
+                external={true}
+                productId={product.id}
+                productName={product.name}
+                productPrice={product.price}
+                retailer={product.retailer}
+              >
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{
+                    flex: 1,
+                    backgroundColor: '#4caf50',
+                    color: 'white',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                    py: { xs: 0.75, sm: 1 },
+                    '&:hover': {
+                      backgroundColor: '#45a049'
+                    }
+                  }}
+                >
+                  Buy Now
+                </Button>
+              </SmartLink>
+              
+              <AddToCartButton
+                productId={product.id}
+                productName={product.name}
+                variant="outlined"
+                size="small"
+                quantity={1}
+                sx={{ flex: 1 }}
+              />
+            </>
+          )}
         </Box>
 
         {/* Wishlist Button */}

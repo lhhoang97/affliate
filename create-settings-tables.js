@@ -227,3 +227,4 @@ INSERT INTO public.payment_settings (
 }
 
 createSettingsTables();
+

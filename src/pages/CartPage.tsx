@@ -14,9 +14,11 @@ import {
 } from '@mui/material';
 import { Add, Remove, Delete, ShoppingCart } from '@mui/icons-material';
 import { useCart } from '../contexts/CartContext';
+import { useBusinessMode } from '../contexts/BusinessModeContext';
 
 const CartPage: React.FC = () => {
   const { items, totalItems, totalPrice, updateQuantity, removeFromCart, clearCart, reloadCart } = useCart();
+  const { mode, isAffiliateMode, isEcommerceMode, isHybridMode } = useBusinessMode();
   // const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
@@ -24,18 +26,40 @@ const CartPage: React.FC = () => {
   };
 
   const handleCheckout = () => {
-    // Redirect to smart checkout page
-    window.location.href = '/checkout';
+    if (isEcommerceMode) {
+      // E-commerce mode: Direct checkout
+      window.location.href = '/checkout';
+    } else if (isAffiliateMode) {
+      // Affiliate mode: Redirect to first product's affiliate link
+      if (items.length > 0 && items[0].product?.affiliateLink) {
+        window.open(items[0].product.affiliateLink, '_blank', 'noopener,noreferrer');
+      } else {
+        // Fallback to checkout page
+        window.location.href = '/checkout';
+      }
+    } else {
+      // Hybrid mode: Go to checkout page
+      window.location.href = '/checkout';
+    }
   };
 
   const handleIndividualCheckout = (product: any) => {
-    if (product.affiliateLink) {
-      window.open(product.affiliateLink, '_blank', 'noopener,noreferrer');
-    } else if ((product as any).externalUrl) {
-      window.open((product as any).externalUrl, '_blank', 'noopener,noreferrer');
+    if (isEcommerceMode) {
+      // E-commerce mode: Go to checkout with this product
+      window.location.href = `/checkout?product=${product.id}`;
+    } else if (isAffiliateMode) {
+      // Affiliate mode: Redirect to affiliate link
+      if (product.affiliateLink) {
+        window.open(product.affiliateLink, '_blank', 'noopener,noreferrer');
+      } else if ((product as any).externalUrl) {
+        window.open((product as any).externalUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        const defaultLink = `https://bestfinds.com/product/${product.id}?ref=cart`;
+        window.open(defaultLink, '_blank', 'noopener,noreferrer');
+      }
     } else {
-      const defaultLink = `https://bestfinds.com/product/${product.id}?ref=cart`;
-      window.open(defaultLink, '_blank', 'noopener,noreferrer');
+      // Hybrid mode: Go to checkout page
+      window.location.href = `/checkout?product=${product.id}`;
     }
   };
 
@@ -142,7 +166,9 @@ const CartPage: React.FC = () => {
                         onClick={() => handleIndividualCheckout(item.product)}
                         sx={{ ml: 1 }}
                       >
-                        Buy Now
+                        {isEcommerceMode ? 'Checkout' : 
+                         isAffiliateMode ? 'Buy Now' : 
+                         'Buy Now'}
                       </Button>
                     </Box>
                   </Box>
@@ -165,29 +191,42 @@ const CartPage: React.FC = () => {
             </Typography>
             <Divider sx={{ my: 2 }} />
 
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography>Subtotal ({totalItems} items):</Typography>
-              <Typography>${totalPrice.toFixed(2)}</Typography>
-            </Box>
+            {isAffiliateMode ? (
+              // Affiliate mode: Show estimated total only
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+                <Typography>Estimated Total ({totalItems} items):</Typography>
+                <Typography variant="h6" color="primary">
+                  ${totalPrice.toFixed(2)}
+                </Typography>
+              </Box>
+            ) : (
+              // E-commerce/Hybrid mode: Show detailed pricing
+              <>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography>Subtotal ({totalItems} items):</Typography>
+                  <Typography>${totalPrice.toFixed(2)}</Typography>
+                </Box>
 
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography>Shipping:</Typography>
-              <Typography>Free</Typography>
-            </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography>Shipping:</Typography>
+                  <Typography>Free</Typography>
+                </Box>
 
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography>Tax:</Typography>
-              <Typography>${(totalPrice * 0.1).toFixed(2)}</Typography>
-            </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography>Tax:</Typography>
+                  <Typography>${(totalPrice * 0.1).toFixed(2)}</Typography>
+                </Box>
 
-            <Divider sx={{ my: 2 }} />
+                <Divider sx={{ my: 2 }} />
 
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-              <Typography variant="h6">Total:</Typography>
-              <Typography variant="h6" color="primary">
-                ${(totalPrice * 1.1).toFixed(2)}
-              </Typography>
-            </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+                  <Typography variant="h6">Total:</Typography>
+                  <Typography variant="h6" color="primary">
+                    ${(totalPrice * 1.1).toFixed(2)}
+                  </Typography>
+                </Box>
+              </>
+            )}
 
             <Button 
               variant="contained" 
@@ -195,13 +234,39 @@ const CartPage: React.FC = () => {
               size="large"
               onClick={handleCheckout}
               startIcon={<ShoppingCart />}
+              sx={{
+                backgroundColor: isAffiliateMode ? '#4caf50' : undefined,
+                '&:hover': {
+                  backgroundColor: isAffiliateMode ? '#45a049' : undefined,
+                }
+              }}
             >
-              Proceed to Checkout
+              {isEcommerceMode ? 'Proceed to Checkout' : 
+               isAffiliateMode ? 'Buy Now on Retailer Site' : 
+               'Proceed to Checkout'}
             </Button>
             
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block', textAlign: 'center' }}>
-              You will be redirected to the seller's checkout page
-            </Typography>
+            {isAffiliateMode ? (
+              <Box sx={{ mt: 2, p: 2, backgroundColor: '#f8f9fa', borderRadius: 1, border: '1px solid #e9ecef' }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 'bold' }}>
+                  ℹ️ Affiliate Mode
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  • You'll be redirected to the retailer's website to complete your purchase
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  • Prices may vary on the retailer's site
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                  • We earn a commission from qualifying purchases
+                </Typography>
+              </Box>
+            ) : (
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block', textAlign: 'center' }}>
+                {isEcommerceMode ? 'Complete your purchase directly on our website' :
+                 'Choose your preferred checkout method'}
+              </Typography>
+            )}
           </CardContent>
         </Card>
       </Box>

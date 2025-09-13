@@ -1,5 +1,6 @@
 import { AuthUser, LoginCredentials, RegisterCredentials } from '../types';
 import { supabase } from '../utils/supabaseClient';
+import { EmailService } from './emailService';
 
 
 
@@ -93,7 +94,7 @@ export async function signUpWithSupabase(credentials: RegisterCredentials): Prom
     }
 
     // Return the profile created by trigger
-    return {
+    const user = {
       id: profile.id,
       name: profile.name,
       email: profile.email,
@@ -106,6 +107,18 @@ export async function signUpWithSupabase(credentials: RegisterCredentials): Prom
       createdAt: profile.created_at,
       updatedAt: profile.updated_at,
     };
+
+    // Send welcome email (async, don't wait for it)
+    EmailService.sendWelcomeEmail(profile.email, profile.name)
+      .then(() => {
+        console.log('✅ Welcome email sent successfully');
+      })
+      .catch((error) => {
+        console.error('❌ Failed to send welcome email:', error);
+        // Don't throw error, just log it
+      });
+
+    return user;
   } catch (error) {
     console.error('Supabase sign up error:', error);
     throw new Error(error instanceof Error ? error.message : 'Registration failed');
@@ -158,6 +171,36 @@ export async function updateProfileWithSupabase(userId: string, profileData: Par
   } catch (error) {
     console.error('Supabase profile update error:', error);
     throw new Error(error instanceof Error ? error.message : 'Profile update failed');
+  }
+}
+
+// Send password reset email
+export async function sendPasswordResetEmail(email: string): Promise<void> {
+  try {
+    // Generate reset URL (you would implement actual password reset flow)
+    const resetUrl = `${window.location.origin}/reset-password?token=temp_token&email=${encodeURIComponent(email)}`;
+    const expiryTime = new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleString('vi-VN');
+
+    // Get user profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('name, email_preferences')
+      .eq('email', email)
+      .single();
+
+    if (profile?.email_preferences?.welcomeEmails !== false) {
+      await EmailService.sendPasswordResetEmail(
+        email,
+        profile?.name || email.split('@')[0],
+        resetUrl,
+        expiryTime
+      );
+    }
+
+    console.log('✅ Password reset email sent successfully');
+  } catch (error) {
+    console.error('❌ Failed to send password reset email:', error);
+    throw error;
   }
 }
 

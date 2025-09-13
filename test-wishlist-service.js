@@ -101,3 +101,4 @@ async function testWishlistService() {
 
 // Run the test
 testWishlistService().catch(console.error);
+

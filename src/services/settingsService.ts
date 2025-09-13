@@ -259,6 +259,7 @@ export async function testEmailConnection(): Promise<{ success: boolean; message
       message: 'Email connection test successful'
     };
   } catch (err) {
+    console.error('Email test error:', err);
     return {
       success: false,
       message: 'Email connection test failed'
@@ -285,3 +286,4 @@ export async function getAllSettings(): Promise<{
     return { system: null, email: null, payment: null };
   }
 }
+

@@ -41,7 +41,7 @@ export const getProductById = async (id: string): Promise<Product> => {
         .from('fallback_products')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
       
       if (fallbackError) {
         console.error('Error fetching from fallback table:', fallbackError);
@@ -107,7 +107,7 @@ export const getProductById = async (id: string): Promise<Product> => {
         .from('fallback_products')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
       
       if (fallbackError) {
         console.error('Error fetching from fallback table:', fallbackError);
@@ -189,40 +189,32 @@ export const getProductById = async (id: string): Promise<Product> => {
 
 // Get all products (for admin and full product pages)
 export const getAllProducts = async (): Promise<Product[]> => {
-  console.log('getAllProducts called - fetching from Supabase database...');
-  
   try {
-    // First try to get products from main products table
     const { data, error } = await supabase.from('products').select('*');
     
     if (error) {
-      console.error('Supabase error:', error);
+      console.error('getAllProducts - Supabase error:', error);
       throw new Error(`Failed to fetch products: ${error.message}`);
     }
 
     if (data && data.length > 0) {
-      console.log('getAllProducts - Found products in main table:', data.length);
       const mappedProducts = data.map(mapDbProduct);
       return mappedProducts;
     } else {
-      console.log('getAllProducts - No products in main table, trying fallback table...');
-      
       // Fallback to fallback_products table
       const { data: fallbackData, error: fallbackError } = await supabase
         .from('fallback_products')
         .select('*');
       
       if (fallbackError) {
-        console.error('Fallback table error:', fallbackError);
+        console.error('getAllProducts - Fallback table error:', fallbackError);
         throw new Error(`Failed to fetch fallback products: ${fallbackError.message}`);
       }
 
       if (fallbackData && fallbackData.length > 0) {
-        console.log('getAllProducts - Found fallback products:', fallbackData.length);
         const mappedFallbackProducts = fallbackData.map(mapDbProduct);
         return mappedFallbackProducts;
       } else {
-        console.log('getAllProducts - No fallback products found either');
         return [];
       }
     }

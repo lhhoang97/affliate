@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { 
   WishlistItem, 
   getWishlist, 
@@ -53,7 +53,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
   const isAuthenticated = auth?.isAuthenticated || false;
 
   // Load wishlist data
-  const loadWishlist = async () => {
+  const loadWishlist = useCallback(async () => {
     if (!isAuthenticated) {
       setWishlistItems([]);
       setWishlistSummary(null);
@@ -80,7 +80,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isAuthenticated]);
 
   // Add item to wishlist
   const addItem = async (productId: string) => {
@@ -156,7 +156,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
   // Load wishlist when authentication state changes
   useEffect(() => {
     loadWishlist();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, loadWishlist]);
 
   const value: WishlistContextType = {
     wishlistItems,

@@ -73,7 +73,7 @@ const AdminCategoriesPage: React.FC = () => {
       id: 'electronics',
       name: 'Electronics',
       color: '#007bff',
-      image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300&h=200&fit=crop',
+      image: 'https://picsum.photos/300/200?random=501',
       subcategories: [
         'HEADPHONES', 'LAPTOP', 'TABLET', 'PHONE', 'TV', 'REFRIGERATOR', 'AIR CONDITIONER'
       ]
@@ -82,7 +82,7 @@ const AdminCategoriesPage: React.FC = () => {
       id: 'fashion',
       name: 'Fashion',
       color: '#e91e63',
-      image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=300&h=200&fit=crop',
+      image: 'https://picsum.photos/300/200?random=502',
       subcategories: [
         'MEN', 'WOMEN', 'KIDS', 'SHOES', 'BAGS', 'JEWELRY', 'ACCESSORIES'
       ]
@@ -91,7 +91,7 @@ const AdminCategoriesPage: React.FC = () => {
       id: 'home-garden',
       name: 'Home & Garden',
       color: '#4caf50',
-      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop',
+      image: 'https://picsum.photos/300/200?random=503',
       subcategories: [
         'FURNITURE', 'KITCHEN', 'BEDDING', 'GARDEN', 'LIGHTING', 'STORAGE'
       ]
@@ -100,7 +100,7 @@ const AdminCategoriesPage: React.FC = () => {
       id: 'sports',
       name: 'Sports & Outdoors',
       color: '#ff9800',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop',
+      image: 'https://picsum.photos/300/200?random=504',
       subcategories: [
         'FITNESS', 'TEAM SPORTS', 'OUTDOOR', 'SWIMMING', 'CYCLING', 'RUNNING'
       ]
@@ -109,7 +109,7 @@ const AdminCategoriesPage: React.FC = () => {
       id: 'books',
       name: 'Books & Media',
       color: '#9c27b0',
-      image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop',
+      image: 'https://picsum.photos/300/200?random=505',
       subcategories: [
         'FICTION', 'NON-FICTION', 'EDUCATIONAL', 'CHILDREN', 'MAGAZINES', 'E-BOOKS'
       ]
@@ -118,7 +118,7 @@ const AdminCategoriesPage: React.FC = () => {
       id: 'toys',
       name: 'Toys & Games',
       color: '#f44336',
-      image: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=300&h=200&fit=crop',
+      image: 'https://picsum.photos/300/200?random=506',
       subcategories: [
         'ACTION FIGURES', 'BOARD GAMES', 'EDUCATIONAL', 'LEGO', 'DOLLS', 'VIDEO GAMES'
       ]
@@ -127,7 +127,7 @@ const AdminCategoriesPage: React.FC = () => {
       id: 'health-beauty',
       name: 'Health & Beauty',
       color: '#ff6b9d',
-      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=200&fit=crop',
+      image: 'https://picsum.photos/300/200?random=507',
       subcategories: [
         'SKINCARE', 'MAKEUP', 'HAIR CARE', 'PERSONAL CARE', 'VITAMINS', 'FRAGRANCES', 'SUPPLEMENTS', 'FITNESS'
       ]
@@ -136,7 +136,7 @@ const AdminCategoriesPage: React.FC = () => {
       id: 'automotive',
       name: 'Automotive',
       color: '#795548',
-      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=300&h=200&fit=crop',
+      image: 'https://picsum.photos/300/200?random=508',
       subcategories: [
         'CAR PARTS', 'CAR CARE', 'MOTORCYCLE', 'TRUCK', 'TOOLS', 'ELECTRONICS'
       ]

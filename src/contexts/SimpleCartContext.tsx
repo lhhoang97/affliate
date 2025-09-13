@@ -72,7 +72,6 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
   // Load cart with product data (optimized)
   const loadCart = useCallback(async () => {
     try {
-      console.log('SimpleCartContext - Loading cart with optimized service...');
       const itemsWithProducts = await loadGuestCartWithProducts();
       
       // Get bundle deals for all products
@@ -94,8 +93,6 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
         };
       });
       
-      console.log('SimpleCartContext - Items received from service:', itemsWithBundleSavings);
-      console.log('SimpleCartContext - Setting items state...');
       setItems(itemsWithBundleSavings);
       
       const newTotalItems = itemsWithBundleSavings.reduce((sum, item) => sum + item.quantity, 0);
@@ -112,14 +109,6 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
       setTotalItems(newTotalItems);
       setTotalPrice(newTotalPrice);
       setTotalSavings(newTotalSavings);
-      
-      console.log('SimpleCartContext - Cart loaded successfully:', { 
-        items: itemsWithBundleSavings.length, 
-        totalItems: newTotalItems, 
-        totalPrice: newTotalPrice,
-        totalSavings: newTotalSavings,
-        itemsData: itemsWithBundleSavings
-      });
     } catch (error) {
       console.error('SimpleCartContext - Error loading cart:', error);
       // Fallback to empty cart
@@ -132,14 +121,12 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
 
   // Add to cart with bundle options and race condition prevention
   const addToCart = useCallback(async (productId: string, quantity: number = 1, bundleType: 'single' | 'double' | 'triple' = 'single') => {
-    console.log('SimpleCartContext - addToCart called:', { productId, quantity, bundleType });
     
     // Create unique bundle key for race condition prevention
     const bundleKey = `${productId}-${bundleType}`;
     
     // Check if this bundle is already being processed
     if (pendingBundles.has(bundleKey)) {
-      console.log(`Bundle ${bundleType} for ${productId} is already being processed - BLOCKED`);
       return;
     }
     
@@ -177,7 +164,6 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
       
       if (existingBundleItem) {
         // Increase quantity of existing item
-        console.log(`Increasing quantity for existing ${bundleType} bundle of ${productId}`);
         updatedItems = items.map(item => 
           item.id === existingBundleItem.id 
             ? { ...item, quantity: item.quantity + 1 }
@@ -185,7 +171,6 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
         );
       } else {
         // Create new item with bundle option
-        console.log(`Creating new ${bundleType} bundle for ${productId}`);
         const newItem: GuestCartItem = {
           id: `guest_${Date.now()}_${bundleType}`,
           productId,
@@ -226,17 +211,12 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
       if (existingBundleItem) {
         // Update existing item quantity in localStorage
         updateGuestCartItemQuantity(existingBundleItem.id, existingBundleItem.quantity + 1);
-        console.log('SimpleCartContext - Updated existing bundle quantity:', { bundleType, newQuantity: existingBundleItem.quantity + 1 });
       } else {
         // Add new item to localStorage
         addToGuestCart(productId, bundleOption.quantity, bundleOption);
-        console.log('SimpleCartContext - Bundle added to cart:', { bundleType, bundleOption });
       }
       
-      // Load full product data in background
-      setTimeout(() => {
-        loadCart();
-      }, 100);
+      // Don't reload cart immediately to prevent infinite loop
       
     } catch (error) {
       console.error('SimpleCartContext - Error adding bundle to cart:', error);
@@ -354,10 +334,10 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   }, []);
 
-  // Load cart on mount
+  // Load cart on mount - only once
   useEffect(() => {
     loadCart();
-  }, [loadCart]);
+  }, []); // Empty dependency array - only run once on mount
 
   // Sync totals with items when items change (optimized with useMemo)
   const calculatedTotals = React.useMemo(() => {
@@ -378,16 +358,10 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
   }, [items]);
 
   useEffect(() => {
-    if (calculatedTotals.newTotalItems !== totalItems) {
-      setTotalItems(calculatedTotals.newTotalItems);
-    }
-    if (calculatedTotals.newTotalPrice !== totalPrice) {
-      setTotalPrice(calculatedTotals.newTotalPrice);
-    }
-    if (calculatedTotals.newTotalSavings !== totalSavings) {
-      setTotalSavings(calculatedTotals.newTotalSavings);
-    }
-  }, [calculatedTotals, totalItems, totalPrice, totalSavings]);
+    setTotalItems(calculatedTotals.newTotalItems);
+    setTotalPrice(calculatedTotals.newTotalPrice);
+    setTotalSavings(calculatedTotals.newTotalSavings);
+  }, [calculatedTotals]); // Only depend on calculatedTotals
 
   const value: SimpleCartContextType = {
     items,

@@ -23,19 +23,19 @@ const AboutUsPage: React.FC = () => {
     {
       name: 'John Smith',
       role: 'CEO & Founder',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150',
+      avatar: 'https://picsum.photos/150/150?random=601',
       bio: '10+ years experience in e-commerce and digital marketing'
     },
     {
       name: 'Sarah Johnson',
       role: 'CTO',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150',
+      avatar: 'https://picsum.photos/150/150?random=602',
       bio: 'Expert in technology and product development'
     },
     {
       name: 'Mike Chen',
       role: 'Head of Operations',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+      avatar: 'https://picsum.photos/150/150?random=603',
       bio: 'Specialized in business operations and customer success'
     }
   ];

@@ -1,5 +1,6 @@
 import { supabase } from '../utils/supabaseClient';
 import { Order, OrderItem } from '../types';
+import { EmailService } from './emailService';
 
 export interface CreateOrderData {
   items: Array<{
@@ -73,6 +74,40 @@ export async function createOrder(orderData: CreateOrderData): Promise<Order> {
       // Rollback order if items creation fails
       await supabase.from('orders').delete().eq('id', order.id);
       throw itemsError;
+    }
+
+    // Send order confirmation email (async, don't wait for it)
+    try {
+      // Get user profile for email
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('name, email, email_preferences')
+        .eq('id', user.id)
+        .single();
+
+      if (profile?.email && profile?.email_preferences?.orderEmails !== false) {
+        const orderItemsForEmail = orderData.items.map(item => ({
+          name: item.product_name,
+          quantity: item.quantity,
+          price: item.unit_price
+        }));
+
+        EmailService.sendOrderConfirmationEmail(
+          profile.email,
+          profile.name,
+          order.id,
+          orderItemsForEmail,
+          totalAmount,
+          orderData.shipping_address ? JSON.stringify(orderData.shipping_address) : undefined
+        ).then(() => {
+          console.log('✅ Order confirmation email sent successfully');
+        }).catch((error) => {
+          console.error('❌ Failed to send order confirmation email:', error);
+        });
+      }
+    } catch (emailError) {
+      console.error('❌ Error sending order confirmation email:', emailError);
+      // Don't throw error, just log it
     }
 
     return order;

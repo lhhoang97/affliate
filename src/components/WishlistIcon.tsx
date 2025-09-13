@@ -56,3 +56,4 @@ const WishlistIcon: React.FC<WishlistIconProps> = ({
 };
 
 export default WishlistIcon;
+

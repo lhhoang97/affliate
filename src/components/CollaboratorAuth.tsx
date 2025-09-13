@@ -155,3 +155,4 @@ const CollaboratorAuth: React.FC<CollaboratorAuthProps> = ({ open, onClose }) =>
 };
 
 export default CollaboratorAuth;
+

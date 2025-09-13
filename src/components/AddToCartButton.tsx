@@ -3,6 +3,7 @@ import { Button, CircularProgress, Snackbar, Alert } from '@mui/material';
 import { ShoppingCart, Add } from '@mui/icons-material';
 import { useSimpleCart } from '../contexts/SimpleCartContext';
 import { useCartSidebar } from '../contexts/CartSidebarContext';
+import { useBusinessMode } from '../contexts/BusinessModeContext';
 
 interface AddToCartButtonProps {
   productId: string;
@@ -12,6 +13,7 @@ interface AddToCartButtonProps {
   fullWidth?: boolean;
   disabled?: boolean;
   quantity?: number;
+  sx?: any; // Add sx prop support
 }
 
 const AddToCartButton: React.FC<AddToCartButtonProps> = ({
@@ -21,10 +23,12 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   size = 'medium',
   fullWidth = false,
   disabled = false,
-  quantity = 1
+  quantity = 1,
+  sx
 }) => {
   const { addToCart } = useSimpleCart();
   const { openCart } = useCartSidebar();
+  const { isAffiliateMode } = useBusinessMode();
   
   const [isAdding, setIsAdding] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -58,6 +62,11 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
     setSnackbarOpen(false);
   };
 
+  // Don't render in affiliate mode
+  if (isAffiliateMode) {
+    return null;
+  }
+
   return (
     <>
       <Button
@@ -69,7 +78,8 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
         onClick={handleAddToCart}
         sx={{
           textTransform: 'none',
-          fontWeight: 500
+          fontWeight: 500,
+          ...sx
         }}
       >
         {isAdding ? 'Adding...' : 'Add to Cart'}

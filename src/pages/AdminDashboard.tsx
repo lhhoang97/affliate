@@ -35,6 +35,8 @@ import { getAllProfiles, getUserStats } from '../services/profileService';
 import { getOrderStats } from '../services/orderService';
 import { getWishlistStats } from '../services/wishlistService';
 import { Product, Category as CategoryType } from '../types';
+import EmailTestPanel from '../components/EmailTestPanel';
+import { useBusinessMode } from '../contexts/BusinessModeContext';
 
 const AdminDashboard: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -43,6 +45,7 @@ const AdminDashboard: React.FC = () => {
   const [orderStats, setOrderStats] = useState<any>(null);
   const [wishlistStats, setWishlistStats] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { mode, setMode, isAffiliateMode, isEcommerceMode, isHybridMode } = useBusinessMode();
 
   useEffect(() => {
     let mounted = true;
@@ -349,6 +352,71 @@ const AdminDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
+        {/* Business Mode Toggle */}
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Business Mode
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <Chip
+                label={mode.charAt(0).toUpperCase() + mode.slice(1)}
+                color={
+                  mode === 'affiliate' ? 'success' : 
+                  mode === 'ecommerce' ? 'primary' : 
+                  'warning'
+                }
+                size="medium"
+                sx={{ fontWeight: 'bold' }}
+              />
+              <Typography variant="body2" color="text.secondary">
+                {mode === 'affiliate' && 'Redirect to retailers'}
+                {mode === 'ecommerce' && 'Direct checkout'}
+                {mode === 'hybrid' && 'Customer choice'}
+              </Typography>
+            </Box>
+            
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Button
+                variant={mode === 'affiliate' ? 'contained' : 'outlined'}
+                color="success"
+                size="small"
+                onClick={() => setMode('affiliate')}
+                sx={{ minWidth: 100 }}
+              >
+                Affiliate
+              </Button>
+              <Button
+                variant={mode === 'ecommerce' ? 'contained' : 'outlined'}
+                color="primary"
+                size="small"
+                onClick={() => setMode('ecommerce')}
+                sx={{ minWidth: 100 }}
+              >
+                E-commerce
+              </Button>
+              <Button
+                variant={mode === 'hybrid' ? 'contained' : 'outlined'}
+                color="warning"
+                size="small"
+                onClick={() => setMode('hybrid')}
+                sx={{ minWidth: 100 }}
+              >
+                Hybrid
+              </Button>
+            </Box>
+            
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => window.location.href = '/admin/business-mode'}
+              sx={{ mt: 1 }}
+            >
+              Advanced Settings →
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardContent>
             <Typography variant="h6" gutterBottom>
@@ -454,6 +522,11 @@ const AdminDashboard: React.FC = () => {
             </CardActions>
           </CardContent>
         </Card>
+
+        {/* Email Test Panel */}
+        <Box sx={{ mt: 4 }}>
+          <EmailTestPanel />
+        </Box>
       </Box>
     </Box>
   );

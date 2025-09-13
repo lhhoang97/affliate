@@ -78,7 +78,7 @@ const ProductCardDemo: React.FC = () => {
                   isForYou: Math.random() > 0.5,
                   foundBy: {
                     name: 'BestFinds',
-                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=24&h=24&fit=crop',
+                    avatar: 'https://picsum.photos/24/24?random=401',
                     time: 'Recently'
                   }
                 }}

@@ -64,7 +64,7 @@ const DealsPage: React.FC = () => {
       originalPrice: 1199.99,
       dealPrice: 999.99,
       discount: 17,
-      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      image: 'https://picsum.photos/400/400?random=301',
       rating: 4.8,
       reviewCount: 1250,
       timeLeft: '2:45:30',
@@ -78,7 +78,7 @@ const DealsPage: React.FC = () => {
       originalPrice: 899.99,
       dealPrice: 599.99,
       discount: 33,
-      image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400',
+      image: 'https://picsum.photos/400/400?random=302',
       rating: 4.6,
       reviewCount: 890,
       timeLeft: '5:20:15',
@@ -92,7 +92,7 @@ const DealsPage: React.FC = () => {
       originalPrice: 399.99,
       dealPrice: 249.99,
       discount: 38,
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
+      image: 'https://picsum.photos/400/400?random=303',
       rating: 4.9,
       reviewCount: 567,
       timeLeft: '1:15:45',
@@ -112,7 +112,7 @@ const DealsPage: React.FC = () => {
           originalPrice: 1199.99,
           dealPrice: 999.99,
           discount: 17,
-          image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
+          image: 'https://picsum.photos/400/400?random=304',
           rating: 4.7,
           reviewCount: 432
         },
@@ -122,7 +122,7 @@ const DealsPage: React.FC = () => {
           originalPrice: 1099.99,
           dealPrice: 899.99,
           discount: 18,
-          image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400',
+          image: 'https://picsum.photos/400/400?random=305',
           rating: 4.8,
           reviewCount: 321
         }
@@ -137,7 +137,7 @@ const DealsPage: React.FC = () => {
           originalPrice: 150.00,
           dealPrice: 89.99,
           discount: 40,
-          image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+          image: 'https://picsum.photos/400/400?random=306',
           rating: 4.5,
           reviewCount: 789
         },
@@ -147,7 +147,7 @@ const DealsPage: React.FC = () => {
           originalPrice: 180.00,
           dealPrice: 119.99,
           discount: 33,
-          image: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400',
+          image: 'https://picsum.photos/400/400?random=307',
           rating: 4.6,
           reviewCount: 456
         }
