@@ -25,6 +25,7 @@ import {
 } from '@mui/icons-material';
 import { useSimpleCart } from '../contexts/SimpleCartContext';
 import { useCartSidebar } from '../contexts/CartSidebarContext';
+import { useBusinessMode } from '../contexts/BusinessModeContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -51,6 +52,7 @@ function TabPanel(props: TabPanelProps) {
 const DealsPage: React.FC = () => {
   const { addToCart } = useSimpleCart();
   const { openCart } = useCartSidebar();
+  const { isAffiliateMode, isEcommerceMode, isHybridMode } = useBusinessMode();
   const [tabValue, setTabValue] = useState(0);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -338,17 +340,19 @@ const DealsPage: React.FC = () => {
                     />
                   </Box>
 
-                  <Button
-                    variant="contained"
-                    startIcon={<ShoppingCart />}
-                    onClick={() => handleAddToCart(deal)}
-                    sx={{
-                      backgroundColor: '#ff4757',
-                      '&:hover': { backgroundColor: '#ff3742' }
-                    }}
-                  >
-                    Add to Cart
-                  </Button>
+                  {!isAffiliateMode && (
+                    <Button
+                      variant="contained"
+                      startIcon={<ShoppingCart />}
+                      onClick={() => handleAddToCart(deal)}
+                      sx={{
+                        backgroundColor: '#ff4757',
+                        '&:hover': { backgroundColor: '#ff3742' }
+                      }}
+                    >
+                      Add to Cart
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ))}
@@ -451,17 +455,19 @@ const DealsPage: React.FC = () => {
                     </Typography>
                   </Box>
 
-                  <Button
-                    variant="contained"
-                    startIcon={<ShoppingCart />}
-                    onClick={() => handleAddToCart(deal)}
-                    sx={{
-                      backgroundColor: '#ff4757',
-                      '&:hover': { backgroundColor: '#ff3742' }
-                    }}
-                  >
-                    Add to Cart
-                  </Button>
+                  {!isAffiliateMode && (
+                    <Button
+                      variant="contained"
+                      startIcon={<ShoppingCart />}
+                      onClick={() => handleAddToCart(deal)}
+                      sx={{
+                        backgroundColor: '#ff4757',
+                        '&:hover': { backgroundColor: '#ff3742' }
+                      }}
+                    >
+                      Add to Cart
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ))}
@@ -512,17 +518,19 @@ const DealsPage: React.FC = () => {
                     </Typography>
                   </Box>
 
-                  <Button
-                    variant="contained"
-                    startIcon={<ShoppingCart />}
-                    onClick={() => handleAddToCart(deal)}
-                    sx={{
-                      backgroundColor: '#00a8e8',
-                      '&:hover': { backgroundColor: '#0097d1' }
-                    }}
-                  >
-                    Prime Add to Cart
-                  </Button>
+                  {!isAffiliateMode && (
+                    <Button
+                      variant="contained"
+                      startIcon={<ShoppingCart />}
+                      onClick={() => handleAddToCart(deal)}
+                      sx={{
+                        backgroundColor: '#00a8e8',
+                        '&:hover': { backgroundColor: '#0097d1' }
+                      }}
+                    >
+                      Prime Add to Cart
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ))}

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   TextField,
   InputAdornment,
@@ -22,7 +22,6 @@ import {
   Clear,
   TrendingUp,
   History,
-  LocalOffer,
   ShoppingBag
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';

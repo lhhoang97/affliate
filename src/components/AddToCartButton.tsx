@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, CircularProgress, Snackbar, Alert } from '@mui/material';
-import { ShoppingCart, Add } from '@mui/icons-material';
+import { Add } from '@mui/icons-material';
 import { useSimpleCart } from '../contexts/SimpleCartContext';
 import { useCartSidebar } from '../contexts/CartSidebarContext';
 import { useBusinessMode } from '../contexts/BusinessModeContext';

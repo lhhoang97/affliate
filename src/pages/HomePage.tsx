@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { 
   Box, 
   Container, 
@@ -7,14 +7,24 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ProductCarousel from '../components/ProductCarousel';
+import LazyProductGrid from '../components/LazyProductGrid';
 import { useProducts } from '../contexts/ProductContext';
 import { Product } from '../types';
 import { getDealConfig } from '../services/dealConfigService';
+import usePerformanceOptimization from '../hooks/usePerformanceOptimization';
 
-const HomePage: React.FC = () => {
+const HomePage: React.FC = memo(() => {
   const { products, loading, error } = useProducts();
   const navigate = useNavigate();
-  const dealConfig = getDealConfig();
+  const dealConfig = useMemo(() => getDealConfig(), []);
+  
+  // Initialize performance optimizations
+  usePerformanceOptimization({
+    enableImageOptimization: true,
+    enableLazyLoading: true,
+    enablePrefetching: true,
+    enableServiceWorker: true
+  });
   
   // Debug logging
   console.log('HomePage - Products:', products.length, 'Loading:', loading, 'Error:', error || 'None');
@@ -263,6 +273,8 @@ const HomePage: React.FC = () => {
       </Container>
     </Box>
   );
-};
+});
+
+HomePage.displayName = 'HomePage';
 
 export default HomePage;

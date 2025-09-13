@@ -218,12 +218,10 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     
     // Add timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
-      if (loading) {
-        console.log('ProductContext - Timeout reached, forcing loading to false');
-        setLoading(false);
-        setIsLoadingProducts(false);
-      }
-    }, 5000); // 5 second timeout
+      console.log('ProductContext - Timeout reached, forcing loading to false');
+      setLoading(false);
+      setIsLoadingProducts(false);
+    }, 3000); // 3 second timeout - faster response
     
     return () => clearTimeout(timeoutId);
   }, []); // Empty dependency array to run only once on mount

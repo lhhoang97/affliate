@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Test - BestFinds</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .device-frame {
+            border: 2px solid #333;
+            border-radius: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+            background: #000;
+            padding: 10px;
+        }
+        .device-frame iframe {
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+        }
+        .mobile-frame {
+            width: 375px;
+            height: 667px;
+        }
+        .desktop-frame {
+            width: 1200px;
+            height: 800px;
+        }
+        .device-label {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .performance-info {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .performance-info h3 {
+            margin-top: 0;
+            color: #2e7d32;
+        }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.excellent { background: #4caf50; color: white; }
+        .status.good { background: #8bc34a; color: white; }
+        .status.average { background: #ff9800; color: white; }
+        .status.poor { background: #f44336; color: white; }
+        .test-results {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .test-results h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        .loading-indicator {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>⚡ Performance Test - BestFinds</h1>
+        
+        <div class="performance-info">
+            <h3>🎯 Performance Metrics</h3>
+            <p>Testing page load speed, resource loading, and user experience on both mobile and desktop.</p>
+        </div>
+
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="metric-value" id="mobile-load-time">--</div>
+                <div class="metric-label">Mobile Load Time</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="desktop-load-time">--</div>
+                <div class="metric-label">Desktop Load Time</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="mobile-score">--</div>
+                <div class="metric-label">Mobile Performance Score</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="desktop-score">--</div>
+                <div class="metric-label">Desktop Performance Score</div>
+            </div>
+        </div>
+
+        <div class="test-results">
+            <h3>📱 Mobile Performance (375px)</h3>
+            <div class="loading-indicator" id="mobile-loading">
+                <div class="spinner"></div>
+                <div>Loading mobile view...</div>
+            </div>
+            <div class="device-frame mobile-frame" id="mobile-frame" style="display: none;">
+                <div class="device-label">iPhone SE / Small Mobile - Performance Test</div>
+                <iframe src="http://localhost:3000" title="Mobile Performance Test"></iframe>
+            </div>
+        </div>
+
+        <div class="test-results">
+            <h3>💻 Desktop Performance (1200px)</h3>
+            <div class="loading-indicator" id="desktop-loading">
+                <div class="spinner"></div>
+                <div>Loading desktop view...</div>
+            </div>
+            <div class="device-frame desktop-frame" id="desktop-frame" style="display: none;">
+                <div class="device-label">Desktop / Large Screen - Performance Test</div>
+                <iframe src="http://localhost:3000" title="Desktop Performance Test"></iframe>
+            </div>
+        </div>
+
+        <div class="performance-info">
+            <h3>✅ Performance Checklist</h3>
+            <ul>
+                <li><span class="status excellent">EXCELLENT</span> Load time < 1 second</li>
+                <li><span class="status good">GOOD</span> Load time 1-3 seconds</li>
+                <li><span class="status average">AVERAGE</span> Load time 3-5 seconds</li>
+                <li><span class="status poor">POOR</span> Load time > 5 seconds</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let mobileStartTime, desktopStartTime;
+        let mobileLoadTime = 0, desktopLoadTime = 0;
+
+        // Test mobile performance
+        function testMobilePerformance() {
+            mobileStartTime = performance.now();
+            const mobileFrame = document.getElementById('mobile-frame');
+            const mobileLoading = document.getElementById('mobile-loading');
+            
+            mobileFrame.style.display = 'block';
+            mobileLoading.style.display = 'none';
+            
+            mobileFrame.querySelector('iframe').onload = () => {
+                mobileLoadTime = performance.now() - mobileStartTime;
+                updateMobileMetrics();
+            };
+        }
+
+        // Test desktop performance
+        function testDesktopPerformance() {
+            desktopStartTime = performance.now();
+            const desktopFrame = document.getElementById('desktop-frame');
+            const desktopLoading = document.getElementById('desktop-loading');
+            
+            desktopFrame.style.display = 'block';
+            desktopLoading.style.display = 'none';
+            
+            desktopFrame.querySelector('iframe').onload = () => {
+                desktopLoadTime = performance.now() - desktopStartTime;
+                updateDesktopMetrics();
+            };
+        }
+
+        function updateMobileMetrics() {
+            const loadTimeElement = document.getElementById('mobile-load-time');
+            const scoreElement = document.getElementById('mobile-score');
+            
+            loadTimeElement.textContent = `${mobileLoadTime.toFixed(0)}ms`;
+            
+            let score, status;
+            if (mobileLoadTime < 1000) {
+                score = '95-100';
+                status = 'excellent';
+            } else if (mobileLoadTime < 3000) {
+                score = '85-94';
+                status = 'good';
+            } else if (mobileLoadTime < 5000) {
+                score = '70-84';
+                status = 'average';
+            } else {
+                score = '0-69';
+                status = 'poor';
+            }
+            
+            scoreElement.textContent = score;
+            scoreElement.className = `status ${status}`;
+        }
+
+        function updateDesktopMetrics() {
+            const loadTimeElement = document.getElementById('desktop-load-time');
+            const scoreElement = document.getElementById('desktop-score');
+            
+            loadTimeElement.textContent = `${desktopLoadTime.toFixed(0)}ms`;
+            
+            let score, status;
+            if (desktopLoadTime < 1000) {
+                score = '95-100';
+                status = 'excellent';
+            } else if (desktopLoadTime < 3000) {
+                score = '85-94';
+                status = 'good';
+            } else if (desktopLoadTime < 5000) {
+                score = '70-84';
+                status = 'average';
+            } else {
+                score = '0-69';
+                status = 'poor';
+            }
+            
+            scoreElement.textContent = score;
+            scoreElement.className = `status ${status}`;
+        }
+
+        // Start tests
+        setTimeout(testMobilePerformance, 1000);
+        setTimeout(testDesktopPerformance, 2000);
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                iframe.src = iframe.src;
+            });
+        }, 30000);
+    </script>
+</body>
+</html>

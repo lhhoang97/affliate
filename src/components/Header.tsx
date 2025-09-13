@@ -13,13 +13,11 @@ import {
   Divider,
   Collapse,
   List,
-  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText
 } from '@mui/material';
 import {
-  ShoppingCart,
   Menu as MenuIcon,
   AccountCircle,
   Favorite,
@@ -27,9 +25,6 @@ import {
   PersonAdd,
   ExpandLess,
   ExpandMore,
-  Category,
-  TrendingUp,
-  NewReleases,
   Inventory,
   LocalOffer,
   Whatshot

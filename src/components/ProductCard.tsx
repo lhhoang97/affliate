@@ -752,7 +752,7 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
               quantity={1}
               sx={{ flex: 1 }}
             />
-          ) : (
+          ) : isHybridMode ? (
             // Hybrid Mode: Both buttons
             <>
               <SmartLink
@@ -792,7 +792,7 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
                 sx={{ flex: 1 }}
               />
             </>
-          )}
+          ) : null}
         </Box>
 
         {/* Wishlist Button */}

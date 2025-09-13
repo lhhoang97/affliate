@@ -28,6 +28,7 @@ import { useWishlist } from '../contexts/WishlistContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSimpleCart } from '../contexts/SimpleCartContext';
 import { useCartSidebar } from '../contexts/CartSidebarContext';
+import { useBusinessMode } from '../contexts/BusinessModeContext';
 import { useNavigate } from 'react-router-dom';
 import SmartLink from '../components/SmartLink';
 import OptimizedImage from '../components/OptimizedImage';
@@ -45,6 +46,7 @@ const WishlistPage: React.FC = () => {
   const { addToCart } = useSimpleCart();
   const { openCart } = useCartSidebar();
   const { isAuthenticated } = useAuth();
+  const { isAffiliateMode, isEcommerceMode, isHybridMode } = useBusinessMode();
   const navigate = useNavigate();
   const [isRemoving, setIsRemoving] = useState<string | null>(null);
 
@@ -280,15 +282,17 @@ const WishlistPage: React.FC = () => {
 
                 <Box sx={{ mt: 'auto' }}>
                   <Stack direction="row" spacing={1}>
-                    <Button
-                      variant="contained"
-                      size="small"
-                      startIcon={<ShoppingCart />}
-                      onClick={() => handleAddToCart(item.product_id)}
-                      sx={{ flex: 1 }}
-                    >
-                      Add to Cart
-                    </Button>
+                    {!isAffiliateMode && (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<ShoppingCart />}
+                        onClick={() => handleAddToCart(item.product_id)}
+                        sx={{ flex: 1 }}
+                      >
+                        Add to Cart
+                      </Button>
+                    )}
                     
                     {item.product?.affiliateLink && (
                       <SmartLink

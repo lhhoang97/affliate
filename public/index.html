@@ -29,6 +29,10 @@
     -->
     <title>BestFinds</title>
     
+    <!-- Critical CSS for performance -->
+    <link rel="preload" href="/critical.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/critical.css"></noscript>
+    
     <!-- Google Analytics 4 - Disabled for development -->
     <!-- Uncomment and configure when ready for production -->
     <!--

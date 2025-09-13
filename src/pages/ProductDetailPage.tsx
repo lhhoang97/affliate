@@ -604,7 +604,7 @@ const ProductDetailPage: React.FC = () => {
                 >
                   {isAddingToCart ? 'ADDING...' : 'ADD TO CART'}
                 </Button>
-              ) : (
+              ) : isHybridMode ? (
                 // Hybrid Mode: Both buttons
                 <>
                   <Button
@@ -650,7 +650,7 @@ const ProductDetailPage: React.FC = () => {
                     {isBuyingNow ? 'PROCESSING...' : 'BUY IT NOW'}
                   </Button>
                 </>
-              )}
+              ) : null}
 
               {/* PayPal Button - Only show in E-commerce and Hybrid modes */}
               {!isAffiliateMode && (

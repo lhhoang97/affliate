@@ -93,6 +93,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       }}
       className={className}
       loading="lazy"
+      decoding="async"
+      fetchPriority="low"
     />
   );
 };

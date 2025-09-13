@@ -14,6 +14,7 @@ import {
 import { Add, Remove, ShoppingCart, FlashOn, Payment } from '@mui/icons-material';
 import { useSimpleCart } from '../contexts/SimpleCartContext';
 import { useCartSidebar } from '../contexts/CartSidebarContext';
+import { useBusinessMode } from '../contexts/BusinessModeContext';
 
 interface AffiliatePurchaseOptionsProps {
   product: any;
@@ -26,6 +27,7 @@ const AffiliatePurchaseOptions: React.FC<AffiliatePurchaseOptionsProps> = ({
 }) => {
   const { addToCart } = useSimpleCart();
   const { openCart } = useCartSidebar();
+  const { isAffiliateMode, isEcommerceMode, isHybridMode } = useBusinessMode();
   const [quantity, setQuantity] = useState(1);
   const [selectedBundle, setSelectedBundle] = useState('single');
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -223,8 +225,29 @@ const AffiliatePurchaseOptions: React.FC<AffiliatePurchaseOptionsProps> = ({
               {isPayPalLoading ? 'Processing...' : 'PayPal'}
             </Button>
           </>
-        ) : (
-          // E-commerce buttons
+        ) : isEcommerceMode ? (
+          // E-commerce Mode: Only "Add to Cart" button
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={handleAddToCart}
+            disabled={isAddingToCart}
+            startIcon={isAddingToCart ? <ShoppingCart /> : <ShoppingCart />}
+            sx={{
+              backgroundColor: '#1976d2',
+              color: 'white',
+              fontWeight: 600,
+              py: 1.5,
+              '&:hover': {
+                backgroundColor: '#1565c0'
+              }
+            }}
+          >
+            {isAddingToCart ? 'Adding...' : 'ADD TO CART'}
+          </Button>
+        ) : isHybridMode ? (
+          // Hybrid Mode: Both buttons
           <>
             <Button
               variant="contained"
@@ -266,7 +289,7 @@ const AffiliatePurchaseOptions: React.FC<AffiliatePurchaseOptionsProps> = ({
               {isBuyingNow ? 'Processing...' : 'BUY IT NOW'}
             </Button>
           </>
-        )}
+        ) : null}
       </Stack>
 
       {/* Trust Indicators */}

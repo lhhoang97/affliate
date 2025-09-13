@@ -15,10 +15,21 @@ import {
   CreditCard,
   AttachMoney
 } from '@mui/icons-material';
-import { getPaymentProviderStatus } from '../services/realPaymentService';
+// import { getPaymentProviderStatus } from '../services/realPaymentService';
 
 const PaymentStatus: React.FC = () => {
-  const status = getPaymentProviderStatus();
+  // Check payment status without loading Stripe
+  const stripeKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
+  const paypalKey = process.env.REACT_APP_PAYPAL_CLIENT_ID;
+  
+  const status = {
+    stripe: !!stripeKey,
+    paypal: !!paypalKey,
+    testMode: !stripeKey || stripeKey.startsWith('pk_test_') || process.env.NODE_ENV === 'development',
+    productionMode: stripeKey?.startsWith('pk_live_'),
+    stripeKeyType: stripeKey?.startsWith('pk_live_') ? 'LIVE' : 'TEST',
+    paypalMode: paypalKey ? 'CONFIGURED' : 'NOT_CONFIGURED'
+  };
 
   const getStatusIcon = () => {
     if (status.productionMode) {
@@ -65,14 +76,14 @@ const PaymentStatus: React.FC = () => {
             size="small"
           />
           <Chip 
-            label={`Stripe: ${status.stripe.enabled ? 'Enabled' : 'Disabled'}`} 
-            color={status.stripe.enabled ? 'success' : 'error'}
+            label={`Stripe: ${status.stripeKeyType}`} 
+            color={status.stripe ? 'success' : 'error'}
             size="small"
             icon={<CreditCard />}
           />
           <Chip 
-            label={`PayPal: ${status.paypal.enabled ? 'Enabled' : 'Disabled'}`} 
-            color={status.paypal.enabled ? 'success' : 'error'}
+            label={`PayPal: ${status.paypalMode}`} 
+            color={status.paypal ? 'success' : 'error'}
             size="small"
             icon={<AttachMoney />}
           />

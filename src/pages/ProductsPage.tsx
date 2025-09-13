@@ -20,6 +20,7 @@ import { Product } from '../types';
 import { useProducts } from '../contexts/ProductContext';
 import { useSimpleCart } from '../contexts/SimpleCartContext';
 import { useCartSidebar } from '../contexts/CartSidebarContext';
+import { useBusinessMode } from '../contexts/BusinessModeContext';
 
 
 
@@ -28,6 +29,7 @@ const ProductsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { addToCart } = useSimpleCart();
   const { openCart } = useCartSidebar();
+  const { isAffiliateMode, isEcommerceMode, isHybridMode } = useBusinessMode();
   
   // Get category and search from URL parameters
   const categoryFromUrl = searchParams.get('category');
@@ -334,30 +336,32 @@ const ProductsPage: React.FC = () => {
               
               {/* Action Buttons */}
               <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleAddToCart(product);
-                  }}
-                  disabled={!product.inStock}
-                  sx={{
-                    flex: 1,
-                    borderColor: '#007bff',
-                    color: '#007bff',
-                    '&:hover': {
-                      borderColor: '#0056b3',
-                      backgroundColor: '#f8f9fa'
-                    },
-                    '&:disabled': {
-                      borderColor: '#ccc',
-                      color: '#ccc'
-                    }
-                  }}
-                >
-                  Add to Cart
-                </Button>
+                {!isAffiliateMode && (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToCart(product);
+                    }}
+                    disabled={!product.inStock}
+                    sx={{
+                      flex: 1,
+                      borderColor: '#007bff',
+                      color: '#007bff',
+                      '&:hover': {
+                        borderColor: '#0056b3',
+                        backgroundColor: '#f8f9fa'
+                      },
+                      '&:disabled': {
+                        borderColor: '#ccc',
+                        color: '#ccc'
+                      }
+                    }}
+                  >
+                    Add to Cart
+                  </Button>
+                )}
                 <Button
                   variant="contained"
                   size="small"
