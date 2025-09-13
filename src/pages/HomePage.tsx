@@ -2,7 +2,8 @@ import React, { useMemo } from 'react';
 import { 
   Box, 
   Container, 
-  Typography
+  Typography,
+  Button
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ProductCarousel from '../components/ProductCarousel';
@@ -11,9 +12,12 @@ import { Product } from '../types';
 import { getDealConfig } from '../services/dealConfigService';
 
 const HomePage: React.FC = () => {
-  const { products, loading } = useProducts();
+  const { products, loading, error } = useProducts();
   const navigate = useNavigate();
   const dealConfig = getDealConfig();
+  
+  // Debug logging
+  console.log('HomePage - Products:', products.length, 'Loading:', loading, 'Error:', error || 'None');
 
   // Create sections from actual products with memoization to prevent unnecessary re-renders
   const justForYouDeals = useMemo(() => {
@@ -91,13 +95,6 @@ const HomePage: React.FC = () => {
     return trending.slice(0, 12);
   }, [products, dealConfig]);
 
-  // Debug log to check products from database
-  console.log('HomePage - Products from database:', products);
-  console.log('HomePage - Products count:', products.length);
-  console.log('HomePage - Loading state:', loading);
-  console.log('HomePage - Just for you deals:', justForYouDeals.length);
-  console.log('HomePage - Hot deals:', hotDeals.length);
-  console.log('HomePage - Trending deals:', trendingDeals.length);
 
   const handleProductClick = (product: Product) => {
     navigate(`/product/${product.id}`);
@@ -136,6 +133,62 @@ const HomePage: React.FC = () => {
             }
           `}
         </style>
+      </Box>
+    );
+  }
+
+  // Show error if there's an error and no products
+  if (error && products.length === 0) {
+    return (
+      <Box sx={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center', 
+        justifyContent: 'center',
+        backgroundColor: '#f8fafc'
+      }}>
+        <Typography variant="h6" sx={{ color: '#ef4444', mb: 2 }}>
+          Error loading products
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#6b7280', mb: 3 }}>
+          {error}
+        </Typography>
+        <Button 
+          variant="contained" 
+          onClick={() => window.location.reload()}
+          sx={{ backgroundColor: '#1a73e8' }}
+        >
+          Retry
+        </Button>
+      </Box>
+    );
+  }
+
+  // Show fallback if no products are available
+  if (!loading && products.length === 0 && !error) {
+    return (
+      <Box sx={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center', 
+        justifyContent: 'center',
+        backgroundColor: '#f8fafc'
+      }}>
+        <Typography variant="h6" sx={{ color: '#6b7280', mb: 2 }}>
+          Setting up your store...
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#9ca3af', mb: 3 }}>
+          We're preparing amazing deals for you. Check back in a moment!
+        </Typography>
+        <Button 
+          variant="contained" 
+          onClick={() => window.location.reload()}
+          sx={{ backgroundColor: '#1a73e8' }}
+        >
+          Refresh
+        </Button>
       </Box>
     );
   }

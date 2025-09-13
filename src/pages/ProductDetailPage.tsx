@@ -50,17 +50,18 @@ import {
 import { useCart } from '../contexts/CartContext';
 import { useSimpleCart } from '../contexts/SimpleCartContext';
 import { useCartSidebar } from '../contexts/CartSidebarContext';
-// import AddToCartButtonWithSidebar from '../components/AddToCartButtonWithSidebar';
-// import BundleOffers from '../components/BundleOffers';
+import { useBusinessMode } from '../contexts/BusinessModeContext';
 import { useProducts } from '../contexts/ProductContext';
 import { Product } from '../types';
 import { getProductById } from '../services/productService';
+import LazyImage from '../components/LazyImage';
 
 const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { addToCart } = useSimpleCart();
   const { openCart } = useCartSidebar();
   const { products, loading } = useProducts();
+  const { isAffiliateMode, isEcommerceMode, isHybridMode } = useBusinessMode();
   
   // State for hybrid model
   const [quantity, setQuantity] = useState(1);
@@ -71,7 +72,6 @@ const ProductDetailPage: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(783); // Total seconds (13:03)
   const [selectedBundle, setSelectedBundle] = useState(2); // Default to bundle 2 for testing
   const [isInStock, setIsInStock] = useState(true);
-  const [hasAffiliateLink, setHasAffiliateLink] = useState(true);
   
   // Loading states for buttons
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -201,10 +201,12 @@ const ProductDetailPage: React.FC = () => {
         const bundleType = selectedBundle === 1 ? 'single' : selectedBundle === 2 ? 'double' : 'triple';
         
         // Add to cart with bundle type
-        await addToCart(product.id, quantity, bundleType);
-        
-        // Show success message
-        console.log(`✅ Added ${bundleType} bundle of ${product.name} to cart!`);
+        if (product) {
+          await addToCart(product.id!, quantity, bundleType);
+          
+          // Show success message
+          console.log(`✅ Added ${bundleType} bundle of ${product.name} to cart!`);
+        }
         
         // Open cart sidebar
         openCart();
@@ -228,9 +230,9 @@ const ProductDetailPage: React.FC = () => {
       setIsBuyingNow(true);
       
       try {
-        if (hasAffiliateLink) {
+        if (true) {
           // Open affiliate link in new tab
-          const affiliateUrl = product.affiliateLink || product.externalUrl || `https://amazon.com/dp/${product.id}`;
+          const affiliateUrl = product?.affiliateLink || product?.externalUrl || `https://amazon.com/dp/${product?.id}`;
           window.open(affiliateUrl, '_blank', 'noopener,noreferrer');
           
           // Track affiliate click
@@ -244,7 +246,9 @@ const ProductDetailPage: React.FC = () => {
           const bundle = getCurrentBundle();
           const totalQuantity = quantity * bundle.quantity;
           
-          addToCart(product.id, totalQuantity);
+          if (product?.id) {
+            addToCart((product as Product).id, totalQuantity);
+          }
           
           // Simulate processing
           await new Promise(resolve => setTimeout(resolve, 500));
@@ -274,13 +278,15 @@ const ProductDetailPage: React.FC = () => {
         await new Promise(resolve => setTimeout(resolve, 800));
         
         // Create PayPal payment URL
-        const paypalUrl = `https://www.paypal.com/checkoutnow?token=${product.id}&amount=${totalPrice}&quantity=${totalQuantity}`;
-        
-        // Open PayPal in new tab
-        window.open(paypalUrl, '_blank', 'noopener,noreferrer');
-        
-        // Track PayPal click
-        console.log('PayPal checkout initiated:', { product: product.name, quantity: totalQuantity, price: totalPrice });
+        if (product) {
+          const paypalUrl = `https://www.paypal.com/checkoutnow?token=${product.id}&amount=${totalPrice}&quantity=${totalQuantity}`;
+          
+          // Open PayPal in new tab
+          window.open(paypalUrl, '_blank', 'noopener,noreferrer');
+          
+          // Track PayPal click
+          console.log('PayPal checkout initiated:', { product: product.name, quantity: totalQuantity, price: totalPrice });
+        }
         
         // Update purchasers count
         setPurchasers(prev => prev + 1);
@@ -312,7 +318,7 @@ const ProductDetailPage: React.FC = () => {
     );
   }
 
-  const discountPercentage = product.originalPrice ? 
+  const discountPercentage = product?.originalPrice ? 
     Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
 
   const selectedBundleOption = getCurrentBundle();
@@ -368,10 +374,12 @@ const ProductDetailPage: React.FC = () => {
             <Box sx={{ position: 'relative' }}>
               {/* Main Product Image */}
               <Card sx={{ mb: 2, overflow: 'hidden', boxShadow: 'none', border: '1px solid #e5e7eb' }}>
-                <Box
-                  component="img"
+                <LazyImage
                   src={product.image}
                   alt={product.name}
+                  height={500}
+                  loading="eager"
+                  sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 600px"
                   sx={{ 
                     width: '100%',
                     height: 500,
@@ -384,20 +392,21 @@ const ProductDetailPage: React.FC = () => {
               {/* Thumbnail Images */}
               <Box sx={{ display: 'flex', gap: 1, overflowX: 'auto' }}>
                 {product.images?.slice(0, 4).map((image, index) => (
-                    <Box
+                    <LazyImage
                       key={index}
-                      component="img"
-                    src={image}
+                      src={image}
                       alt={`${product.name} ${index + 1}`}
+                      width={80}
+                      height={60}
+                      loading="lazy"
+                      sizes="80px"
                       sx={{
-                      width: 80,
-                      height: 60,
                         objectFit: 'cover',
                         borderRadius: 1,
                         cursor: 'pointer',
-                      border: '2px solid #e5e7eb',
-                      '&:hover': { borderColor: '#3b82f6' }
-                    }}
+                        border: '2px solid #e5e7eb',
+                        '&:hover': { borderColor: '#3b82f6' }
+                      }}
                     />
                   ))}
                 </Box>
@@ -478,11 +487,12 @@ const ProductDetailPage: React.FC = () => {
                     </Typography>
                   </Box>
 
-            {/* Bundle Options - Exact like Louistores */}
-            {/* Simple Bundle Options */}
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#000000' }}>
-              Bundle & save
-            </Typography>
+            {/* Bundle Options - Only show in E-commerce and Hybrid modes */}
+            {!isAffiliateMode && (
+              <>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#000000' }}>
+                  Bundle & save
+                </Typography>
             <Stack spacing={1} sx={{ mb: 3 }}>
               <Paper
                 sx={{
@@ -527,88 +537,142 @@ const ProductDetailPage: React.FC = () => {
                 </Typography>
               </Paper>
             </Stack>
+              </>
+            )}
 
-            {/* Quantity Selector */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid #e5e7eb', borderRadius: 1 }}>
-                <IconButton onClick={() => setQuantity(Math.max(1, quantity - 1))}>
-                  <Remove />
-                </IconButton>
-                <Typography variant="h6" sx={{ px: 2, minWidth: 50, textAlign: 'center' }}>
-                  {quantity}
-                </Typography>
-                <IconButton onClick={() => setQuantity(quantity + 1)}>
-                  <Add />
-                </IconButton>
+            {/* Quantity Selector - Only show in E-commerce and Hybrid modes */}
+            {!isAffiliateMode && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid #e5e7eb', borderRadius: 1 }}>
+                  <IconButton onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                    <Remove />
+                  </IconButton>
+                  <Typography variant="h6" sx={{ px: 2, minWidth: 50, textAlign: 'center' }}>
+                    {quantity}
+                  </Typography>
+                  <IconButton onClick={() => setQuantity(quantity + 1)}>
+                    <Add />
+                  </IconButton>
+                </Box>
               </Box>
-            </Box>
+            )}
 
-            {/* Action Buttons - Exact colors like Louistores */}
+            {/* Action Buttons - Based on Business Mode */}
             <Stack spacing={2} sx={{ mb: 3 }}>
-              {/* Add to Cart Button - Black */}
-              <Button
-                variant="contained"
-                size="large"
-                fullWidth
-                onClick={handleAddToCart}
-                disabled={isAddingToCart}
-                sx={{
-                  backgroundColor: '#333333',
-                  color: 'white',
-                  fontWeight: 700,
-                  py: 2,
-                  fontSize: '1.1rem',
-                  '&:hover': {
-                    backgroundColor: '#000000'
-                  },
-                  '&:disabled': {
-                    backgroundColor: '#cccccc',
-                    color: '#666666'
-                  }
-                }}
-              >
-                {isAddingToCart ? 'ADDING...' : 'ADD TO CART'}
-              </Button>
+              {isAffiliateMode ? (
+                // Affiliate Mode: Only "Buy Now" button
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  onClick={handleBuyNow}
+                  disabled={isBuyingNow}
+                  sx={{
+                    backgroundColor: '#4caf50',
+                    color: 'white',
+                    fontWeight: 700,
+                    py: 2,
+                    fontSize: '1.1rem',
+                    '&:hover': { backgroundColor: '#45a049' },
+                    '&:disabled': { backgroundColor: '#a5d6a7' }
+                  }}
+                >
+                  {isBuyingNow ? 'PROCESSING...' : 'BUY NOW'}
+                </Button>
+              ) : isEcommerceMode ? (
+                // E-commerce Mode: Only "Add to Cart" button
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  onClick={handleAddToCart}
+                  disabled={isAddingToCart}
+                  sx={{
+                    backgroundColor: '#333333',
+                    color: 'white',
+                    fontWeight: 700,
+                    py: 2,
+                    fontSize: '1.1rem',
+                    '&:hover': {
+                      backgroundColor: '#000000'
+                    },
+                    '&:disabled': {
+                      backgroundColor: '#cccccc',
+                      color: '#666666'
+                    }
+                  }}
+                >
+                  {isAddingToCart ? 'ADDING...' : 'ADD TO CART'}
+                </Button>
+              ) : (
+                // Hybrid Mode: Both buttons
+                <>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    onClick={handleAddToCart}
+                    disabled={isAddingToCart}
+                    sx={{
+                      backgroundColor: '#333333',
+                      color: 'white',
+                      fontWeight: 700,
+                      py: 2,
+                      fontSize: '1.1rem',
+                      '&:hover': {
+                        backgroundColor: '#000000'
+                      },
+                      '&:disabled': {
+                        backgroundColor: '#cccccc',
+                        color: '#666666'
+                      }
+                    }}
+                  >
+                    {isAddingToCart ? 'ADDING...' : 'ADD TO CART'}
+                  </Button>
 
-              {/* Buy Now Button - Red */}
-              <Button
-                variant="contained"
-                size="large"
-                fullWidth
-                onClick={handleBuyNow}
-                disabled={isBuyingNow}
-                sx={{
-                  backgroundColor: '#dc2626',
-                  color: 'white',
-                  fontWeight: 700,
-                  py: 2,
-                  fontSize: '1.1rem',
-                  '&:hover': { backgroundColor: '#b91c1c' },
-                  '&:disabled': { backgroundColor: '#f87171' }
-                }}
-              >
-                {isBuyingNow ? 'PROCESSING...' : 'BUY IT NOW'}
-              </Button>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    onClick={handleBuyNow}
+                    disabled={isBuyingNow}
+                    sx={{
+                      backgroundColor: '#dc2626',
+                      color: 'white',
+                      fontWeight: 700,
+                      py: 2,
+                      fontSize: '1.1rem',
+                      '&:hover': { backgroundColor: '#b91c1c' },
+                      '&:disabled': { backgroundColor: '#f87171' }
+                    }}
+                  >
+                    {isBuyingNow ? 'PROCESSING...' : 'BUY IT NOW'}
+                  </Button>
+                </>
+              )}
 
-              {/* PayPal Button - Blue */}
-              <Button
-                variant="contained"
-                size="large"
-                fullWidth
-                onClick={handlePayPal}
-                disabled={isPayPalLoading}
-                sx={{
-                  backgroundColor: '#0070ba',
-                  color: 'white',
-                  fontWeight: 700,
-                  py: 2,
-                  fontSize: '1.1rem',
-                  '&:hover': { backgroundColor: '#005ea6' },
-                  '&:disabled': { backgroundColor: '#60a5fa' }
-                }}
-              >
-                {isPayPalLoading ? 'LOADING...' : 'PayPal'}
-              </Button>
+              {/* PayPal Button - Only show in E-commerce and Hybrid modes */}
+              {!isAffiliateMode && (
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  onClick={handlePayPal}
+                  disabled={isPayPalLoading}
+                  sx={{
+                    backgroundColor: '#0070ba',
+                    color: 'white',
+                    fontWeight: 700,
+                    py: 2,
+                    fontSize: '1.1rem',
+                    '&:hover': { backgroundColor: '#005ea6' },
+                    '&:disabled': { backgroundColor: '#60a5fa' }
+                  }}
+                >
+                  {isPayPalLoading ? 'LOADING...' : 'PayPal'}
+                </Button>
+              )}
             </Stack>
 
             {/* Trust Badge - Exact text */}
