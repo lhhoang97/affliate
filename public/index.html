@@ -29,9 +29,83 @@
     -->
     <title>BestFinds</title>
     
+    <!-- Critical CSS inline for faster initial render -->
+    <style>
+      /* Critical above-the-fold styles */
+      body {
+        margin: 0;
+        font-family: 'Google Sans', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #202124;
+      }
+      
+      /* Header critical styles */
+      .MuiAppBar-root {
+        background-color: #ffffff !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+        border-bottom: 1px solid #e8eaed !important;
+      }
+      
+      /* Loading spinner */
+      .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 200px;
+        color: #ff6b35;
+      }
+      
+      /* Product grid critical styles */
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+        padding: 16px;
+      }
+      
+      /* Prevent layout shift */
+      .product-card {
+        min-height: 400px;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        border: 1px solid #e8eaed;
+        overflow: hidden;
+        transition: all 0.2s ease-in-out;
+      }
+    </style>
+    
     <!-- Critical CSS for performance -->
     <link rel="preload" href="/critical.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/critical.css"></noscript>
+    
+    <!-- Preload critical fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"></noscript>
+    
+    <!-- Preload critical images -->
+    <link rel="preload" as="image" href="/logo192.svg">
+    <link rel="preload" as="image" href="/favicon.svg">
+    
+    <!-- Resource hints for performance -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('SW registered: ', registration);
+            })
+            .catch(function(registrationError) {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
     
     <!-- Google Analytics 4 - Disabled for development -->
     <!-- Uncomment and configure when ready for production -->

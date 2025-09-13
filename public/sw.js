@@ -3,30 +3,27 @@ const CACHE_NAME = 'bestfinds-v1';
 const STATIC_CACHE = 'bestfinds-static-v1';
 const DYNAMIC_CACHE = 'bestfinds-dynamic-v1';
 
-// Files to cache immediately
-const STATIC_FILES = [
+// Assets to cache immediately
+const STATIC_ASSETS = [
   '/',
-  '/static/js/bundle.js',
   '/static/css/main.css',
-  '/manifest.json',
-  '/favicon.ico'
+  '/static/js/main.js',
+  '/favicon.svg',
+  '/logo192.svg',
+  '/manifest.json'
 ];
 
-// Install event - cache static files
+// Install event - cache static assets
 self.addEventListener('install', (event) => {
   console.log('Service Worker installing...');
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then((cache) => {
-        console.log('Caching static files');
-        return cache.addAll(STATIC_FILES);
+        console.log('Caching static assets');
+        return cache.addAll(STATIC_ASSETS);
       })
       .then(() => {
-        console.log('Static files cached successfully');
         return self.skipWaiting();
-      })
-      .catch((error) => {
-        console.error('Failed to cache static files:', error);
       })
   );
 });
@@ -35,25 +32,22 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   console.log('Service Worker activating...');
   event.waitUntil(
-    caches.keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
-              console.log('Deleting old cache:', cacheName);
-              return caches.delete(cacheName);
-            }
-          })
-        );
-      })
-      .then(() => {
-        console.log('Service Worker activated');
-        return self.clients.claim();
-      })
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => {
+      return self.clients.claim();
+    })
   );
 });
 
-// Fetch event - serve from cache or network
+// Fetch event - serve from cache with network fallback
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -68,153 +62,124 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(request)
-      .then((cachedResponse) => {
-        // Return cached version if available
-        if (cachedResponse) {
-          console.log('Serving from cache:', request.url);
-          return cachedResponse;
-        }
+  // Handle different types of requests
+  if (request.destination === 'image') {
+    // Images: Cache first, then network
+    event.respondWith(
+      caches.match(request)
+        .then((response) => {
+          if (response) {
+            return response;
+          }
+          
+          return fetch(request)
+            .then((fetchResponse) => {
+              // Don't cache if not a valid response
+              if (!fetchResponse || fetchResponse.status !== 200 || fetchResponse.type !== 'basic') {
+                return fetchResponse;
+              }
 
-        // Otherwise fetch from network
-        return fetch(request)
-          .then((response) => {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
+              // Clone the response
+              const responseToCache = fetchResponse.clone();
 
-            // Clone the response
-            const responseToCache = response.clone();
-
-            // Determine cache strategy based on request type
-            const cacheStrategy = getCacheStrategy(request);
-            
-            if (cacheStrategy.shouldCache) {
-              caches.open(cacheStrategy.cacheName)
+              caches.open(DYNAMIC_CACHE)
                 .then((cache) => {
-                  console.log('Caching response:', request.url);
                   cache.put(request, responseToCache);
                 });
-            }
 
+              return fetchResponse;
+            })
+            .catch(() => {
+              // Return offline fallback for images
+              return new Response(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="#f5f5f5"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#999">Image unavailable</text></svg>',
+                { headers: { 'Content-Type': 'image/svg+xml' } }
+              );
+            });
+        })
+    );
+  } else if (url.pathname.startsWith('/static/') || url.pathname.endsWith('.css') || url.pathname.endsWith('.js')) {
+    // Static assets: Cache first
+    event.respondWith(
+      caches.match(request)
+        .then((response) => {
+          if (response) {
             return response;
-          })
-          .catch((error) => {
-            console.error('Fetch failed:', error);
-            
-            // Return offline page for navigation requests
-            if (request.destination === 'document') {
-              return caches.match('/offline.html');
-            }
-            
-            throw error;
-          });
-      })
-  );
-});
+          }
+          
+          return fetch(request)
+            .then((fetchResponse) => {
+              if (!fetchResponse || fetchResponse.status !== 200 || fetchResponse.type !== 'basic') {
+                return fetchResponse;
+              }
 
-// Cache strategy based on request type
-function getCacheStrategy(request) {
-  const url = new URL(request.url);
-  
-  // Static assets (JS, CSS, images)
-  if (url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/)) {
-    return {
-      shouldCache: true,
-      cacheName: STATIC_CACHE,
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    };
+              const responseToCache = fetchResponse.clone();
+              caches.open(STATIC_CACHE)
+                .then((cache) => {
+                  cache.put(request, responseToCache);
+                });
+
+              return fetchResponse;
+            });
+        })
+    );
+  } else {
+    // API and other requests: Network first, then cache
+    event.respondWith(
+      fetch(request)
+        .then((fetchResponse) => {
+          // Cache successful responses
+          if (fetchResponse.status === 200) {
+            const responseToCache = fetchResponse.clone();
+            caches.open(DYNAMIC_CACHE)
+              .then((cache) => {
+                cache.put(request, responseToCache);
+              });
+          }
+          return fetchResponse;
+        })
+        .catch(() => {
+          // Fallback to cache if network fails
+          return caches.match(request);
+        })
+    );
   }
-  
-  // API requests
-  if (url.pathname.startsWith('/api/')) {
-    return {
-      shouldCache: true,
-      cacheName: DYNAMIC_CACHE,
-      maxAge: 5 * 60 * 1000 // 5 minutes
-    };
-  }
-  
-  // HTML pages
-  if (request.destination === 'document') {
-    return {
-      shouldCache: true,
-      cacheName: DYNAMIC_CACHE,
-      maxAge: 24 * 60 * 60 * 1000 // 1 day
-    };
-  }
-  
-  // Default: don't cache
-  return {
-    shouldCache: false,
-    cacheName: null,
-    maxAge: 0
-  };
-}
+});
 
 // Background sync for offline actions
 self.addEventListener('sync', (event) => {
   if (event.tag === 'background-sync') {
     console.log('Background sync triggered');
-    event.waitUntil(
-      // Handle offline actions when connection is restored
-      handleBackgroundSync()
-    );
+    // Handle offline actions when back online
   }
 });
 
-// Push notifications
+// Push notifications (for future use)
 self.addEventListener('push', (event) => {
   if (event.data) {
     const data = event.data.json();
     const options = {
       body: data.body,
-      icon: '/icon-192x192.png',
-      badge: '/badge-72x72.png',
+      icon: '/logo192.svg',
+      badge: '/favicon.svg',
       vibrate: [100, 50, 100],
       data: data.data,
-      actions: data.actions || []
+      actions: [
+        {
+          action: 'explore',
+          title: 'View',
+          icon: '/logo192.svg'
+        },
+        {
+          action: 'close',
+          title: 'Close',
+          icon: '/favicon.svg'
+        }
+      ]
     };
-    
+
     event.waitUntil(
       self.registration.showNotification(data.title, options)
     );
   }
 });
-
-// Handle background sync
-async function handleBackgroundSync() {
-  try {
-    // Get pending offline actions from IndexedDB
-    const pendingActions = await getPendingActions();
-    
-    for (const action of pendingActions) {
-      try {
-        await processOfflineAction(action);
-        await removePendingAction(action.id);
-      } catch (error) {
-        console.error('Failed to process offline action:', error);
-      }
-    }
-  } catch (error) {
-    console.error('Background sync failed:', error);
-  }
-}
-
-// Helper functions for offline actions
-async function getPendingActions() {
-  // Implementation would depend on your IndexedDB setup
-  return [];
-}
-
-async function processOfflineAction(action) {
-  // Process the offline action (e.g., sync cart, send analytics)
-  console.log('Processing offline action:', action);
-}
-
-async function removePendingAction(actionId) {
-  // Remove the processed action from IndexedDB
-  console.log('Removing processed action:', actionId);
-}

@@ -7,6 +7,7 @@ import analytics from './services/analyticsService';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import PageTracker from './components/PageTracker';
+import PerformanceMonitor from './components/PerformanceMonitor';
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
@@ -22,12 +23,6 @@ import EmailConfirmationPage from './pages/EmailConfirmationPage';
 import EmailSentPage from './pages/EmailSentPage';
 import ResendEmailPage from './pages/ResendEmailPage';
 import SmartCheckoutPage from './pages/SmartCheckoutPage';
-import AdminBusinessModePage from './pages/AdminBusinessModePage';
-import ProfilePage from './pages/ProfilePage';
-import DealsPage from './pages/DealsPage';
-import ReviewsPage from './pages/ReviewsPage';
-import OrdersPage from './pages/OrdersPage';
-import OrderDetailPage from './pages/OrderDetailPage';
 import AboutUsPage from './pages/AboutUsPage';
 import ContactPage from './pages/ContactPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
@@ -66,6 +61,14 @@ const AdminAmazonPage = React.lazy(() => import('./pages/AdminAmazonPage'));
 const ProductCardDemo = React.lazy(() => import('./pages/ProductCardDemo'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 const ServerErrorPage = React.lazy(() => import('./pages/ServerErrorPage'));
+
+// Lazy load admin and user-specific pages for better performance
+const AdminBusinessModePage = React.lazy(() => import('./pages/AdminBusinessModePage'));
+const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
+const DealsPage = React.lazy(() => import('./pages/DealsPage'));
+const ReviewsPage = React.lazy(() => import('./pages/ReviewsPage'));
+const OrdersPage = React.lazy(() => import('./pages/OrdersPage'));
+const OrderDetailPage = React.lazy(() => import('./pages/OrderDetailPage'));
 
 // Add Suspense wrapper for lazy loaded components
 const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -293,6 +296,7 @@ function App() {
                     <ProductProvider>
                     <Router>
                 <PageTracker />
+                <PerformanceMonitor />
             <Routes>
               {/* Regular layout with header/footer */}
               <Route path="/*" element={
@@ -308,8 +312,16 @@ function App() {
                       <Route path="/categories" element={<CategoriesPage />} />
                       <Route path="/category/:slug" element={<CategoryDetailPage />} />
               
-                      <Route path="/deals" element={<DealsPage />} />
-                      <Route path="/reviews" element={<ReviewsPage />} />
+                      <Route path="/deals" element={
+                        <Suspense fallback={<div style={{padding: '20px', textAlign: 'center'}}>Loading deals...</div>}>
+                          <DealsPage />
+                        </Suspense>
+                      } />
+                      <Route path="/reviews" element={
+                        <Suspense fallback={<div style={{padding: '20px', textAlign: 'center'}}>Loading reviews...</div>}>
+                          <ReviewsPage />
+                        </Suspense>
+                      } />
                       <Route path="/about" element={<AboutUsPage />} />
                       <Route path="/contact" element={<ContactPage />} />
                       <Route path="/privacy" element={<PrivacyPolicyPage />} />
@@ -335,17 +347,23 @@ function App() {
                                 } />
                                 <Route path="/profile" element={
                         <ProtectedRoute>
-                          <ProfilePage />
+                          <Suspense fallback={<div style={{padding: '20px', textAlign: 'center'}}>Loading profile...</div>}>
+                            <ProfilePage />
+                          </Suspense>
                         </ProtectedRoute>
                       } />
                       <Route path="/orders" element={
                         <ProtectedRoute>
-                          <OrdersPage />
+                          <Suspense fallback={<div style={{padding: '20px', textAlign: 'center'}}>Loading orders...</div>}>
+                            <OrdersPage />
+                          </Suspense>
                         </ProtectedRoute>
                       } />
                       <Route path="/orders/:orderId" element={
                         <ProtectedRoute>
-                          <OrderDetailPage />
+                          <Suspense fallback={<div style={{padding: '20px', textAlign: 'center'}}>Loading order details...</div>}>
+                            <OrderDetailPage />
+                          </Suspense>
                         </ProtectedRoute>
                       } />
                       

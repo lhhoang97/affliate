@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Box, Skeleton } from '@mui/material';
+import { useImageOptimization } from '../hooks/useImageOptimization';
 
 interface OptimizedImageProps {
   src: string;
@@ -8,6 +9,8 @@ interface OptimizedImageProps {
   height?: string | number;
   style?: React.CSSProperties;
   className?: string;
+  loading?: 'lazy' | 'eager';
+  webpSrc?: string; // Optional WebP source
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({
@@ -16,32 +19,16 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   width,
   height,
   style,
-  className
+  className,
+  loading = 'lazy',
+  webpSrc
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  const [imageSrc, setImageSrc] = useState<string>('');
-
-  useEffect(() => {
-    setIsLoading(true);
-    setHasError(false);
-
-    const img = new Image();
-    img.onload = () => {
-      setImageSrc(src);
-      setIsLoading(false);
-    };
-    img.onerror = () => {
-      setHasError(true);
-      setIsLoading(false);
-    };
-    img.src = src;
-
-    return () => {
-      img.onload = null;
-      img.onerror = null;
-    };
-  }, [src]);
+  const { src: imageSrc, isLoading, hasError, supportsWebP } = useImageOptimization({
+    webpSrc,
+    fallbackSrc: src,
+    lazy: loading === 'lazy',
+    priority: loading === 'eager'
+  });
 
   if (isLoading) {
     return (
@@ -92,7 +79,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         ...style
       }}
       className={className}
-      loading="lazy"
+      loading={loading}
       decoding="async"
       fetchPriority="low"
     />

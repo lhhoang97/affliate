@@ -1,22 +1,18 @@
 import React, { useEffect } from 'react';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  Chip,
-  IconButton,
-  Avatar,
-  Button
-} from '@mui/material';
-import {
-  Favorite,
-  FavoriteBorder,
-  Share,
-  ChatBubbleOutline,
-  Fullscreen,
-  Person
-} from '@mui/icons-material';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import Favorite from '@mui/icons-material/Favorite';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import Share from '@mui/icons-material/Share';
+import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
+import Fullscreen from '@mui/icons-material/Fullscreen';
+import Person from '@mui/icons-material/Person';
 import SmartLink from './SmartLink';
 import OptimizedImage from './OptimizedImage';
 import AddToCartButton from './AddToCartButton';

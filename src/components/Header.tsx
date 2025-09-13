@@ -1,49 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Box,
-  Drawer,
-  Badge,
-  Menu,
-  MenuItem,
-  Avatar,
-  Divider,
-  Collapse,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText
-} from '@mui/material';
-import {
-  Menu as MenuIcon,
-  AccountCircle,
-  Favorite,
-  Login,
-  PersonAdd,
-  ExpandLess,
-  ExpandMore,
-  Inventory,
-  LocalOffer,
-  Whatshot
-} from '@mui/icons-material';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import Badge from '@mui/material/Badge';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Avatar from '@mui/material/Avatar';
+import Divider from '@mui/material/Divider';
+import Collapse from '@mui/material/Collapse';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MenuIcon from '@mui/icons-material/Menu';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import Favorite from '@mui/icons-material/Favorite';
+import Login from '@mui/icons-material/Login';
+import PersonAdd from '@mui/icons-material/PersonAdd';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Inventory from '@mui/icons-material/Inventory';
+import LocalOffer from '@mui/icons-material/LocalOffer';
+import Whatshot from '@mui/icons-material/Whatshot';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import analytics from '../services/analyticsService';
 import { useAuth } from '../contexts/AuthContext';
-import { useCart } from '../contexts/CartContext';
 import { useSimpleCart } from '../contexts/SimpleCartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useProducts } from '../contexts/ProductContext';
-import { useCartSidebar } from '../contexts/CartSidebarContext';
 import { useBusinessMode } from '../contexts/BusinessModeContext';
-import CartSidebar from './CartSidebar';
 import SimpleCartSidebar from './SimpleCartSidebar';
 import SearchBarSimple from './SearchBarSimple';
 import Logo from './Logo';
-import CategoryNavigation from './CategoryNavigation';
-import { categories, featuredCategories, newCategories } from '../data/categories';
 import { menuService, MenuCategory } from '../services/menuService';
 import { couponService, CouponRetailer } from '../services/couponService';
 import { dealService, DealCategory } from '../services/dealService';
@@ -53,8 +44,7 @@ const Header: React.FC = () => {
   const { items } = useSimpleCart();
   const { wishlistItemCount } = useWishlist();
   const { products } = useProducts();
-  const { isOpen: isCartOpen, openCart, closeCart } = useCartSidebar();
-  const { mode, setMode, isAffiliateMode, isEcommerceMode, isHybridMode } = useBusinessMode();
+  const { mode, setMode } = useBusinessMode();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
@@ -1221,7 +1211,7 @@ const Header: React.FC = () => {
       )}
 
       {/* Cart Sidebar */}
-      <SimpleCartSidebar open={isCartOpen} onClose={closeCart} />
+      <SimpleCartSidebar open={false} onClose={() => {}} />
     </>
   );
 };

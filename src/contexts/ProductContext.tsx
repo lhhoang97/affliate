@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from 'react';
 import { Product } from '../types';
 import { getAllProducts, updateProduct, createProduct, deleteProduct } from '../services/productService';
 
@@ -73,9 +73,17 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       updatedAt: new Date().toISOString()
     }
   ]);
+  
+  // Cache for database queries
+  const [queryCache, setQueryCache] = useState<Map<string, { data: Product[], timestamp: number }>>(new Map());
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+  
   const [loading, setLoading] = useState(false); // Start with false
   const [error, setError] = useState<string | null>(null);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+  
+  // Use ref to prevent multiple initializations
+  const isInitialized = useRef(false);
 
   const loadProducts = useCallback(async (showLoading: boolean = true, useHomepageOptimization: boolean = true) => {
     console.log('ProductContext - loadProducts called with:', { showLoading, useHomepageOptimization, isLoadingProducts });
@@ -83,6 +91,19 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     // Prevent multiple simultaneous calls
     if (isLoadingProducts) {
       console.log('ProductContext - Already loading products, skipping...');
+      return;
+    }
+    
+    // Check cache first
+    const cacheKey = 'all-products';
+    const cachedData = queryCache.get(cacheKey);
+    const now = Date.now();
+    
+    if (cachedData && (now - cachedData.timestamp) < CACHE_DURATION) {
+      console.log('ProductContext - Using cached products:', cachedData.data.length);
+      setProducts(cachedData.data);
+      setLoading(false);
+      setIsLoadingProducts(false);
       return;
     }
     
@@ -96,6 +117,9 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       console.log('ProductContext - Calling getAllProducts...');
       const allProducts = await getAllProducts();
       console.log('ProductContext - getAllProducts returned:', allProducts.length, 'products');
+      
+      // Cache the results
+      setQueryCache(prev => new Map(prev).set(cacheKey, { data: allProducts, timestamp: now }));
       
       if (allProducts.length > 0) {
         console.log('ProductContext - Setting products from database:', allProducts.length);
@@ -161,7 +185,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
         setLoading(false);
       }
     }
-  }, []); // Empty dependency array to prevent infinite loop
+  }, [isLoadingProducts]); // Include isLoadingProducts dependency
 
   const refreshProducts = async () => {
     console.log('ProductContext - Refreshing all products...');
@@ -213,6 +237,13 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
   };
 
   useEffect(() => {
+    // Prevent multiple initializations using ref
+    if (isInitialized.current) {
+      console.log('ProductContext - Already initialized, skipping...');
+      return;
+    }
+    
+    isInitialized.current = true;
     console.log('ProductContext - useEffect: Starting initial load...');
     loadProducts(true, true);
     
@@ -224,7 +255,8 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     }, 3000); // 3 second timeout - faster response
     
     return () => clearTimeout(timeoutId);
-  }, []); // Empty dependency array to run only once on mount
+  }, []); // Empty dependency array - useRef prevents multiple calls
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 
   // Auto-refresh disabled to prevent infinite loops
   // useEffect(() => {

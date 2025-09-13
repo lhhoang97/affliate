@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ProductCarousel from '../components/ProductCarousel';
-import LazyProductGrid from '../components/LazyProductGrid';
+import SSRWrapper from '../components/SSRWrapper';
 import { useProducts } from '../contexts/ProductContext';
 import { Product } from '../types';
 import { getDealConfig } from '../services/dealConfigService';
