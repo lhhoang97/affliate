@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { 
   Order
 } from '../types';
@@ -47,7 +47,7 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
   const isAuthenticated = auth?.isAuthenticated || false;
 
   // Load user orders
-  const loadUserOrders = async () => {
+  const loadUserOrders = useCallback(async () => {
     if (!isAuthenticated) {
       setOrders([]);
       return;
@@ -65,7 +65,7 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isAuthenticated]);
 
   // Load specific order by ID
   const loadOrderById = async (orderId: string) => {
@@ -113,7 +113,7 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
   };
 
   // Load order statistics
-  const loadOrderStatistics = async () => {
+  const loadOrderStatistics = useCallback(async () => {
     if (!isAuthenticated) {
       setOrderStatistics(null);
       return;
@@ -127,7 +127,7 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
       console.error('Error loading order statistics:', err);
       setError(err instanceof Error ? err.message : 'Failed to load order statistics');
     }
-  };
+  }, [isAuthenticated]);
 
   // Refresh all orders data
   const refreshOrders = async () => {
@@ -147,7 +147,7 @@ export const OrdersProvider: React.FC<OrdersProviderProps> = ({ children }) => {
       setCurrentOrder(null);
       setOrderStatistics(null);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, loadUserOrders, loadOrderStatistics]);
 
   const value: OrdersContextType = {
     orders,

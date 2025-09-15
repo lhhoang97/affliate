@@ -271,7 +271,7 @@ class AffiliateService {
     try {
       // This would aggregate data from affiliate_clicks table
       // For now, return mock data
-      return {
+      const analytics = {
         totalClicks: 0,
         totalConversions: 0,
         conversionRate: 0,
@@ -279,6 +279,7 @@ class AffiliateService {
         topProducts: [],
         topRetailers: []
       };
+      return analytics;
     } catch (error) {
       console.error('Error fetching affiliate analytics:', error);
       return {

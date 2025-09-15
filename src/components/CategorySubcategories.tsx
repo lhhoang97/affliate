@@ -6,14 +6,10 @@ import {
   Grid,
   Card,
   CardContent,
-  CardMedia,
   IconButton
 } from '@mui/material';
 import {
-  ArrowForward,
-  TrendingUp,
-  NewReleases,
-  Star
+  ArrowForward
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { categorySubcategories } from '../data/categories';

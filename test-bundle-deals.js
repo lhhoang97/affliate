@@ -1,7 +1,10 @@
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
-const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_ANON_KEY);
+const supabaseUrl = 'https://rlgjpejeulxvfatwvniq.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsZ2pwZWpldWx4dmZhdHd2bmlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3MDk0ODAsImV4cCI6MjA3MTI4NTQ4MH0.2d3RgtqDg-3PSuK85smraSgo7Zt2WYymQzRa8bgNltg';
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function testBundleDeals() {
   try {
@@ -26,7 +29,7 @@ async function testBundleDeals() {
     console.log('\n2. Fetching products...');
     const { data: products, error: productsError } = await supabase
       .from('products')
-      .select('id, title, price')
+      .select('id, name, price')
       .limit(5);
 
     if (productsError) {
@@ -36,7 +39,7 @@ async function testBundleDeals() {
 
     console.log(`✅ Found ${products.length} products`);
     products.forEach(product => {
-      console.log(`   - ${product.title}: $${product.price}`);
+      console.log(`   - ${product.name}: $${product.price}`);
     });
 
     // 3. Test creating bundle deals
@@ -77,7 +80,7 @@ async function testBundleDeals() {
         *,
         products (
           id,
-          title,
+          name,
           price
         )
       `)
@@ -89,7 +92,7 @@ async function testBundleDeals() {
       console.log(`✅ Found ${bundleDeals.length} active bundle deals`);
       bundleDeals.forEach(deal => {
         const product = deal.products;
-        console.log(`   - ${product?.title}: ${deal.bundle_type} - ${deal.discount_percentage}% off`);
+        console.log(`   - ${product?.name}: ${deal.bundle_type} - ${deal.discount_percentage}% off`);
       });
     }
 
@@ -99,7 +102,7 @@ async function testBundleDeals() {
       const product = products[0];
       const productDeals = bundleDeals.filter(deal => deal.product_id === product.id);
       
-      console.log(`Testing with product: ${product.title} ($${product.price})`);
+      console.log(`Testing with product: ${product.name} ($${product.price})`);
       
       productDeals.forEach(deal => {
         const requiredQuantity = parseInt(deal.bundle_type.replace('get', ''));

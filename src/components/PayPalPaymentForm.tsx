@@ -11,7 +11,6 @@ import {
 import {
   AttachMoney,
   Security,
-  CheckCircle,
   Error as ErrorIcon
 } from '@mui/icons-material';
 

@@ -103,3 +103,4 @@ INSERT INTO public.payment_settings (
   'USD'
 ) ON CONFLICT DO NOTHING;
 
+

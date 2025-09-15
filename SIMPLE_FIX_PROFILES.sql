@@ -8,3 +8,4 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS last_login TIMESTAMP WITH TIME ZON
 -- Test
 SELECT 'Profiles table columns added' as result;
 
+

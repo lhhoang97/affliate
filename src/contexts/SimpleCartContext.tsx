@@ -337,7 +337,7 @@ export const SimpleCartProvider: React.FC<{ children: ReactNode }> = ({ children
   // Load cart on mount - only once
   useEffect(() => {
     loadCart();
-  }, []); // Empty dependency array - only run once on mount
+  }, [loadCart]); // Include loadCart dependency
 
   // Sync totals with items when items change (optimized with useMemo)
   const calculatedTotals = React.useMemo(() => {

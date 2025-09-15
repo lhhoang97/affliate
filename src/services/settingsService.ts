@@ -254,10 +254,11 @@ export async function testEmailConnection(): Promise<{ success: boolean; message
   try {
     // This would typically send a test email
     // For now, we'll just simulate a test
-    return {
+    const result = {
       success: true,
       message: 'Email connection test successful'
     };
+    return result;
   } catch (err) {
     console.error('Email test error:', err);
     return {

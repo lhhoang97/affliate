@@ -185,7 +185,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
         setLoading(false);
       }
     }
-  }, [isLoadingProducts]); // Include isLoadingProducts dependency
+  }, [isLoadingProducts, CACHE_DURATION, queryCache]); // Include all dependencies
 
   const refreshProducts = async () => {
     console.log('ProductContext - Refreshing all products...');
@@ -255,8 +255,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     }, 3000); // 3 second timeout - faster response
     
     return () => clearTimeout(timeoutId);
-  }, []); // Empty dependency array - useRef prevents multiple calls
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadProducts]); // Include loadProducts dependency
 
   // Auto-refresh disabled to prevent infinite loops
   // useEffect(() => {

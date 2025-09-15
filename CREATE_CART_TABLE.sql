@@ -27,3 +27,4 @@ CREATE TRIGGER update_cart_items_updated_at
 -- Test
 SELECT 'Cart items table created successfully' as result;
 
+

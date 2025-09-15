@@ -16,12 +16,9 @@ import {
   Stack,
   Alert,
   LinearProgress,
-  Badge,
-  AppBar,
-  Toolbar
+  Badge
 } from '@mui/material';
 import {
-  ShoppingCart,
   Favorite,
   FavoriteBorder,
   Share,
@@ -42,9 +39,6 @@ import {
   Remove,
   ThumbUp,
   ThumbUpOutlined,
-  Home,
-  TrackChanges,
-  ContactMail
 } from '@mui/icons-material';
 
 import { useCart } from '../contexts/CartContext';
@@ -325,47 +319,6 @@ const ProductDetailPage: React.FC = () => {
 
   return (
     <Box sx={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
-      {/* Header - Exactly like Louistores */}
-      <AppBar 
-        position="static" 
-      sx={{ 
-          backgroundColor: '#ffffff', 
-          color: '#000000',
-          boxShadow: 'none',
-          borderBottom: '1px solid #e5e7eb'
-        }}
-      >
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          {/* Logo */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box sx={{ display: 'flex', gap: 0.5 }}>
-              <Box sx={{ width: 20, height: 20, backgroundColor: '#ff69b4', borderRadius: '50%' }} />
-              <Box sx={{ width: 20, height: 20, backgroundColor: '#00bfff', borderRadius: '50%' }} />
-            </Box>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#000000' }}>
-              Louistores ONLINE STORE
-            </Typography>
-          </Box>
-
-          {/* Navigation Links */}
-          <Box sx={{ display: 'flex', gap: 3 }}>
-            <Link to="/" style={{ textDecoration: 'none', color: '#000000' }}>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>Home</Typography>
-            </Link>
-            <Link to="/orders" style={{ textDecoration: 'none', color: '#000000' }}>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>Track My Order</Typography>
-          </Link>
-            <Link to="/contact" style={{ textDecoration: 'none', color: '#000000' }}>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>Contact Us</Typography>
-          </Link>
-      </Box>
-
-          {/* Cart Icon */}
-          <IconButton sx={{ color: '#000000' }}>
-            <ShoppingCart />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
 
       <Container maxWidth="lg" sx={{ py: 2 }}>
         <Grid container spacing={4}>

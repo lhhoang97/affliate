@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { 
   Profile, 
   getCurrentProfile, 
@@ -41,7 +41,7 @@ export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) =>
   const currentUser = auth?.user;
 
   // Load user profile
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     if (!isAuthenticated || !currentUser) {
       setProfile(null);
       return;
@@ -59,7 +59,7 @@ export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) =>
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isAuthenticated, currentUser]);
 
   // Update user profile
   const updateUserProfile = async (profileData: Partial<Profile>) => {
@@ -79,7 +79,7 @@ export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) =>
   };
 
   // Load user statistics
-  const loadUserStatistics = async () => {
+  const loadUserStatistics = useCallback(async () => {
     if (!isAuthenticated || !currentUser) {
       setUserStatistics(null);
       return;
@@ -93,7 +93,7 @@ export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) =>
       console.error('Error loading user statistics:', err);
       setError(err instanceof Error ? err.message : 'Failed to load user statistics');
     }
-  };
+  }, [isAuthenticated, currentUser]);
 
   // Refresh all profile data
   const refreshProfile = async () => {
@@ -112,7 +112,7 @@ export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) =>
       setProfile(null);
       setUserStatistics(null);
     }
-  }, [isAuthenticated, currentUser]);
+  }, [isAuthenticated, currentUser, loadProfile, loadUserStatistics]);
 
   const value: ProfileContextType = {
     profile,

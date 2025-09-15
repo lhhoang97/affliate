@@ -40,26 +40,24 @@ import {
   ShoppingBag as AmazonIcon,
   TrendingUp as StatsIcon
 } from '@mui/icons-material';
-import amazonService from '../services/amazonService';
+import { amazonService } from '../services/amazonService';
 import { supabase } from '../utils/supabaseClient';
 
 interface AmazonProduct {
-  id?: number;
-  name: string;
+  id?: string;
+  title: string;
   price: number;
-  originalPrice?: number;
-  imageUrl: string;
+  original_price?: number;
+  image_url: string;
   description: string;
   category: string;
   brand: string;
   rating?: number;
-  reviewCount?: number;
-  externalUrl: string;
-  affiliateLink: string;
-  retailer: string;
-  source: string;
+  review_count?: number;
+  affiliate_url: string;
+  retailer_id: string;
   asin: string;
-  createdAt?: string;
+  created_at?: string;
 }
 
 interface ImportStats {
@@ -92,15 +90,15 @@ const AdminAmazonPage: React.FC = () => {
   const [alert, setAlert] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; message: string } | null>(null);
 
   // Categories
-  const categories = amazonService.getAvailableCategories();
+  const categories = ['Electronics', 'Clothing', 'Home & Garden', 'Sports', 'Books', 'Toys'];
 
   const loadAmazonProducts = useCallback(async () => {
     setIsLoadingProducts(true);
     try {
       const { data, error } = await supabase
-        .from('products')
+        .from('affiliate_products')
         .select('*')
-        .eq('source', 'amazon')
+        .not('asin', 'is', null)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -132,13 +130,13 @@ const AdminAmazonPage: React.FC = () => {
     setSearchResults([]);
     
     try {
-      const results = await amazonService.searchProducts(searchKeywords, selectedCategory, maxResults);
-      setSearchResults(results);
+      const results = await amazonService.searchProducts(searchKeywords);
+      setSearchResults(results.products);
       
-      if (results.length === 0) {
+      if (results.products.length === 0) {
         showAlert('info', 'No products found for your search');
       } else {
-        showAlert('success', `Found ${results.length} products on Amazon`);
+        showAlert('success', `Found ${results.products.length} products on Amazon`);
       }
     } catch (error) {
       console.error('Search error:', error);
@@ -164,9 +162,8 @@ const AdminAmazonPage: React.FC = () => {
         setImportProgress(prev => Math.min(prev + 10, 90));
       }, 200);
 
-      const importedCount = await amazonService.importProductsToSupabase(
+      const importedCount = await amazonService.bulkImportProducts(
         searchKeywords, 
-        selectedCategory, 
         maxResults
       );
 
@@ -198,12 +195,12 @@ const AdminAmazonPage: React.FC = () => {
     // TODO: Implement product sync functionality
   };
 
-  const handleDeleteProduct = async (productId: number) => {
+  const handleDeleteProduct = async (productId: string) => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
 
     try {
       const { error } = await supabase
-        .from('products')
+        .from('affiliate_products')
         .delete()
         .eq('id', productId);
 
@@ -368,12 +365,12 @@ const AdminAmazonPage: React.FC = () => {
           
           <Grid container spacing={2}>
             {searchResults.map((product, index) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={product.ASIN || index}>
+              <Grid item xs={12} sm={6} md={4} lg={3} key={product.asin || index}>
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <CardMedia
                     component="img"
                     height="200"
-                    image={product.images?.primary?.medium?.URL || '/placeholder-image.jpg'}
+                    image={product.imageUrl || '/placeholder-image.jpg'}
                     alt={product.title}
                     sx={{ objectFit: 'contain' }}
                   />
@@ -382,17 +379,15 @@ const AdminAmazonPage: React.FC = () => {
                       {product.title}
                     </Typography>
                     <Typography variant="h6" color="primary">
-                      {product.price?.displayAmount || 'N/A'}
+                      ${product.price}
                     </Typography>
                     <Box display="flex" alignItems="center" gap={1} mt={1}>
                       <Chip label={product.brand || 'Unknown'} size="small" />
-                      {product.customerReviews && (
-                        <Chip 
-                          label={`${product.customerReviews.starRating?.value || 0}★`} 
-                          size="small" 
-                          color="warning" 
-                        />
-                      )}
+                      <Chip 
+                        label={`${product.rating}★`} 
+                        size="small" 
+                        color="warning" 
+                      />
                     </Box>
                   </CardContent>
                 </Card>
@@ -460,13 +455,13 @@ const AdminAmazonPage: React.FC = () => {
                     <TableCell>
                       <Box display="flex" alignItems="center" gap={2}>
                         <img 
-                          src={product.imageUrl} 
-                          alt={product.name}
+                          src={product.image_url} 
+                          alt={product.title}
                           style={{ width: 50, height: 50, objectFit: 'contain' }}
                         />
                         <Box>
                           <Typography variant="body2" noWrap sx={{ maxWidth: 200 }}>
-                            {product.name}
+                            {product.title}
                           </Typography>
                           <Chip label="Amazon" size="small" color="warning" />
                         </Box>
@@ -482,7 +477,7 @@ const AdminAmazonPage: React.FC = () => {
                             {product.rating}★
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            ({product.reviewCount})
+                            ({product.review_count})
                           </Typography>
                         </Box>
                       ) : (
@@ -491,7 +486,7 @@ const AdminAmazonPage: React.FC = () => {
                     </TableCell>
                     <TableCell>{product.asin}</TableCell>
                     <TableCell>
-                      {product.createdAt ? new Date(product.createdAt).toLocaleDateString() : 'N/A'}
+                      {product.created_at ? new Date(product.created_at).toLocaleDateString() : 'N/A'}
                     </TableCell>
                     <TableCell>
                       <Box display="flex" gap={1}>
@@ -538,14 +533,14 @@ const AdminAmazonPage: React.FC = () => {
             <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
                 <img 
-                  src={selectedProduct.imageUrl} 
-                  alt={selectedProduct.name}
+                  src={selectedProduct.image_url} 
+                  alt={selectedProduct.title}
                   style={{ width: '100%', maxHeight: 300, objectFit: 'contain' }}
                 />
               </Grid>
               <Grid item xs={12} md={8}>
                 <Typography variant="h6" gutterBottom>
-                  {selectedProduct.name}
+                  {selectedProduct.title}
                 </Typography>
                 <Typography variant="h5" color="primary" gutterBottom>
                   {formatPrice(selectedProduct.price)}
@@ -561,7 +556,7 @@ const AdminAmazonPage: React.FC = () => {
                 <Box display="flex" gap={1}>
                   <Button
                     variant="contained"
-                    href={selectedProduct.externalUrl}
+                    href={`https://amazon.com/dp/${selectedProduct.asin}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -569,7 +564,7 @@ const AdminAmazonPage: React.FC = () => {
                   </Button>
                   <Button
                     variant="outlined"
-                    href={selectedProduct.affiliateLink}
+                    href={selectedProduct.affiliate_url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

@@ -23,7 +23,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   loading = 'lazy',
   webpSrc
 }) => {
-  const { src: imageSrc, isLoading, hasError, supportsWebP } = useImageOptimization({
+  const { src: imageSrc, isLoading, hasError } = useImageOptimization({
     webpSrc,
     fallbackSrc: src,
     lazy: loading === 'lazy',

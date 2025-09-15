@@ -79,7 +79,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ products, title, subt
   const isTablet = useMediaQuery(theme.breakpoints.between('md', 'lg'));
   
   // State to force re-render on window resize
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
   
   useEffect(() => {
     const handleResize = () => {

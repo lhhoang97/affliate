@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Card,
   CardContent,
@@ -22,7 +22,7 @@ import {
 import { EmailService } from '../services/emailService';
 import { useAuth } from '../contexts/AuthContext';
 
-interface EmailPreferences {
+interface EmailPreferencesData {
   welcomeEmails: boolean;
   orderEmails: boolean;
   priceAlerts: boolean;
@@ -31,7 +31,7 @@ interface EmailPreferences {
 
 const EmailPreferences: React.FC = () => {
   const { user } = useAuth();
-  const [preferences, setPreferences] = useState<EmailPreferences>({
+  const [preferences, setPreferences] = useState<EmailPreferencesData>({
     welcomeEmails: true,
     orderEmails: true,
     priceAlerts: true,
@@ -41,7 +41,7 @@ const EmailPreferences: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const loadPreferences = async () => {
+  const loadPreferences = useCallback(async () => {
     if (!user?.id) return;
     
     setLoading(true);
@@ -54,9 +54,9 @@ const EmailPreferences: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
 
-  const handlePreferenceChange = (key: keyof EmailPreferences, value: boolean) => {
+  const handlePreferenceChange = (key: keyof EmailPreferencesData, value: boolean) => {
     setPreferences(prev => ({
       ...prev,
       [key]: value
@@ -90,7 +90,7 @@ const EmailPreferences: React.FC = () => {
     return enabled ? <NotificationsActive color="primary" /> : <NotificationsOff color="disabled" />;
   };
 
-  const getPreferenceDescription = (key: keyof EmailPreferences) => {
+  const getPreferenceDescription = (key: keyof EmailPreferencesData) => {
     const descriptions = {
       welcomeEmails: 'Nhận email chào mừng khi đăng ký tài khoản mới',
       orderEmails: 'Nhận email xác nhận và cập nhật trạng thái đơn hàng',
@@ -100,7 +100,7 @@ const EmailPreferences: React.FC = () => {
     return descriptions[key];
   };
 
-  const getPreferenceLabel = (key: keyof EmailPreferences) => {
+  const getPreferenceLabel = (key: keyof EmailPreferencesData) => {
     const labels = {
       welcomeEmails: 'Email chào mừng',
       orderEmails: 'Email đơn hàng',
@@ -154,7 +154,7 @@ const EmailPreferences: React.FC = () => {
                 control={
                   <Switch
                     checked={value}
-                    onChange={(e) => handlePreferenceChange(key as keyof EmailPreferences, e.target.checked)}
+                    onChange={(e) => handlePreferenceChange(key as keyof EmailPreferencesData, e.target.checked)}
                     disabled={loading || saving}
                   />
                 }
@@ -163,10 +163,10 @@ const EmailPreferences: React.FC = () => {
                     {getPreferenceIcon(value)}
                     <Box>
                       <Typography variant="body1" fontWeight="medium">
-                        {getPreferenceLabel(key as keyof EmailPreferences)}
+                        {getPreferenceLabel(key as keyof EmailPreferencesData)}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        {getPreferenceDescription(key as keyof EmailPreferences)}
+                        {getPreferenceDescription(key as keyof EmailPreferencesData)}
                       </Typography>
                     </Box>
                   </Box>

@@ -6,8 +6,7 @@ import {
   Zoom
 } from '@mui/material';
 import {
-  ShoppingCart,
-  ShoppingCartOutlined
+  ShoppingCart
 } from '@mui/icons-material';
 import { useCart } from '../contexts/CartContext';
 import { useCartSidebar } from '../contexts/CartSidebarContext';

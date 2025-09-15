@@ -16,3 +16,4 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS notes TEXT;
 -- Test
 SELECT 'Orders table columns added successfully' as result;
 
+

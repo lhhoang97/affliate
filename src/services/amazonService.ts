@@ -1,365 +1,217 @@
 import { createClient } from '@supabase/supabase-js';
-// Browser-compatible crypto alternative
-const crypto = {
-  createHmac: (algorithm: string, key: string | Buffer) => {
-    return {
-      update: (data: string) => ({
-        digest: (encoding?: string): string => {
-          // Simple hash implementation for demo
-          const str = (typeof key === 'string' ? key : key.toString()) + data;
-          let hash = 0;
-          for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32-bit integer
-          }
-          return Math.abs(hash).toString(16);
-        }
-      })
-    };
-  },
-  createHash: (algorithm: string) => ({
-    update: (data: string) => ({
-      digest: (encoding: string): string => {
-        // Simple hash implementation
-        let hash = 0;
-        for (let i = 0; i < data.length; i++) {
-          const char = data.charCodeAt(i);
-          hash = ((hash << 5) - hash) + char;
-          hash = hash & hash;
-        }
-        return Math.abs(hash).toString(16);
-      }
-    })
-  })
-};
 
-// Amazon PA-API 5.0 Configuration
-const AMAZON_CONFIG = {
-  accessKey: process.env.REACT_APP_AMAZON_ACCESS_KEY || '',
-  secretKey: process.env.REACT_APP_AMAZON_SECRET_KEY || '',
-  associateTag: process.env.REACT_APP_AMAZON_ASSOCIATE_TAG || '',
-  region: 'us-east-1',
-  host: 'webservices.amazon.com',
-  endpoint: '/paapi5/searchitems'
-};
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL!,
+  process.env.REACT_APP_SUPABASE_ANON_KEY!
+);
 
-// Initialize Supabase client
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || '';
-const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-interface AmazonProduct {
-  ASIN: string;
+export interface AmazonProduct {
+  asin: string;
   title: string;
-  price?: {
-    displayAmount: string;
-    amount: number;
-    currency: string;
-  };
-  images?: {
-    primary: {
-      large: { URL: string };
-      medium: { URL: string };
-    };
-  };
-  detailPageURL: string;
-  features?: string[];
-  brand?: string;
-  customerReviews?: {
-    count: number;
-    starRating: {
-      value: number;
-    };
-  };
-}
-
-interface NormalizedProduct {
-  name: string;
   price: number;
   originalPrice?: number;
   imageUrl: string;
   description: string;
-  category: string;
   brand: string;
-  rating?: number;
-  reviewCount?: number;
-  externalUrl: string;
-  affiliateLink: string;
-  retailer: string;
-  source: 'amazon';
-  asin: string;
+  category: string;
+  rating: number;
+  reviewCount: number;
+  availability: string;
+  features: string[];
+  specifications: Record<string, string>;
+}
+
+export interface AmazonSearchResult {
+  products: AmazonProduct[];
+  totalResults: number;
+  page: number;
 }
 
 class AmazonService {
-  
-  /**
-   * Generate AWS Signature V4 for PA-API requests
-   */
-  private generateSignature(stringToSign: string, dateStamp: string): string {
-    const kDate = crypto.createHmac('sha256', 'AWS4' + AMAZON_CONFIG.secretKey).update(dateStamp).digest();
-    const kRegion = crypto.createHmac('sha256', kDate).update(AMAZON_CONFIG.region).digest();
-    const kService = crypto.createHmac('sha256', kRegion).update('ProductAdvertisingAPI').digest();
-    const kSigning = crypto.createHmac('sha256', kService).update('aws4_request').digest();
-    
-    return crypto.createHmac('sha256', kSigning).update(stringToSign).digest('hex');
+  private accessKey: string;
+  private secretKey: string;
+  private associateTag: string;
+  private endpoint: string = 'webservices.amazon.com';
+  private region: string = 'us-east-1';
+
+  constructor() {
+    this.accessKey = process.env.REACT_APP_AMAZON_ACCESS_KEY || '';
+    this.secretKey = process.env.REACT_APP_AMAZON_SECRET_KEY || '';
+    this.associateTag = process.env.REACT_APP_AMAZON_ASSOCIATE_TAG || '';
   }
 
-  /**
-   * Create authorization header for PA-API
-   */
-  private createAuthHeaders(payload: string): Record<string, string> {
-    const timestamp = new Date().toISOString().replace(/[:-]|\.\d{3}/g, '');
-    const dateStamp = timestamp.substring(0, 8);
-    
-    const canonicalHeaders = [
-      'content-encoding:amz-1.0',
-      'content-type:application/json; charset=utf-8',
-      `host:${AMAZON_CONFIG.host}`,
-      `x-amz-date:${timestamp}`,
-      `x-amz-target:com.amazon.paapi5.v1.ProductAdvertisingAPIv1.SearchItems`
-    ].join('\n');
-
-    const signedHeaders = 'content-encoding;content-type;host;x-amz-date;x-amz-target';
-    const payloadHash = crypto.createHash('sha256').update(payload).digest('hex');
-    
-    const canonicalRequest = [
-      'POST',
-      AMAZON_CONFIG.endpoint,
-      '',
-      canonicalHeaders + '\n',
-      signedHeaders,
-      payloadHash
-    ].join('\n');
-
-    const algorithm = 'AWS4-HMAC-SHA256';
-    const credentialScope = `${dateStamp}/${AMAZON_CONFIG.region}/ProductAdvertisingAPI/aws4_request`;
-    const stringToSign = [
-      algorithm,
-      timestamp,
-      credentialScope,
-      crypto.createHash('sha256').update(canonicalRequest).digest('hex')
-    ].join('\n');
-
-    const signature = this.generateSignature(stringToSign, dateStamp);
-    const authorization = `${algorithm} Credential=${AMAZON_CONFIG.accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
-
-    return {
-      'Authorization': authorization,
-      'Content-Encoding': 'amz-1.0',
-      'Content-Type': 'application/json; charset=utf-8',
-      'Host': AMAZON_CONFIG.host,
-      'X-Amz-Date': timestamp,
-      'X-Amz-Target': 'com.amazon.paapi5.v1.ProductAdvertisingAPIv1.SearchItems'
-    };
-  }
-
-  /**
-   * Search products on Amazon using PA-API 5.0
-   */
-  async searchProducts(keywords: string, category?: string, maxResults: number = 10): Promise<AmazonProduct[]> {
+  // Search products by keywords
+  async searchProducts(keywords: string, page: number = 1): Promise<AmazonSearchResult> {
     try {
-      const payload = {
-        Keywords: keywords,
-        Resources: [
-          'Images.Primary.Large',
-          'Images.Primary.Medium', 
-          'ItemInfo.Title',
-          'ItemInfo.Features',
-          'ItemInfo.ProductGroup',
-          'ItemInfo.Brand',
-          'Offers.Listings.Price',
-          'CustomerReviews.Count',
-          'CustomerReviews.StarRating'
-        ],
-        SearchIndex: category || 'All',
-        ItemCount: maxResults,
-        PartnerTag: AMAZON_CONFIG.associateTag,
-        PartnerType: 'Associates',
-        Marketplace: 'www.amazon.com'
+      // For now, return mock data since we need to implement AWS signature
+      // In production, this would make actual API calls to Amazon PA-API 5.0
+      
+      const mockProducts: AmazonProduct[] = [
+        {
+          asin: 'B08N5WRWNW',
+          title: 'Samsung Galaxy S21 5G',
+          price: 799.99,
+          originalPrice: 899.99,
+          imageUrl: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400',
+          description: 'Premium Android smartphone with 5G capability',
+          brand: 'Samsung',
+          category: 'Electronics > Cell Phones & Accessories',
+          rating: 4.6,
+          reviewCount: 1892,
+          availability: 'In Stock',
+          features: ['5G capability', 'Triple camera', 'Wireless charging'],
+          specifications: {
+            'Screen Size': '6.2 inches',
+            'Storage': '128GB',
+            'Color': 'Phantom Gray'
+          }
+        },
+        {
+          asin: 'B08N5WRWNW',
+          title: 'iPhone 15 Pro',
+          price: 999.99,
+          originalPrice: 1099.99,
+          imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400',
+          description: 'Latest iPhone with titanium design and A17 Pro chip',
+          brand: 'Apple',
+          category: 'Electronics > Cell Phones & Accessories',
+          rating: 4.8,
+          reviewCount: 2156,
+          availability: 'In Stock',
+          features: ['Titanium design', 'A17 Pro chip', 'USB-C'],
+          specifications: {
+            'Screen Size': '6.1 inches',
+            'Storage': '128GB',
+            'Color': 'Natural Titanium'
+          }
+        }
+      ];
+
+      return {
+        products: mockProducts,
+        totalResults: mockProducts.length,
+        page
+      };
+    } catch (error) {
+      console.error('Error searching Amazon products:', error);
+      return {
+        products: [],
+        totalResults: 0,
+        page
+      };
+    }
+  }
+
+  // Get product details by ASIN
+  async getProductByAsin(asin: string): Promise<AmazonProduct | null> {
+    try {
+      // Mock implementation - in production would call Amazon API
+      const mockProduct: AmazonProduct = {
+        asin,
+        title: 'Sample Product',
+        price: 99.99,
+        imageUrl: 'https://via.placeholder.com/400',
+        description: 'Sample product description',
+        brand: 'Sample Brand',
+        category: 'Electronics',
+        rating: 4.5,
+        reviewCount: 100,
+        availability: 'In Stock',
+        features: ['Feature 1', 'Feature 2'],
+        specifications: {
+          'Spec 1': 'Value 1',
+          'Spec 2': 'Value 2'
+        }
       };
 
-      const payloadString = JSON.stringify(payload);
-      const headers = this.createAuthHeaders(payloadString);
-
-      const response = await fetch(`https://${AMAZON_CONFIG.host}${AMAZON_CONFIG.endpoint}`, {
-        method: 'POST',
-        headers,
-        body: payloadString
-      });
-
-      if (!response.ok) {
-        throw new Error(`Amazon API Error: ${response.status} - ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.SearchResult?.Items) {
-        return data.SearchResult.Items.map((item: any) => ({
-          ASIN: item.ASIN,
-          title: item.ItemInfo?.Title?.DisplayValue || '',
-          price: item.Offers?.Listings?.[0]?.Price?.DisplayAmount ? {
-            displayAmount: item.Offers.Listings[0].Price.DisplayAmount,
-            amount: item.Offers.Listings[0].Price.Amount || 0,
-            currency: item.Offers.Listings[0].Price.Currency || 'USD'
-          } : undefined,
-          images: item.Images?.Primary ? {
-            primary: {
-              large: { URL: item.Images.Primary.Large?.URL || '' },
-              medium: { URL: item.Images.Primary.Medium?.URL || '' }
-            }
-          } : undefined,
-          detailPageURL: item.DetailPageURL || '',
-          features: item.ItemInfo?.Features?.DisplayValues || [],
-          brand: item.ItemInfo?.Brand?.DisplayValue || '',
-          customerReviews: item.CustomerReviews ? {
-            count: item.CustomerReviews.Count || 0,
-            starRating: {
-              value: item.CustomerReviews.StarRating?.Value || 0
-            }
-          } : undefined
-        }));
-      }
-
-      return [];
+      return mockProduct;
     } catch (error) {
-      console.error('Amazon API Error:', error);
-      throw error;
+      console.error('Error getting Amazon product:', error);
+      return null;
     }
   }
 
-  /**
-   * Normalize Amazon product data for Supabase
-   */
-  private normalizeAmazonProduct(amazonProduct: AmazonProduct, category: string): NormalizedProduct {
-    const affiliateLink = this.generateAffiliateLink(amazonProduct.ASIN);
-    
-    return {
-      name: amazonProduct.title,
-      price: amazonProduct.price?.amount || 0,
-      originalPrice: amazonProduct.price?.amount || 0,
-      imageUrl: amazonProduct.images?.primary?.large?.URL || amazonProduct.images?.primary?.medium?.URL || '',
-      description: amazonProduct.features?.join('\n') || '',
-      category: category,
-      brand: amazonProduct.brand || 'Amazon',
-      rating: amazonProduct.customerReviews?.starRating?.value || 0,
-      reviewCount: amazonProduct.customerReviews?.count || 0,
-      externalUrl: amazonProduct.detailPageURL,
-      affiliateLink: affiliateLink,
-      retailer: 'Amazon',
-      source: 'amazon',
-      asin: amazonProduct.ASIN
-    };
-  }
-
-  /**
-   * Generate Amazon affiliate link
-   */
-  private generateAffiliateLink(asin: string): string {
-    return `https://www.amazon.com/dp/${asin}?tag=${AMAZON_CONFIG.associateTag}`;
-  }
-
-  /**
-   * Import Amazon products to Supabase
-   */
-  async importProductsToSupabase(keywords: string, category: string = 'Electronics', maxResults: number = 20): Promise<number> {
+  // Import product to affiliate_products table
+  async importProductToAffiliate(amazonProduct: AmazonProduct): Promise<boolean> {
     try {
-      console.log(`🔍 Searching Amazon for: ${keywords} in category: ${category}`);
-      
-      const amazonProducts = await this.searchProducts(keywords, category, maxResults);
-      
-      if (amazonProducts.length === 0) {
-        console.log('❌ No products found on Amazon');
-        return 0;
-      }
+      // Get Amazon retailer ID
+      const { data: amazonRetailer } = await supabase
+        .from('affiliate_retailers')
+        .select('id')
+        .eq('name', 'amazon')
+        .single();
 
-      console.log(`✅ Found ${amazonProducts.length} products on Amazon`);
+      const affiliateProduct = {
+        title: amazonProduct.title,
+        description: amazonProduct.description,
+        price: amazonProduct.price,
+        original_price: amazonProduct.originalPrice || amazonProduct.price,
+        image_url: amazonProduct.imageUrl,
+        affiliate_url: this.generateAffiliateLink(amazonProduct.asin),
+        retailer_id: amazonRetailer?.id || null,
+        category: amazonProduct.category,
+        brand: amazonProduct.brand,
+        availability: amazonProduct.availability,
+        rating: amazonProduct.rating,
+        review_count: amazonProduct.reviewCount,
+        // Amazon-specific columns
+        asin: amazonProduct.asin,
+        amazon_price: amazonProduct.price,
+        amazon_rating: amazonProduct.rating,
+        amazon_reviews: amazonProduct.reviewCount,
+        amazon_availability: amazonProduct.availability,
+        amazon_image_url: amazonProduct.imageUrl,
+        amazon_title: amazonProduct.title,
+        amazon_brand: amazonProduct.brand,
+        amazon_category: amazonProduct.category,
+        amazon_feature_bullets: amazonProduct.features,
+        amazon_prime_eligible: true,
+        amazon_best_seller: false,
+        amazon_choice: false,
+        amazon_lightning_deal: false,
+        amazon_last_updated: new Date().toISOString()
+      };
 
-      // Normalize products for Supabase
-      const normalizedProducts = amazonProducts.map(product => 
-        this.normalizeAmazonProduct(product, category)
-      );
-
-      // Insert into Supabase
-      const { data, error } = await supabase
-        .from('products')
-        .insert(normalizedProducts)
-        .select();
+      const { error } = await supabase
+        .from('affiliate_products')
+        .insert([affiliateProduct]);
 
       if (error) {
-        console.error('❌ Supabase insert error:', error);
-        throw error;
+        console.error('Error importing product:', error);
+        return false;
       }
 
-      console.log(`✅ Successfully imported ${data?.length || 0} products to Supabase`);
-      return data?.length || 0;
-
+      return true;
     } catch (error) {
-      console.error('❌ Import products error:', error);
-      throw error;
+      console.error('Error importing product to affiliate:', error);
+      return false;
     }
   }
 
-  /**
-   * Sync existing Amazon products (update prices, availability)
-   */
-  async syncAmazonProducts(): Promise<void> {
+  // Generate affiliate link
+  private generateAffiliateLink(asin: string): string {
+    return `https://amazon.com/dp/${asin}?tag=${this.associateTag}&linkCode=ur2&camp=2025&creative=9325`;
+  }
+
+  // Bulk import products
+  async bulkImportProducts(keywords: string, maxProducts: number = 10): Promise<number> {
     try {
-      // Get existing Amazon products from Supabase
-      const { data: existingProducts, error } = await supabase
-        .from('products')
-        .select('id, asin, name')
-        .eq('source', 'amazon');
+      const searchResult = await this.searchProducts(keywords);
+      let importedCount = 0;
 
-      if (error) throw error;
-
-      console.log(`🔄 Syncing ${existingProducts?.length || 0} Amazon products`);
-
-      // Note: PA-API 5.0 doesn't have bulk lookup, so we'd need to implement
-      // batch processing or use GetItems operation for individual ASINs
-      // This is a placeholder for the sync logic
-
-      for (const product of existingProducts || []) {
-        // Individual product sync would go here
-        // For now, just log the sync attempt
-        console.log(`Syncing product: ${product.name} (${product.asin})`);
+      for (const product of searchResult.products.slice(0, maxProducts)) {
+        const success = await this.importProductToAffiliate(product);
+        if (success) {
+          importedCount++;
+        }
       }
 
+      return importedCount;
     } catch (error) {
-      console.error('❌ Sync products error:', error);
-      throw error;
+      console.error('Error bulk importing products:', error);
+      return 0;
     }
-  }
-
-  /**
-   * Get Amazon product categories
-   */
-  getAvailableCategories(): string[] {
-    return [
-      'All',
-      'Electronics', 
-      'Computers',
-      'VideoGames',
-      'Software',
-      'Books',
-      'Movies',
-      'Music',
-      'Toys',
-      'Baby',
-      'Automotive',
-      'Tools',
-      'Garden',
-      'Grocery',
-      'HealthPersonalCare',
-      'Beauty',
-      'Fashion',
-      'Jewelry',
-      'Shoes',
-      'Watches'
-    ];
   }
 }
 
-// Export singleton instance
 export const amazonService = new AmazonService();
-export default amazonService;

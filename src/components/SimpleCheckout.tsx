@@ -16,10 +16,7 @@ import {
   DialogContent
 } from '@mui/material';
 import {
-  ShoppingCart,
-  CreditCard,
   Security,
-  CheckCircle,
   LocalShipping
 } from '@mui/icons-material';
 import { useCart } from '../contexts/CartContext';

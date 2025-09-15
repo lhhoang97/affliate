@@ -12,7 +12,7 @@ const Logo: React.FC<LogoProps> = ({ variant = 'header', onClick }) => {
   const getIconSize = () => {
     switch (variant) {
       case 'mobile':
-        return { width: 16, height: 16 }; // Smaller
+        return { width: 20, height: 20 }; // Larger for mobile visibility
       case 'footer':
         return { width: 20, height: 20 }; // Smaller
       default:
@@ -23,7 +23,7 @@ const Logo: React.FC<LogoProps> = ({ variant = 'header', onClick }) => {
   const getTextSize = () => {
     switch (variant) {
       case 'mobile':
-        return '13px'; // Smaller
+        return '14px'; // Slightly larger for mobile readability
       case 'footer':
         return '15px'; // Smaller
       default:
@@ -62,50 +62,57 @@ const Logo: React.FC<LogoProps> = ({ variant = 'header', onClick }) => {
           position: 'relative'
         }}
       >
-        {/* Blue Shopping Cart */}
+        {/* White Shopping Cart with shadow */}
         <ShoppingCart
           sx={{
             ...iconSize,
-            color: '#1976d2',
+            color: '#ffffff',
+            filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
             transform: variant === 'header' ? 'scale(1.0)' : 'scale(1.2)', // No scaling for header
           }}
         />
         
-        {/* Colorful items inside cart */}
+        {/* Colorful items inside cart - responsive sizing */}
         <Box
           sx={{
             position: 'absolute',
-            top: '25%',
-            left: '20%',
-            width: 6,
-            height: 8,
-            backgroundColor: '#e91e63', // Pink/magenta
-            borderRadius: '1px',
-            transform: 'rotate(-15deg)'
+            top: '20%',
+            left: '18%',
+            width: variant === 'mobile' ? 6 : 8,
+            height: variant === 'mobile' ? 8 : 10,
+            backgroundColor: '#ff4081', // Brighter pink
+            borderRadius: variant === 'mobile' ? '1px' : '2px',
+            transform: 'rotate(-15deg)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+            border: '0.5px solid rgba(255,255,255,0.3)'
           }}
         />
         <Box
           sx={{
             position: 'absolute',
-            top: '35%',
-            left: '25%',
-            width: 5,
-            height: 6,
-            backgroundColor: '#00bcd4', // Light blue/cyan
-            borderRadius: '1px',
-            transform: 'rotate(10deg)'
+            top: '30%',
+            left: '22%',
+            width: variant === 'mobile' ? 5 : 7,
+            height: variant === 'mobile' ? 6 : 8,
+            backgroundColor: '#00e5ff', // Brighter cyan
+            borderRadius: variant === 'mobile' ? '1px' : '2px',
+            transform: 'rotate(10deg)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+            border: '0.5px solid rgba(255,255,255,0.3)'
           }}
         />
         <Box
           sx={{
             position: 'absolute',
-            top: '45%',
-            left: '30%',
-            width: 4,
-            height: 5,
-            backgroundColor: '#ff9800', // Orange
-            borderRadius: '1px',
-            transform: 'rotate(-5deg)'
+            top: '40%',
+            left: '26%',
+            width: variant === 'mobile' ? 4 : 6,
+            height: variant === 'mobile' ? 5 : 7,
+            backgroundColor: '#ffab40', // Brighter orange
+            borderRadius: variant === 'mobile' ? '1px' : '2px',
+            transform: 'rotate(-5deg)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+            border: '0.5px solid rgba(255,255,255,0.3)'
           }}
         />
       </Box>
@@ -114,12 +121,14 @@ const Logo: React.FC<LogoProps> = ({ variant = 'header', onClick }) => {
       <Typography
         sx={{
           fontSize: textSize,
-          fontWeight: variant === 'header' ? 600 : 'bold', // Lighter for header
-          color: '#007bff',
+          fontWeight: variant === 'header' ? 700 : 'bold', // Bolder for better visibility
+          color: '#ffffff',
           textTransform: 'none', // Keep original case
-          letterSpacing: variant === 'header' ? '0.3px' : '0.5px',
+          letterSpacing: variant === 'header' ? '0.5px' : '0.5px', // Slightly more spacing
           lineHeight: variant === 'header' ? 0.9 : 1, // Tighter for header
-          mt: variant === 'header' ? 0.2 : 0 // Minimal top margin for header
+          mt: variant === 'header' ? 0.2 : 0, // Minimal top margin for header
+          textShadow: '0 1px 2px rgba(0,0,0,0.3)', // Add text shadow for better contrast
+          filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.2))' // Additional shadow effect
         }}
       >
         BestFinds

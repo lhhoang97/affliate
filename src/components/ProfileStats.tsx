@@ -11,9 +11,6 @@ import {
   Stack
 } from '@mui/material';
 import {
-  ShoppingCart,
-  Favorite,
-  Receipt,
   TrendingUp,
   Person,
   Email,
@@ -29,7 +26,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const ProfileStats: React.FC = () => {
   const { profile, userStatistics } = useProfile();
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

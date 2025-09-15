@@ -22,8 +22,7 @@ import {
   Person,
   Email,
   Phone,
-  LocationOn,
-  CalendarToday
+  LocationOn
 } from '@mui/icons-material';
 import { useProfile } from '../contexts/ProfileContext';
 import { useAuth } from '../contexts/AuthContext';
